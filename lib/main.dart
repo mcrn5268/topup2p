@@ -1,18 +1,22 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:topup2p/widgets/login.dart';
 import 'package:topup2p/widgets/register.dart';
 import 'package:topup2p/widgets/mainpage.dart';
-import 'package:topup2p/widgets/favorites_widget.dart';
+import 'package:topup2p/widgets/favorites.dart';
 import 'package:topup2p/widgets/games.dart';
+import 'package:topup2p/global/globals.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   //const GamesList().initImages();
-  runApp(const MyApp());
+  runApp(const Topup2p());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class Topup2p extends StatelessWidget {
+  const Topup2p({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +43,7 @@ class MyApp extends StatelessWidget {
         ),
         primarySwatch: Colors.blueGrey,
       ),
-      home: const MainPage(),
+      home: MainPage(),
     );
   }
 }
