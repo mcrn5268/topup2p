@@ -23,61 +23,39 @@ class _FavoritesIconState extends State<FavoritesIcon> {
     String icon = GlobalValues.forIcon[isFavorited]!;
     return Align(
         alignment: Alignment.topRight,
-        child: Consumer<FavoritesProvider>(
-          builder: (context, favorites, child) {
-          // print("CONSUMER ${isFavList['name']} $icon ");
-          return IconButton(
-            key: ValueKey('${widget.name}favButton'),
-            icon: Image.asset(
-                context.read<FavoritesProvider>().getImage(isFavorited)),
-            color: null,
-            padding: const EdgeInsets.only(right: 10),
-            constraints: const BoxConstraints(),
-            iconSize: widget.size,
-            onPressed: () {
-              //print("--- " + isFavList['name'] + isFavList['isFav'].toString());
+        child:
+            // Consumer<FavoritesProvider>(
+            //builder: (context, favorites, child) {
+            // print("CONSUMER ${isFavList['name']} $icon ");
+            //return
+            IconButton(
+          key: ValueKey('${widget.name}favButton'),
+          icon: Image.asset(
+              //context.read<FavoritesProvider>().getImage(isFavorited)),
+              //Provider.of<FavoritesProvider>(context, listen: false).getImage(isFavorited)),
+              //'assets/images/logo.png'),
+              FavoritesProvider().getImage(isFavorited)),
 
-              //isFavList['isFav'] = !isFavList['isFav'];
-
-
-
-
-              context.read<FavoritesProvider>().setImage(isFavList);
-              //Provider.of<FavoritesProvider>(context, listen: false).setImage(isFavList);
-
-
-
-
-              //isFavList = GlobalValues.theMap.firstWhere((item) => item["name"] == widget.name);
-
-              //print(isFavList['name'] + isFavList['isFav'].toString());
-              setState(() {});
-            },
-          );
-        }));
+          //WHHYYYYYYYYYYYY
+          color: null,
+          padding: const EdgeInsets.only(right: 10),
+          constraints: const BoxConstraints(),
+          iconSize: widget.size,
+          onPressed: () {
+            
+            //Provider.of<FavoritesProvider>(context, listen: false).checkNav();
+            context.read<FavoritesProvider>().setImage(isFavList);
+            //Provider.of<FavoritesProvider>(context, listen: false).setImage(isFavList);
+            if ((GlobalValues.favoritedItems.length) * 114.5 >
+                GlobalValues.size.width) {
+              GlobalValues.RVisible = true;
+            } else {
+              GlobalValues.RVisible = false;
+            }
+            //setState(() {});
+          },
+        )
+        //})
+        );
   }
 }
-
-// Widget favoriteIcon(String name) {
-//   var isFavList =
-//       GlobalValues.theMap.firstWhere((item) => item["name"] == name);
-//   isFavorited = isFavList['isFav'];
-//   String icon = GlobalValues.forIcon[isFavorited]!;
-
-//   return Align(
-//     alignment: Alignment.topRight,
-//     child: IconButton(
-//       key: ValueKey('${name}favButton'),
-//       icon: Image.asset(icon),
-//       color: null,
-//       padding: const EdgeInsets.only(right: 10),
-//       constraints: const BoxConstraints(),
-//       iconSize: 35,
-//       onPressed: () {
-//         setState(() {
-//           isFavList['isFav'] = !isFavList['isFav'];
-//         });
-//       },
-//     ),
-//   );
-// }

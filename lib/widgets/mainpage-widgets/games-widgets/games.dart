@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:topup2p/global/globals.dart' as GlobalValues;
-import 'package:topup2p/widgets/mainpage.dart';
+import 'package:topup2p/widgets/mainpage-widgets/mainpage.dart';
 import 'package:topup2p/widgets/icons/favoriteicon.dart';
 import 'package:provider/provider.dart';
 import 'package:topup2p/provider/favoritesprovider.dart';

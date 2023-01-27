@@ -1,10 +1,10 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
-import 'package:topup2p/widgets/customdivider.dart';
+import 'package:topup2p/widgets/cons-widgets/customdivider.dart';
 import 'package:topup2p/widgets/register.dart';
 import 'package:topup2p/widgets/forgotpassword.dart';
-import 'package:topup2p/widgets/mainpage.dart';
+import 'package:topup2p/widgets/mainpage-widgets/mainpage.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});

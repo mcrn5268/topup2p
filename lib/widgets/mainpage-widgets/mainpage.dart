@@ -2,19 +2,19 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:topup2p/widgets/favorites.dart';
-import 'package:topup2p/widgets/games.dart';
-import 'package:topup2p/widgets/appbar.dart';
+import 'package:topup2p/widgets/mainpage-widgets/favorites-widgets/favorites.dart';
+import 'package:topup2p/widgets/mainpage-widgets/games-widgets/games.dart';
+import 'package:topup2p/widgets/cons-widgets/appbar.dart';
 import 'package:topup2p/widgets/textwidgets/headline6.dart';
-import 'package:topup2p/widgets/loadingscreen.dart';
+import 'package:topup2p/widgets/cons-widgets/loadingscreen.dart';
 import 'package:topup2p/global/globals.dart' as GlobalValues;
 import 'package:provider/provider.dart';
 import 'package:topup2p/provider/favoritesprovider.dart';
 
-import '../global/globals.dart';
+import '../../global/globals.dart';
 
 class MainPage extends StatefulWidget {
-  MainPage({super.key});
+  const MainPage({super.key});
 
   //var globals = GlobalValues;
   @override
@@ -43,8 +43,9 @@ class _MainPageState extends State<MainPage> {
       //     tempMap['name'] == "Valorant" ||
       //     tempMap['name'] == "Steam Wallet Code" ||
       //     tempMap['name'] == "Garena Shells" ||
-      //     tempMap['name'] == "Free Fire Max" ||
-      //     tempMap['name'] == "Grand Theft Auto V: Premium Online Edition") {
+      //     tempMap['name'] == "Free Fire MAX" ||
+      //     tempMap['name'] == "Grand Theft Auto V: Premium Online Edition"
+      //     ) {
       //   tempMap['isFav'] = true;
       // }
       GlobalValues.theMap.add(tempMap);
@@ -67,49 +68,28 @@ class _MainPageState extends State<MainPage> {
         future: _flag,
         builder: (ctx, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
-            return
-              ChangeNotifierProvider<FavoritesProvider>(
+            return ChangeNotifierProvider<FavoritesProvider>(
                 create: (context) => FavoritesProvider(),
-                child: Scaffold(
-                  appBar: const AppBarWidget(),
-                  body: ListView(
-                    shrinkWrap: true,
-                    children: const <Widget>[
-                      Divider(),
-                      HeadLine6('FAVORITES'),
-                      FavoritesList(),
-                      //dynamically adjust # of shown items depending on the width
-                      Divider(),
-                      HeadLine6('GAMES'),
-                      GamesList(),
-                    ],
-                  )
-                ),
-
-                
-              );
-            
-          
+                child: Builder(
+                  builder: ((context) {
+                    return Scaffold(
+                        appBar: const AppBarWidget(),
+                        body: ListView(
+                          shrinkWrap: true,
+                          children: const <Widget>[
+                            Divider(),
+                            HeadLine6('FAVORITES'),
+                            FavoritesList(),
+                            Divider(),
+                            HeadLine6('GAMES'),
+                            GamesList(),
+                          ],
+                        ));
+                  }),
+                ));
           } else {
             return const LoadingScreen();
           }
         });
   }
 }
-
-
-
-// return Scaffold(
-//                 appBar: const AppBarWidget(),
-//                 body: ListView(
-//                   shrinkWrap: true,
-//                   children: const <Widget>[
-//                     Divider(),
-//                     HeadLine6('FAVORITES'),
-//                     FavoritesList(),
-//                     //dynamically adjust # of shown items depending on the width
-//                     Divider(),
-//                     HeadLine6('GAMES'),
-//                     GamesList(),
-//                   ],
-//                 ));

@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:topup2p/widgets/mainpage-widgets/favorites-widgets/favorites-items.dart';
 
 final List<String> productItems = [
   'Mobile Legends',
@@ -80,6 +81,9 @@ final Map<bool, String> forIcon = {
   true: 'assets/icons/bookmark-icon-yellow.png',
   false: 'assets/icons/bookmark-icon-white.png'
 };
-final List<Map<String, dynamic>> favorited = [];
+late var favoritedList;
+final favoritedItems = <FavoriteItems>[];
 
-
+bool LVisible = false;
+bool RVisible = false;
+Size size = WidgetsBinding.instance.window.physicalSize;

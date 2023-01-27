@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:topup2p/widgets/customdivider.dart';
+import 'package:topup2p/widgets/cons-widgets/customdivider.dart';
 
 class RegisterPage extends StatelessWidget {
   const RegisterPage({super.key});

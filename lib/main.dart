@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:topup2p/widgets/login.dart';
 import 'package:topup2p/widgets/register.dart';
-import 'package:topup2p/widgets/mainpage.dart';
-import 'package:topup2p/widgets/favorites.dart';
-import 'package:topup2p/widgets/games.dart';
+import 'package:topup2p/widgets/mainpage-widgets/mainpage.dart';
+import 'package:topup2p/widgets/mainpage-widgets/favorites-widgets/favorites.dart';
+import 'package:topup2p/widgets/mainpage-widgets/games-widgets/games.dart';
 import 'package:topup2p/global/globals.dart';
 
 void main() {
