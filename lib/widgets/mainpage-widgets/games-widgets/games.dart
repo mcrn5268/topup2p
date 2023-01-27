@@ -27,8 +27,7 @@ class _GamesListState extends State<GamesList> {
 
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width;
-    int countRow = width ~/ 150;
+    int countRow = GlobalValues.logicalWidth ~/ 150;
     return Column(
       children: [
         GridView.count(

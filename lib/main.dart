@@ -32,9 +32,9 @@ class Topup2p extends StatelessWidget {
           ),
         ),
         textTheme: const TextTheme(
-          headline1: TextStyle(fontSize: 72.0, fontWeight: FontWeight.bold),
-          headline6: TextStyle(fontSize: 26.0, fontStyle: FontStyle.italic),
-          bodyText2: TextStyle(fontSize: 14.0, fontFamily: 'Hind'),
+          displayLarge: TextStyle(fontSize: 72.0, fontWeight: FontWeight.bold),
+          titleLarge: TextStyle(fontSize: 26.0, fontStyle: FontStyle.italic),
+          bodyMedium: TextStyle(fontSize: 14.0, fontFamily: 'Hind'),
         ),
         appBarTheme: const AppBarTheme(
           backgroundColor: Colors.transparent,
@@ -43,7 +43,7 @@ class Topup2p extends StatelessWidget {
         ),
         primarySwatch: Colors.blueGrey,
       ),
-      home: MainPage(),
+      home: const MainPage(),
     );
   }
 }

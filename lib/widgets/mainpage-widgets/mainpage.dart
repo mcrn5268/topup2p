@@ -39,15 +39,15 @@ class _MainPageState extends State<MainPage> {
       tempMap['name'] = GlobalValues.productItems[i];
       tempMap['image'] = imagePaths[i];
       tempMap['isFav'] = false;
-      // if (tempMap['name'] == "Mobile Legends" ||
-      //     tempMap['name'] == "Valorant" ||
-      //     tempMap['name'] == "Steam Wallet Code" ||
-      //     tempMap['name'] == "Garena Shells" ||
-      //     tempMap['name'] == "Free Fire MAX" ||
-      //     tempMap['name'] == "Grand Theft Auto V: Premium Online Edition"
-      //     ) {
-      //   tempMap['isFav'] = true;
-      // }
+      if (tempMap['name'] == "Mobile Legends" ||
+          tempMap['name'] == "Valorant" ||
+          tempMap['name'] == "Steam Wallet Code" 
+          // tempMap['name'] == "Garena Shells" ||
+          // tempMap['name'] == "Free Fire MAX" ||
+          // tempMap['name'] == "Grand Theft Auto V: Premium Online Edition"
+          ) {
+        tempMap['isFav'] = true;
+      }
       GlobalValues.theMap.add(tempMap);
     }
 
@@ -75,7 +75,8 @@ class _MainPageState extends State<MainPage> {
                     return Scaffold(
                         appBar: const AppBarWidget(),
                         body: ListView(
-                          shrinkWrap: true,
+                        addAutomaticKeepAlives: true,
+                          shrinkWrap: false,
                           children: const <Widget>[
                             Divider(),
                             HeadLine6('FAVORITES'),

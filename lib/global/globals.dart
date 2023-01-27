@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:topup2p/widgets/mainpage-widgets/favorites-widgets/favorites-items.dart';
+import 'dart:ui';
 
 final List<String> productItems = [
   'Mobile Legends',
@@ -86,4 +87,8 @@ final favoritedItems = <FavoriteItems>[];
 
 bool LVisible = false;
 bool RVisible = false;
-Size size = WidgetsBinding.instance.window.physicalSize;
+//Size size = WidgetsBinding.instance.window.physicalSize;
+var pixelRatio = window.devicePixelRatio;
+var logicalScreenSize = window.physicalSize / pixelRatio;
+var logicalWidth = logicalScreenSize.width;
+//double size = MediaQuery.of(context).size.width;

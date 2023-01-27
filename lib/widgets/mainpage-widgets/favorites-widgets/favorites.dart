@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 import 'package:topup2p/provider/favoritesprovider.dart';
 import 'package:topup2p/widgets/mainpage-widgets/favorites-widgets/favorites-items.dart';
 
-
 //late double width = size.width;
 
 class FavoritesList extends StatefulWidget {
@@ -17,7 +16,7 @@ class FavoritesList extends StatefulWidget {
   State<FavoritesList> createState() => _FavoritesListState();
 }
 
-class _FavoritesListState extends State<FavoritesList> {
+class _FavoritesListState extends State<FavoritesList> with AutomaticKeepAliveClientMixin{
   //List<SliverList> innerLists = [];
   final controller = ScrollController();
   bool flag = true;
@@ -43,7 +42,8 @@ class _FavoritesListState extends State<FavoritesList> {
       GlobalValues.favoritedItems
           .add(FavoriteItems(e['name'], e['image'], e['isFav']));
     }
-    if ((GlobalValues.favoritedItems.length) * 114.5 > GlobalValues.size.width) {
+    if ((GlobalValues.favoritedItems.length) * 114.5 >
+        GlobalValues.logicalWidth) {
       GlobalValues.RVisible = true;
     }
   }
@@ -52,6 +52,7 @@ class _FavoritesListState extends State<FavoritesList> {
   //arrow_back_ios_outlined
   @override
   Widget build(BuildContext context) {
+    print("favorites buiild");
     return SizedBox(
       height: 150,
       child: Consumer<FavoritesProvider>(builder: (_, favorites, child) {
@@ -72,7 +73,7 @@ class _FavoritesListState extends State<FavoritesList> {
                     GlobalValues.favoritedItems.insert(newIndex, item);
                   },
                   itemBuilder: (BuildContext context, int index) {
-                    return ReorderableDragStartListener(
+                    return ReorderableDelayedDragStartListener(
                       key: ValueKey("Favorited-Items-$index"),
                       index: index,
                       child: GlobalValues.favoritedItems[index],
@@ -124,7 +125,7 @@ class _FavoritesListState extends State<FavoritesList> {
   bool navFlag = true;
   void nextItem(String move) {
     final deviceWidth = MediaQuery.of(context).size.width;
-    double cardsWidth = ((GlobalValues.size.width / 114.5).ceil() * 114.5);
+    double cardsWidth = ((GlobalValues.logicalWidth / 114.5).ceil() * 114.5);
     if (cardsWidth == deviceWidth) {
       flag = false;
     }
@@ -158,4 +159,7 @@ class _FavoritesListState extends State<FavoritesList> {
     }
     controller.jumpTo(jumpValue);
   }
+  
+  @override
+  bool get wantKeepAlive => true;
 }

@@ -47,7 +47,7 @@ class _FavoritesIconState extends State<FavoritesIcon> {
             context.read<FavoritesProvider>().setImage(isFavList);
             //Provider.of<FavoritesProvider>(context, listen: false).setImage(isFavList);
             if ((GlobalValues.favoritedItems.length) * 114.5 >
-                GlobalValues.size.width) {
+                GlobalValues.logicalWidth) {
               GlobalValues.RVisible = true;
             } else {
               GlobalValues.RVisible = false;
