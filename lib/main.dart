@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:topup2p/widgets/login.dart';
 import 'package:topup2p/widgets/register.dart';
+import 'package:topup2p/widgets/seller/seller.dart';
 import 'package:topup2p/widgets/mainpage-widgets/mainpage.dart';
 import 'package:topup2p/widgets/mainpage-widgets/favorites-widgets/favorites.dart';
 import 'package:topup2p/widgets/mainpage-widgets/games-widgets/games.dart';
@@ -43,6 +44,7 @@ class Topup2p extends StatelessWidget {
         ),
         primarySwatch: Colors.blueGrey,
       ),
+      //home: const GameSellerList('Mobile Legends'),
       home: const MainPage(),
     );
   }

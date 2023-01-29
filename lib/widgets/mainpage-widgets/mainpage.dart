@@ -24,24 +24,26 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   late Future _flag;
   Future initImages() async {
-    // >> To get paths you need these 2 lines
     final manifestContent = await rootBundle.loadString('AssetManifest.json');
 
     final Map<String, dynamic> manifestMap = json.decode(manifestContent);
-    // >> To get paths you need these 2 lines
 
     final imagePaths = manifestMap.keys
         .where((String key) => key.contains('assets/gameslogos/'))
+        .toList();
+    final imagePathsBanner = manifestMap.keys
+        .where((String key) => key.contains('assets/gameslogos-banner/'))
         .toList();
     //Map<String, String> nameMap = Map.fromIterables("name", productItems);
     for (int i = 0; i < GlobalValues.productItems.length; i++) {
       late final Map<String, dynamic> tempMap = {};
       tempMap['name'] = GlobalValues.productItems[i];
       tempMap['image'] = imagePaths[i];
+      tempMap['image-banner'] = imagePathsBanner[i];
       tempMap['isFav'] = false;
       if (tempMap['name'] == "Mobile Legends" ||
-          tempMap['name'] == "Valorant" ||
-          tempMap['name'] == "Steam Wallet Code" 
+              tempMap['name'] == "Valorant" ||
+              tempMap['name'] == "Steam Wallet Code"
           // tempMap['name'] == "Garena Shells" ||
           // tempMap['name'] == "Free Fire MAX" ||
           // tempMap['name'] == "Grand Theft Auto V: Premium Online Edition"
@@ -73,9 +75,9 @@ class _MainPageState extends State<MainPage> {
                 child: Builder(
                   builder: ((context) {
                     return Scaffold(
-                        appBar: const AppBarWidget(),
+                        appBar: AppBarWidget(true, true, GlobalValues.isLoggedIn),
                         body: ListView(
-                        addAutomaticKeepAlives: true,
+                          addAutomaticKeepAlives: true,
                           shrinkWrap: false,
                           children: const <Widget>[
                             Divider(),

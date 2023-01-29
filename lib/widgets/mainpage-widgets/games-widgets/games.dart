@@ -7,6 +7,7 @@ import 'package:topup2p/widgets/mainpage-widgets/mainpage.dart';
 import 'package:topup2p/widgets/icons/favoriteicon.dart';
 import 'package:provider/provider.dart';
 import 'package:topup2p/provider/favoritesprovider.dart';
+import 'package:topup2p/widgets/seller/seller.dart';
 
 class GamesList extends StatefulWidget {
   const GamesList({Key? key}) : super(key: key);
@@ -30,6 +31,7 @@ class _GamesListState extends State<GamesList> {
     int countRow = GlobalValues.logicalWidth ~/ 150;
     return Column(
       children: [
+        //change to slivergrid
         GridView.count(
           physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
@@ -51,23 +53,34 @@ class _GamesListState extends State<GamesList> {
                       borderRadius: BorderRadius.circular(20.0),
                       color: Colors.teal[100],
                     ),
-                    child: Column(
-                      children: [
-                        Expanded(flex: 3, child: Image.asset(mapKey['image']!)),
-                        Expanded(
-                          child: Container(
-                            width: double.infinity,
-                            color: Colors.grey,
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                mapKey['name']!,
-                                textAlign: TextAlign.center,
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    GameSellerList(mapKey['name'])));
+                        //GameSellerList(mapKey['name']);
+                      },
+                      child: Column(
+                        children: [
+                          Expanded(
+                              flex: 3, child: Image.asset(mapKey['image']!)),
+                          Expanded(
+                            child: Container(
+                              width: double.infinity,
+                              color: Colors.grey,
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(
+                                  mapKey['name']!,
+                                  textAlign: TextAlign.center,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                   Consumer<FavoritesProvider>(builder: (_, favorites, child) {

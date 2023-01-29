@@ -10,7 +10,7 @@ class HeadLine6 extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(0, 10, 0, 20),
       child: Text(
         text,
-        style: Theme.of(context).textTheme.headline6,
+        style: Theme.of(context).textTheme.titleLarge,
         textAlign: TextAlign.center,
       ),
     );
