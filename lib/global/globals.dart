@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:topup2p/widgets/mainpage-widgets/favorites-widgets/favorites-items.dart';
 import 'dart:ui';
 
+bool isLoggedIn = true;
+
 final List<String> productItems = [
   'Mobile Legends',
   'Valorant',
