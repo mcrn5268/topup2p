@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:topup2p/widgets/mainpage-widgets/favorites-widgets/favorites.dart';
 import 'package:topup2p/widgets/mainpage-widgets/games-widgets/games.dart';
-import 'package:topup2p/widgets/cons-widgets/appbar.dart';
+import 'package:topup2p/widgets/appbarwidgets/appbar.dart';
 import 'package:topup2p/widgets/textwidgets/headline6.dart';
 import 'package:topup2p/widgets/cons-widgets/loadingscreen.dart';
 import 'package:topup2p/global/globals.dart' as GlobalValues;
@@ -73,7 +73,7 @@ class _MainPageState extends State<MainPage> {
                 child: Builder(
                   builder: ((context) {
                     return Scaffold(
-                        appBar: const AppBarWidget(),
+                        appBar: AppBarWidget(true, true, GlobalValues.isLoggedIn),
                         body: ListView(
                         addAutomaticKeepAlives: true,
                           shrinkWrap: false,
