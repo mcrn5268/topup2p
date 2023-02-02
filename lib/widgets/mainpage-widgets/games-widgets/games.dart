@@ -71,7 +71,8 @@ class _GamesListState extends State<GamesList> {
                     ),
                   ),
                   Consumer<FavoritesProvider>(builder: (_, favorites, child) {
-                    return FavoritesIcon(mapKey['name'], 35);
+                    return 
+                    FavoritesIcon(mapKey['name'], 35);
                   }),
                 ]),
               ),

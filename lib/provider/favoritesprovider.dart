@@ -21,24 +21,4 @@ class FavoritesProvider extends ChangeNotifier {
     }
     notifyListeners();
   }
-
-  void checkNav() {
-    // if ((size.width / 114.5).floor() > GlobalValues.favoritedList.length) {
-    //   RVisible = false;
-    // } else if ((size.width / 114.5).floor() <
-    //     GlobalValues.favoritedList.length) {
-    //   RVisible = true;
-    // }
-
-    // print((GlobalValues.favoritedItems.length + 1) * 114.5 > size.width);
-    // print(GlobalValues.favoritedItems.length +1 );
-    // if ((GlobalValues.favoritedItems.length) * 114.5 > size.width) {
-    //   RVisible = true;
-    //   notifyListeners();
-    // } 
-    //else {
-    //   RVisible = false;
-    //   notifyListeners();
-    // }
-  }
 }
