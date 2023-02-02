@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 import 'package:topup2p/global/globals.dart' as GlobalValues;
 import 'package:topup2p/provider/favoritesprovider.dart';
-import 'package:topup2p/widgets/appbarwidgets/appbar.dart';
+import 'package:topup2p/widgets/cons-widgets/appbarwidgets/appbar.dart';
 import 'package:topup2p/widgets/textwidgets/headline6.dart';
 import 'package:topup2p/widgets/icons/favoriteicon.dart';
 
