@@ -32,9 +32,9 @@ class _FavoritesIconState extends State<FavoritesIcon> {
           key: ValueKey('${widget.name}favButton'),
           icon: Image.asset(
               //context.read<FavoritesProvider>().getImage(isFavorited)),
-              //Provider.of<FavoritesProvider>(context, listen: false).getImage(isFavorited)),
+              Provider.of<FavoritesProvider>(context).getImage(isFavorited)),
               //'assets/images/logo.png'),
-              FavoritesProvider().getImage(isFavorited)),
+              //FavoritesProvider().getImage(isFavorited)),
 
           //WHHYYYYYYYYYYYY
           color: null,
@@ -44,8 +44,8 @@ class _FavoritesIconState extends State<FavoritesIcon> {
           onPressed: () {
             
             //Provider.of<FavoritesProvider>(context, listen: false).checkNav();
-            context.read<FavoritesProvider>().setImage(isFavList);
-            //Provider.of<FavoritesProvider>(context, listen: false).setImage(isFavList);
+            //context.read<FavoritesProvider>().setImage(isFavList);
+            Provider.of<FavoritesProvider>(context, listen: false).setImage(isFavList);
             if ((GlobalValues.favoritedItems.length) * 114.5 >
                 GlobalValues.logicalWidth) {
               GlobalValues.RVisible = true;

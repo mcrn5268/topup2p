@@ -7,7 +7,11 @@ import 'package:topup2p/widgets/mainpage-widgets/mainpage.dart';
 import 'package:topup2p/widgets/icons/favoriteicon.dart';
 import 'package:provider/provider.dart';
 import 'package:topup2p/provider/favoritesprovider.dart';
+<<<<<<< HEAD
 import 'package:topup2p/widgets/seller/seller.dart';
+=======
+import 'package:topup2p/widgets/seller.dart';
+>>>>>>> main-page-fix
 
 class GamesList extends StatefulWidget {
   const GamesList({Key? key}) : super(key: key);
@@ -51,16 +55,33 @@ class _GamesListState extends State<GamesList> {
                     clipBehavior: Clip.hardEdge,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20.0),
-                      color: Colors.teal[100],
                     ),
                     child: InkWell(
                       onTap: () {
+<<<<<<< HEAD
                         Navigator.push(
                             context,
                             MaterialPageRoute(
                                 builder: (context) =>
                                     GameSellerList(mapKey['name'])));
                         //GameSellerList(mapKey['name']);
+=======
+                        Navigator.of(context)
+                            .push(
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                ChangeNotifierProvider<FavoritesProvider>.value(
+                              value: FavoritesProvider(),
+                              child: GameSellerList(mapKey['name']),
+                            ),
+                          ),
+                        )
+                            .then((value) {
+                          setState(() {
+                            Provider.of<FavoritesProvider>(context, listen: false).notifList();
+                          });
+                        });
+>>>>>>> main-page-fix
                       },
                       child: Column(
                         children: [
@@ -70,12 +91,26 @@ class _GamesListState extends State<GamesList> {
                             child: Container(
                               width: double.infinity,
                               color: Colors.grey,
+<<<<<<< HEAD
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Text(
                                   mapKey['name']!,
                                   textAlign: TextAlign.center,
                                 ),
+=======
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(
+                                      mapKey['name']!,
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                ],
+>>>>>>> main-page-fix
                               ),
                             ),
                           ),
@@ -83,7 +118,7 @@ class _GamesListState extends State<GamesList> {
                       ),
                     ),
                   ),
-                  Consumer<FavoritesProvider>(builder: (_, favorites, child) {
+                  Consumer<FavoritesProvider>(builder: (_, __, ___) {
                     return FavoritesIcon(mapKey['name'], 35);
                   }),
                 ]),

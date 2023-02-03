@@ -85,7 +85,11 @@ final Map<bool, String> forIcon = {
 late var favoritedList;
 final favoritedItems = <FavoriteItems>[];
 
+<<<<<<< HEAD
 bool isLoggedIn = true;
+=======
+bool isLoggedIn = false;
+>>>>>>> main-page-fix
 
 bool LVisible = false;
 bool RVisible = false;
