@@ -82,11 +82,14 @@ class _GameSellerListState extends State<GameSellerList> {
           // Consumer<FavoritesProvider>(builder: (_, favorites, child) {
           //   return FavoritesIcon(widget.gameName, 50);
           // }),
-          
+
           // setState((){
 
           // })
-          FavoritesIcon(widget.gameName, 50, 33)
+          Consumer<FavoritesProvider>(builder: (_, __, ___) {
+            return 
+            FavoritesIcon(widget.gameName, 50);
+          }),
         ])),
         SliverList(
           delegate: SliverChildBuilderDelegate(

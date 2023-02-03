@@ -52,7 +52,6 @@ class _FavoritesListState extends State<FavoritesList> with AutomaticKeepAliveCl
   //arrow_back_ios_outlined
   @override
   Widget build(BuildContext context) {
-    print("favorites buiild");
     return SizedBox(
       height: 150,
       child: Consumer<FavoritesProvider>(builder: (_, favorites, child) {

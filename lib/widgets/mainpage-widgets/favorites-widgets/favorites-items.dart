@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:topup2p/widgets/icons/favoriteicon.dart';
 import 'package:provider/provider.dart';
 import 'package:topup2p/provider/favoritesprovider.dart';
+import 'package:topup2p/widgets/seller.dart';
 
 class FavoriteItems extends StatefulWidget {
   final String name;
@@ -11,8 +12,6 @@ class FavoriteItems extends StatefulWidget {
       : super(key: key);
   @override
   State<FavoriteItems> createState() => FavoriteItemsState();
-
-  
 }
 
 class FavoriteItemsState extends State<FavoriteItems> {
@@ -23,7 +22,6 @@ class FavoriteItemsState extends State<FavoriteItems> {
 
   @override
   Widget build(BuildContext context) {
-
     // return Material(
     //   child: Consumer<FavoritesProvider>(
     //     builder: (_, favorites, child) {
@@ -39,30 +37,54 @@ class FavoriteItemsState extends State<FavoriteItems> {
             clipBehavior: Clip.hardEdge,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20.0),
-              color: Colors.teal[100],
             ),
-            child: Column(
-              children: [
-                Expanded(flex: 3, child: Image.asset(widget.image)),
-                Expanded(
-                  child: Container(
-                    width: double.infinity,
-                    color: Colors.grey,
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        widget.name,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(fontSize: 10),
+            child: InkWell(
+              onTap: () {
+                Navigator.of(context)
+                    .push(
+                  MaterialPageRoute(
+                    builder: (_) =>
+                        ChangeNotifierProvider<FavoritesProvider>.value(
+                      value: FavoritesProvider(),
+                      child: GameSellerList(widget.name),
+                    ),
+                  ),
+                )
+                    .then((value) {
+                  setState(() {
+                    Provider.of<FavoritesProvider>(context, listen: false)
+                        .notifList();
+                  });
+                });
+              },
+              child: Column(
+                children: [
+                  Expanded(flex: 3, child: Image.asset(widget.image)),
+                  Expanded(
+                    child: Container(
+                      width: double.infinity,
+                      color: Colors.grey,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              widget.name,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(fontSize: 10),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
           //Consumer<FavoritesProvider>(builder: (_, favorites, child) {
-             FavoritesIcon(widget.name, 20)
+          FavoritesIcon(widget.name, 20)
           //}),
         ]),
       ),

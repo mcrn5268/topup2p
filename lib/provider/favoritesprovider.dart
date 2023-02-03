@@ -19,6 +19,10 @@ class FavoritesProvider extends ChangeNotifier {
     } else {
       GlobalValues.favoritedItems.removeWhere((i) => i.name == item['name']);
     }
+    notifList();
+  }
+
+  void notifList() {
     notifyListeners();
   }
 }

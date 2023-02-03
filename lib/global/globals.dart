@@ -2,8 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:topup2p/widgets/mainpage-widgets/favorites-widgets/favorites-items.dart';
 import 'dart:ui';
 
-bool isLoggedIn = true;
-
 final List<String> productItems = [
   'Mobile Legends',
   'Valorant',
@@ -87,10 +85,141 @@ final Map<bool, String> forIcon = {
 late var favoritedList;
 final favoritedItems = <FavoriteItems>[];
 
+bool isLoggedIn = false;
+
 bool LVisible = false;
 bool RVisible = false;
-//Size size = WidgetsBinding.instance.window.physicalSize;
 var pixelRatio = window.devicePixelRatio;
 var logicalScreenSize = window.physicalSize / pixelRatio;
 var logicalWidth = logicalScreenSize.width;
-//double size = MediaQuery.of(context).size.width;
+
+final List<Map<String, dynamic>> shopList = [
+  {
+    'game': 'Mobile Legends',
+    'shops': ['7/11', 'Ministop', 'Diskounted']
+  },
+  {
+    'game': 'Valorant',
+    'shops': ['Diskounted', 'Ministop']
+  },
+  {
+    'game': 'Leauge of Legends: Wild RIft',
+    'shops': ['Ministop']
+  },
+  {
+    'game': 'Call of Duty Mobile',
+    'shops': ['7/11', 'Ministop']
+  },
+  
+];
+final List<Map<String, dynamic>> gameShop = [
+  {
+    'shop-name': 'Diskounted',
+    'mop': [
+      'assets/images/MoP/GCash.png',
+      'assets/images/MoP/PayMaya.png',
+      'assets/images/MoP/metrobank.png',
+      'assets/images/MoP/unionbank.png'
+    ],
+    'games-price-rate': [
+      {
+        'Mobile Legends': [
+          '₱150 : 500 💎',
+          '₱150 : 500 💎',
+          '₱150 : 500 💎',
+        ],
+        'Valorant': [
+          '₱250 : 600 💎',
+          '₱350 : 600 💎',
+          '₱250 : 600 💎',
+          '₱250 : 600 💎',
+          '₱250 : 600 💎',
+          '₱250 : 600 💎'
+        ],
+        'Leauge of Legends: Wild RIft': [
+          '₱450 : 800 💎',
+          '₱450 : 800 💎',
+          '₱450 : 800 💎',
+          '₱450 : 800 💎',
+          '₱450 : 800 💎',
+          '₱450 : 800 💎'
+        ],
+      }
+    ]
+  },
+  {
+    'shop-name': '7/11',
+    'mop': ['assets/images/MoP/GCash.png', 'assets/images/MoP/unionbank.png'],
+    'games-price-rate': [
+      {
+        'Mobile Legends': [
+          '₱150 : 500 💎',
+          '₱150 : 500 💎',
+          '₱150 : 500 💎',
+          '₱150 : 500 💎',
+          '₱150 : 500 💎'
+        ],
+        'Call of Duty Mobile': [
+          '₱350 : 700 💎',
+          '₱350 : 700 💎',
+          '₱350 : 700 💎',
+          '₱350 : 700 💎',
+          '₱350 : 700 💎',
+          '₱350 : 700 💎'
+        ],
+        'Leauge of Legends: Wild RIft': [
+          '₱450 : 800 💎',
+          '₱450 : 800 💎',
+          '₱450 : 800 💎',
+          '₱450 : 800 💎',
+          '₱450 : 800 💎',
+          '₱450 : 800 💎'
+        ],
+      }
+    ]
+  },
+  {
+    'shop-name': 'Ministop',
+    'mop': [
+      'assets/images/MoP/metrobank.png',
+      'assets/images/MoP/unionbank.png'
+    ],
+    'games-price-rate': [
+      {
+        'Mobile Legends': [
+          '₱150 : 500 💎',
+          '₱150 : 500 💎',
+          '₱150 : 500 💎',
+          '₱150 : 500 💎',
+          '₱150 : 500 💎',
+          '₱150 : 500 💎',
+          '₱150 : 500 💎',
+        ],
+        'Valorant': [
+          '₱250 : 600 💎',
+          '₱350 : 600 💎',
+          '₱250 : 600 💎',
+          '₱250 : 600 💎',
+          '₱250 : 600 💎',
+          '₱250 : 600 💎'
+        ],
+        'Call of Duty Mobile': [
+          '₱350 : 700 💎',
+          '₱350 : 700 💎',
+          '₱350 : 700 💎',
+          '₱350 : 700 💎',
+          '₱350 : 700 💎',
+          '₱350 : 700 💎'
+        ],
+        'Leauge of Legends: Wild RIft': [
+          '₱450 : 800 💎',
+          '₱450 : 800 💎',
+          '₱450 : 800 💎',
+          '₱450 : 800 💎',
+          '₱450 : 800 💎',
+          '₱450 : 800 💎'
+        ],
+      }
+    ]
+  }
+];

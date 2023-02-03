@@ -7,6 +7,7 @@ import 'package:topup2p/widgets/mainpage-widgets/mainpage.dart';
 import 'package:topup2p/widgets/icons/favoriteicon.dart';
 import 'package:provider/provider.dart';
 import 'package:topup2p/provider/favoritesprovider.dart';
+import 'package:topup2p/widgets/seller.dart';
 
 class GamesList extends StatefulWidget {
   const GamesList({Key? key}) : super(key: key);
@@ -49,30 +50,53 @@ class _GamesListState extends State<GamesList> {
                     clipBehavior: Clip.hardEdge,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20.0),
-                      color: Colors.teal[100],
                     ),
-                    child: Column(
-                      children: [
-                        Expanded(flex: 3, child: Image.asset(mapKey['image']!)),
-                        Expanded(
-                          child: Container(
-                            width: double.infinity,
-                            color: Colors.grey,
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                mapKey['name']!,
-                                textAlign: TextAlign.center,
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.of(context)
+                            .push(
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                ChangeNotifierProvider<FavoritesProvider>.value(
+                              value: FavoritesProvider(),
+                              child: GameSellerList(mapKey['name']),
+                            ),
+                          ),
+                        )
+                            .then((value) {
+                          setState(() {
+                            Provider.of<FavoritesProvider>(context, listen: false).notifList();
+                          });
+                        });
+                      },
+                      child: Column(
+                        children: [
+                          Expanded(
+                              flex: 3, child: Image.asset(mapKey['image']!)),
+                          Expanded(
+                            child: Container(
+                              width: double.infinity,
+                              color: Colors.grey,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(
+                                      mapKey['name']!,
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-                  Consumer<FavoritesProvider>(builder: (_, favorites, child) {
-                    return 
-                    FavoritesIcon(mapKey['name'], 35);
+                  Consumer<FavoritesProvider>(builder: (_, __, ___) {
+                    return FavoritesIcon(mapKey['name'], 35);
                   }),
                 ]),
               ),
