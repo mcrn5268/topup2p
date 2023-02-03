@@ -13,14 +13,10 @@ class SearchButton extends StatelessWidget {
           children: [
             ElevatedButton(
               onPressed: () {
-<<<<<<< HEAD
-                //skip
-=======
                 showSearch(
                   context: context,
                   delegate: SearchD(),
                 );
->>>>>>> main-page-fix
               },
               child: Row(
                 children: const <Widget>[Icon(Icons.search_outlined)],
@@ -31,9 +27,6 @@ class SearchButton extends StatelessWidget {
       ],
     );
   }
-<<<<<<< HEAD
-}
-=======
 }
 
 class SearchD extends SearchDelegate {
@@ -90,4 +83,3 @@ class SearchD extends SearchDelegate {
         });
   }
 }
->>>>>>> main-page-fix

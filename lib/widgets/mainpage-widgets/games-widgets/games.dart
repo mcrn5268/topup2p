@@ -7,11 +7,7 @@ import 'package:topup2p/widgets/mainpage-widgets/mainpage.dart';
 import 'package:topup2p/widgets/icons/favoriteicon.dart';
 import 'package:provider/provider.dart';
 import 'package:topup2p/provider/favoritesprovider.dart';
-<<<<<<< HEAD
-import 'package:topup2p/widgets/seller/seller.dart';
-=======
 import 'package:topup2p/widgets/seller.dart';
->>>>>>> main-page-fix
 
 class GamesList extends StatefulWidget {
   const GamesList({Key? key}) : super(key: key);
@@ -58,14 +54,6 @@ class _GamesListState extends State<GamesList> {
                     ),
                     child: InkWell(
                       onTap: () {
-<<<<<<< HEAD
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    GameSellerList(mapKey['name'])));
-                        //GameSellerList(mapKey['name']);
-=======
                         Navigator.of(context)
                             .push(
                           MaterialPageRoute(
@@ -81,7 +69,6 @@ class _GamesListState extends State<GamesList> {
                             Provider.of<FavoritesProvider>(context, listen: false).notifList();
                           });
                         });
->>>>>>> main-page-fix
                       },
                       child: Column(
                         children: [
@@ -91,14 +78,6 @@ class _GamesListState extends State<GamesList> {
                             child: Container(
                               width: double.infinity,
                               color: Colors.grey,
-<<<<<<< HEAD
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(
-                                  mapKey['name']!,
-                                  textAlign: TextAlign.center,
-                                ),
-=======
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
@@ -110,7 +89,6 @@ class _GamesListState extends State<GamesList> {
                                     ),
                                   ),
                                 ],
->>>>>>> main-page-fix
                               ),
                             ),
                           ),
