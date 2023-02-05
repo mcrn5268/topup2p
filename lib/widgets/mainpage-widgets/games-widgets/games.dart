@@ -7,7 +7,9 @@ import 'package:topup2p/widgets/mainpage-widgets/mainpage.dart';
 import 'package:topup2p/widgets/icons/favoriteicon.dart';
 import 'package:provider/provider.dart';
 import 'package:topup2p/provider/favoritesprovider.dart';
-import 'package:topup2p/widgets/seller.dart';
+import 'package:topup2p/widgets/seller/seller.dart';
+
+late var gamesContext;
 
 class GamesList extends StatefulWidget {
   const GamesList({Key? key}) : super(key: key);
@@ -28,6 +30,7 @@ class _GamesListState extends State<GamesList> {
 
   @override
   Widget build(BuildContext context) {
+    gamesContext = context;
     int countRow = GlobalValues.logicalWidth ~/ 150;
     return Column(
       children: [
@@ -54,21 +57,26 @@ class _GamesListState extends State<GamesList> {
                     ),
                     child: InkWell(
                       onTap: () {
-                        Navigator.of(context)
-                            .push(
-                          MaterialPageRoute(
-                            builder: (_) =>
-                                ChangeNotifierProvider<FavoritesProvider>.value(
-                              value: FavoritesProvider(),
-                              child: GameSellerList(mapKey['name']),
-                            ),
-                          ),
-                        )
-                            .then((value) {
-                          setState(() {
-                            Provider.of<FavoritesProvider>(context, listen: false).notifList();
-                          });
-                        });
+                        MainPageNavigator(
+                            mapKey['name'], mapKey['image-banner']);
+
+                        // Navigator.of(context)
+                        //     .push(
+                        //   MaterialPageRoute(
+                        //     builder: (_) =>
+                        //         ChangeNotifierProvider<FavoritesProvider>.value(
+                        //       value: FavoritesProvider(),
+                        //       child: GameSellerList(
+                        //           mapKey['name'], mapKey['image-banner']),
+                        //     ),
+                        //   ),
+                        // )
+                        //     .then((value) {
+                        //   //setState(() {
+                        //   Provider.of<FavoritesProvider>(context, listen: false)
+                        //       .notifList();
+                        //   //});
+                        // });
                       },
                       child: Column(
                         children: [
@@ -81,12 +89,9 @@ class _GamesListState extends State<GamesList> {
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text(
-                                      mapKey['name']!,
-                                      textAlign: TextAlign.center,
-                                    ),
+                                  Text(
+                                    mapKey['name']!,
+                                    textAlign: TextAlign.center,
                                   ),
                                 ],
                               ),
@@ -96,9 +101,9 @@ class _GamesListState extends State<GamesList> {
                       ),
                     ),
                   ),
-                  Consumer<FavoritesProvider>(builder: (_, __, ___) {
-                    return FavoritesIcon(mapKey['name'], 35);
-                  }),
+                  //Consumer<FavoritesProvider>(builder: (_, __, ___) {
+                  FavoritesIcon(mapKey['name'], 35)
+                  //}),
                 ]),
               ),
             )
@@ -117,5 +122,39 @@ class _GamesListState extends State<GamesList> {
         ),
       ],
     );
+  }
+}
+
+void MainPageNavigator(String name, String banner, {bool? flag}) {
+  if (flag == null) {
+    Navigator.of(gamesContext)
+        .push(
+      MaterialPageRoute(
+        builder: (_) => ChangeNotifierProvider<FavoritesProvider>.value(
+          value: FavoritesProvider(),
+          child: GameSellerList(name, banner),
+        ),
+      ),
+    )
+        .then((value) {
+      //setState(() {
+      Provider.of<FavoritesProvider>(gamesContext, listen: false).notifList();
+      //});
+    });
+  } else {
+    Navigator.of(gamesContext)
+        .pushReplacement(
+      MaterialPageRoute(
+        builder: (_) => ChangeNotifierProvider<FavoritesProvider>.value(
+          value: FavoritesProvider(),
+          child: GameSellerList(name, banner),
+        ),
+      ),
+    )
+        .then((value) {
+      //setState(() {
+      Provider.of<FavoritesProvider>(gamesContext, listen: false).notifList();
+      //});
+    });
   }
 }

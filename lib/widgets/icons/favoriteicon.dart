@@ -29,32 +29,33 @@ class _FavoritesIconState extends State<FavoritesIcon> {
             // print("CONSUMER ${isFavList['name']} $icon ");
             //return
             IconButton(
-          key: ValueKey('${widget.name}favButton'),
-          icon: Image.asset(
-              //context.read<FavoritesProvider>().getImage(isFavorited)),
-              Provider.of<FavoritesProvider>(context).getImage(isFavorited)),
-              //'assets/images/logo.png'),
-              //FavoritesProvider().getImage(isFavorited)),
+              key: ValueKey('${widget.name}favButton'),
+              icon: Image.asset(
+                //context.read<FavoritesProvider>().getImage(isFavorited)),
+                Provider.of<FavoritesProvider>(context).getImage(isFavorited)),
+                //context.watch<FavoritesProvider>().getImage(isFavorited)),
+                //'assets/images/logo.png'),
+                //FavoritesProvider().getImage(isFavorited)),
 
-          //WHHYYYYYYYYYYYY
-          color: null,
-          padding: const EdgeInsets.only(right: 10),
-          constraints: const BoxConstraints(),
-          iconSize: widget.size,
-          onPressed: () {
-            
-            //Provider.of<FavoritesProvider>(context, listen: false).checkNav();
-            //context.read<FavoritesProvider>().setImage(isFavList);
-            Provider.of<FavoritesProvider>(context, listen: false).setImage(isFavList);
-            if ((GlobalValues.favoritedItems.length) * 114.5 >
-                GlobalValues.logicalWidth) {
-              GlobalValues.RVisible = true;
-            } else {
-              GlobalValues.RVisible = false;
-            }
-            //setState(() {});
-          },
-        )
+              //WHHYYYYYYYYYYYY
+              color: null,
+              padding: const EdgeInsets.only(right: 10),
+              constraints: const BoxConstraints(),
+              iconSize: widget.size,
+              onPressed: () {
+                  
+                //Provider.of<FavoritesProvider>(context, listen: false).checkNav();
+                //context.read<FavoritesProvider>().setImage(isFavList);
+                Provider.of<FavoritesProvider>(context, listen: false).setImage(isFavList);
+                if ((GlobalValues.favoritedItems.length) * 114.5 >
+                    GlobalValues.logicalWidth) {
+                  GlobalValues.RVisible = true;
+                } else {
+                  GlobalValues.RVisible = false;
+                }
+                //setState(() {});
+              },
+            )
         //})
         );
   }

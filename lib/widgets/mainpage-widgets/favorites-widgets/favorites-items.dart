@@ -2,13 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:topup2p/widgets/icons/favoriteicon.dart';
 import 'package:provider/provider.dart';
 import 'package:topup2p/provider/favoritesprovider.dart';
-import 'package:topup2p/widgets/seller.dart';
+import 'package:topup2p/widgets/seller/seller.dart';
 
 class FavoriteItems extends StatefulWidget {
   final String name;
   final String image;
   final bool isFav;
-  const FavoriteItems(this.name, this.image, this.isFav, {Key? key})
+  final String banner;
+  const FavoriteItems(this.name, this.image, this.isFav, this.banner,
+      {Key? key})
       : super(key: key);
   @override
   State<FavoriteItems> createState() => FavoriteItemsState();
@@ -46,7 +48,7 @@ class FavoriteItemsState extends State<FavoriteItems> {
                     builder: (_) =>
                         ChangeNotifierProvider<FavoritesProvider>.value(
                       value: FavoritesProvider(),
-                      child: GameSellerList(widget.name),
+                      child: GameSellerList(widget.name, widget.banner),
                     ),
                   ),
                 )
@@ -67,13 +69,10 @@ class FavoriteItemsState extends State<FavoriteItems> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              widget.name,
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(fontSize: 10),
-                            ),
+                          Text(
+                            widget.name,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(fontSize: 10),
                           ),
                         ],
                       ),
@@ -81,10 +80,11 @@ class FavoriteItemsState extends State<FavoriteItems> {
                   ),
                 ],
               ),
-            ),
+            ),  
           ),
-          //Consumer<FavoritesProvider>(builder: (_, favorites, child) {
-          FavoritesIcon(widget.name, 20)
+         // Consumer<FavoritesProvider>(builder: (_, __, ___) {
+            //return 
+            FavoritesIcon(widget.name, 20)
           //}),
         ]),
       ),

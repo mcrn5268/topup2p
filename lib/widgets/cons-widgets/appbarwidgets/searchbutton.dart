@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:topup2p/global/globals.dart' as GlobalValues;
+import 'package:topup2p/provider/favoritesprovider.dart';
+import 'package:topup2p/widgets/mainpage-widgets/games-widgets/games.dart';
+import 'package:topup2p/widgets/seller/seller.dart';
 
 class SearchButton extends StatelessWidget {
   const SearchButton({super.key});
@@ -30,8 +35,6 @@ class SearchButton extends StatelessWidget {
 }
 
 class SearchD extends SearchDelegate {
-  List<String> searchResults = ['hatdong', 'tanga', 'bobo', 'pakyu', 'payong'];
-
   @override
   List<Widget>? buildActions(BuildContext context) => [
         IconButton(
@@ -53,14 +56,33 @@ class SearchD extends SearchDelegate {
       icon: const Icon(Icons.arrow_back_ios_outlined,
           color: Colors.black)); //close searchbar
 
+  // @override
+  // Widget buildResults(BuildContext context) => Center(
+  //   child: Text(query),
+  // );
+
+  // @override
+  // Widget buildResults(BuildContext context){
+  //   //return GameSellerList('Mobile Legends', 'assets/gameslogos-banner/1-b.jpeg');
+  //   return Navigator.of(context).push(
+  //     MaterialPageRoute(
+  //       builder: (BuildContext context) => Provider(
+  //         create: (context) => InventoryItem(),
+  //         builder: (context, child) => GameSellerList('Mobile Legends', 'assets/gameslogos-banner/1-b.jpeg'),
+  //       ),
+  //     ),
+  //   );
+  // }
+
   @override
-  Widget buildResults(BuildContext context) => Center(
-        child: Text(query),
-      );
+  Widget buildResults(BuildContext context) {
+    // TODO: implement buildResults
+    throw UnimplementedError();
+  }
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    List<String> suggestions = searchResults.where((search) {
+    List<String> suggestions = GlobalValues.productItems.where((search) {
       final result = search.toLowerCase();
       final input = query.toLowerCase();
 
@@ -75,11 +97,17 @@ class SearchD extends SearchDelegate {
           return ListTile(
             title: Text(suggestion),
             onTap: () {
-              query = suggestion;
-
-              showResults(context);
+              MainPageNavigator(suggestion, getBanner(suggestion), flag: true);
             },
           );
         });
   }
+}
+
+String getBanner(String name) {
+  var temp =
+      GlobalValues.theMap.where((element) => element['name'] == name).toList();
+  print(temp[0]['image-banner']);
+
+  return 'assets/gameslogos-banner/1-b.jpeg';
 }

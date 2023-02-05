@@ -9,7 +9,7 @@ import 'package:topup2p/widgets/mainpage-widgets/mainpage.dart';
 import 'package:topup2p/widgets/mainpage-widgets/favorites-widgets/favorites.dart';
 import 'package:topup2p/widgets/mainpage-widgets/games-widgets/games.dart';
 import 'package:topup2p/global/globals.dart';
-import 'package:topup2p/widgets/seller.dart';
+import 'package:topup2p/widgets/seller/seller.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();

@@ -40,7 +40,7 @@ class _FavoritesListState extends State<FavoritesList> with AutomaticKeepAliveCl
     super.initState();
     for (var e in GlobalValues.favoritedList) {
       GlobalValues.favoritedItems
-          .add(FavoriteItems(e['name'], e['image'], e['isFav']));
+          .add(FavoriteItems(e['name'], e['image'], e['isFav'], e['image-banner']));
     }
     if ((GlobalValues.favoritedItems.length) * 114.5 >
         GlobalValues.logicalWidth) {
@@ -54,7 +54,8 @@ class _FavoritesListState extends State<FavoritesList> with AutomaticKeepAliveCl
   Widget build(BuildContext context) {
     return SizedBox(
       height: 150,
-      child: Consumer<FavoritesProvider>(builder: (_, favorites, child) {
+      child: 
+      Consumer<FavoritesProvider>(builder: (_, __, ___) {
         return Stack(
           children: [
             CustomScrollView(
@@ -71,7 +72,8 @@ class _FavoritesListState extends State<FavoritesList> with AutomaticKeepAliveCl
                         GlobalValues.favoritedItems.removeAt(oldIndex);
                     GlobalValues.favoritedItems.insert(newIndex, item);
                   },
-                  itemBuilder: (BuildContext context, int index) {
+                  itemBuilder: (context, index) {
+                    //cannot find correct provider
                     return ReorderableDelayedDragStartListener(
                       key: ValueKey("Favorited-Items-$index"),
                       index: index,

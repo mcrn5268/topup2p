@@ -6,7 +6,7 @@ import 'package:topup2p/global/globals.dart' as GlobalValues;
 
 int index = 0;
 
-class FavoritesProvider extends ChangeNotifier {
+class FavoritesProvider with ChangeNotifier {
   String getImage(dynamic item) {
     return GlobalValues.forIcon[item]!;
   }
@@ -15,7 +15,7 @@ class FavoritesProvider extends ChangeNotifier {
     item['isFav'] = !item['isFav'];
     if (item['isFav']) {
       GlobalValues.favoritedItems
-          .add(FavoriteItems(item['name'], item['image'], item['isFav']));
+          .add(FavoriteItems(item['name'], item['image'], item['isFav'], item['image-banner']));
     } else {
       GlobalValues.favoritedItems.removeWhere((i) => i.name == item['name']);
     }

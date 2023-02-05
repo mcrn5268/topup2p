@@ -110,7 +110,6 @@ final List<Map<String, dynamic>> shopList = [
     'game': 'Call of Duty Mobile',
     'shops': ['7/11', 'Ministop']
   },
-  
 ];
 final List<Map<String, dynamic>> gameShop = [
   {

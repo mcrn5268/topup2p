@@ -7,7 +7,7 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
   final bool search;
   final bool isloggedin;
   @override
-  Widget build(BuildContext context) {
+  PreferredSizeWidget build(BuildContext context) {
     return AppBar(
       leading: leadingIcon(context),
       flexibleSpace: Padding(
