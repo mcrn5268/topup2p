@@ -42,15 +42,15 @@ class _MainPageState extends State<MainPage> {
       tempMap['image'] = imagePaths[i];
       tempMap['image-banner'] = imagePathsBanner[i];
       tempMap['isFav'] = false;
-      if (tempMap['name'] == "Mobile Legends" ||
-              tempMap['name'] == "Valorant" ||
-              tempMap['name'] == "Steam Wallet Code"
-          // tempMap['name'] == "Garena Shells" ||
-          // tempMap['name'] == "Free Fire MAX" ||
-          // tempMap['name'] == "Grand Theft Auto V: Premium Online Edition"
-          ) {
-        tempMap['isFav'] = true;
-      }
+      // if (tempMap['name'] == "Mobile Legends" ||
+      //         tempMap['name'] == "Valorant" ||
+      //         tempMap['name'] == "Steam Wallet Code"
+      //     // tempMap['name'] == "Garena Shells" ||
+      //     // tempMap['name'] == "Free Fire MAX" ||
+      //     // tempMap['name'] == "Grand Theft Auto V: Premium Online Edition"
+      //     ) {
+      //   tempMap['isFav'] = true;
+      // }
       GlobalValues.theMap.add(tempMap);
     }
 

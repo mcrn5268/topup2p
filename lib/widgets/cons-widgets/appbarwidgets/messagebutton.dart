@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 class MessageButton extends StatelessWidget {
-  const MessageButton({super.key});
-
+  const MessageButton({this.fromProfile, super.key});
+  final bool? fromProfile;
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -22,8 +22,11 @@ class MessageButton extends StatelessWidget {
                 // );
               },
               child: Row(
-                children: const <Widget>[
-                  Icon(Icons.chat_bubble_outline_outlined)
+                children: <Widget>[
+                  Icon(
+                    Icons.chat_bubble_outline_outlined,
+                    color: (fromProfile != null) ? Colors.white : Colors.black,
+                  )
                 ],
               ),
             )

@@ -5,6 +5,8 @@ import 'package:provider/provider.dart';
 import 'package:topup2p/provider/favoritesprovider.dart';
 import 'package:topup2p/widgets/mainpage-widgets/favorites-widgets/favorites-items.dart';
 
+import '../../cons-widgets/favorite-placeholder.dart';
+
 //late double width = size.width;
 
 class FavoritesList extends StatefulWidget {
@@ -35,10 +37,10 @@ class _FavoritesListState extends State<FavoritesList>
 
   @override
   void initState() {
+    super.initState();
     GlobalValues.favoritedList =
         GlobalValues.theMap.where((item) => item["isFav"] == true);
 
-    super.initState();
     for (var e in GlobalValues.favoritedList) {
       GlobalValues.favoritedItems.add(
           FavoriteItems(e['name'], e['image'], e['isFav'], e['image-banner']));
@@ -56,68 +58,72 @@ class _FavoritesListState extends State<FavoritesList>
     return SizedBox(
       height: 150,
       child: Consumer<FavoritesProvider>(builder: (_, __, ___) {
-        return Stack(
-          children: [
-            CustomScrollView(
-              scrollDirection: Axis.horizontal,
-              controller: controller,
-              slivers: [
-                SliverReorderableList(
-                  itemCount: GlobalValues.favoritedItems.length,
-                  onReorder: (int oldIndex, int newIndex) {
-                    if (newIndex > oldIndex) {
-                      newIndex -= 1;
-                    }
-                    final dynamic item =
-                        GlobalValues.favoritedItems.removeAt(oldIndex);
-                    GlobalValues.favoritedItems.insert(newIndex, item);
-                  },
-                  itemBuilder: (context, index) {
-                    //cannot find correct provider
-                    return ReorderableDelayedDragStartListener(
-                      key: ValueKey("Favorited-Items-$index"),
-                      index: index,
-                      child: GlobalValues.favoritedItems[index],
-                    );
-                  },
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                Visibility(
-                  visible: GlobalValues.LVisible,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.arrow_back_ios_outlined),
-                        onPressed: () {
-                          nextItem("Prev");
-                        },
-                      ),
-                    ],
+        if (GlobalValues.favoritedList.isEmpty) {
+          return FavoritesPlaceholder();
+        } else {
+          return Stack(
+            children: [
+              CustomScrollView(
+                scrollDirection: Axis.horizontal,
+                controller: controller,
+                slivers: [
+                  SliverReorderableList(
+                    itemCount: GlobalValues.favoritedItems.length,
+                    onReorder: (int oldIndex, int newIndex) {
+                      if (newIndex > oldIndex) {
+                        newIndex -= 1;
+                      }
+                      final dynamic item =
+                          GlobalValues.favoritedItems.removeAt(oldIndex);
+                      GlobalValues.favoritedItems.insert(newIndex, item);
+                    },
+                    itemBuilder: (context, index) {
+                      //cannot find correct provider
+                      return ReorderableDelayedDragStartListener(
+                        key: ValueKey("Favorited-Items-$index"),
+                        index: index,
+                        child: GlobalValues.favoritedItems[index],
+                      );
+                    },
                   ),
-                ),
-                const Spacer(),
-                Visibility(
-                  visible: GlobalValues.RVisible,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.arrow_forward_ios_outlined),
-                        onPressed: () {
-                          nextItem("Next");
-                        },
-                      ),
-                    ],
+                ],
+              ),
+              Row(
+                children: [
+                  Visibility(
+                    visible: GlobalValues.LVisible,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.arrow_back_ios_outlined),
+                          onPressed: () {
+                            nextItem("Prev");
+                          },
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ],
-        );
+                  const Spacer(),
+                  Visibility(
+                    visible: GlobalValues.RVisible,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.arrow_forward_ios_outlined),
+                          onPressed: () {
+                            nextItem("Next");
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          );
+        }
       }),
     );
   }

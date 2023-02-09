@@ -33,6 +33,7 @@ class _RegisterPageState extends State<RegisterPage> {
     focusNode.addListener(() {
       if (!focusNode.hasFocus) {
         setState(() {
+          //CHECK AGAIN FOR VALID EMAIL ADDRESS NOT ONLY .COM
           if (text.contains('@') && text.endsWith('.com')) {
             _hasInputError = false;
           } else {

@@ -12,6 +12,7 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
   @override
   PreferredSizeWidget build(BuildContext context) {
     return AppBar(
+      backgroundColor: (fromProfile!=null) ? Colors.black : Colors.transparent,
       leading: leadingIcon(context),
       flexibleSpace: Padding(
         padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
@@ -27,7 +28,7 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
                     const SearchButton(),
                   ],
                   if (isloggedin == true) ...[
-                    const MessageButton(),
+                    MessageButton(fromProfile: fromProfile),
                     if (fromProfile == true) ...[
                       const SignoutButton(),
                     ] else ...[
@@ -48,10 +49,11 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
   Widget leadingIcon(BuildContext context) {
     if (home == false) {
       return IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: const Icon(Icons.arrow_back_ios_outlined, color: Colors.black));
+        onPressed: () {
+          Navigator.pop(context);
+        },
+        icon: Icon(Icons.arrow_back_ios_outlined, 
+        color: (fromProfile!=null) ? Colors.white : Colors.black,));
     } else {
       return const LogoButton();
     }

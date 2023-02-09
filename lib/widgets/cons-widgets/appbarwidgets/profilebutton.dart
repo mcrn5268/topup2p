@@ -18,7 +18,7 @@ class ProfileButton extends StatelessWidget {
                 Navigator.push(
                   context,
                   PageRouteBuilder(
-                    pageBuilder: (_, __, ___) => const ProfilePage(),
+                    pageBuilder: (_, __, ___) => ProfilePage(),
                     transitionsBuilder: (_, a, __, c) => FadeTransition(opacity: a, child: c),
                   ),
                 );

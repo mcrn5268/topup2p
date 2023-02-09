@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.topup2p">
    <application
-        android:label="topup2p"
+        android:label="TopuP2P"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
