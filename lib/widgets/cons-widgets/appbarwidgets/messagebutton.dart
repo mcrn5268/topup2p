@@ -13,7 +13,13 @@ class MessageButton extends StatelessWidget {
           children: [
             ElevatedButton(
               onPressed: () {
-                //skip
+                // Navigator.push(
+                //   context,
+                //   PageRouteBuilder(
+                //     pageBuilder: (_, __, ___) => const RegisterPage(),
+                //     transitionsBuilder: (_, a, __, c) => FadeTransition(opacity: a, child: c),
+                //   ),
+                // );
               },
               child: Row(
                 children: const <Widget>[

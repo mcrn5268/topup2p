@@ -16,7 +16,8 @@ class FavoritesList extends StatefulWidget {
   State<FavoritesList> createState() => _FavoritesListState();
 }
 
-class _FavoritesListState extends State<FavoritesList> with AutomaticKeepAliveClientMixin{
+class _FavoritesListState extends State<FavoritesList>
+    with AutomaticKeepAliveClientMixin {
   //List<SliverList> innerLists = [];
   final controller = ScrollController();
   bool flag = true;
@@ -39,8 +40,8 @@ class _FavoritesListState extends State<FavoritesList> with AutomaticKeepAliveCl
 
     super.initState();
     for (var e in GlobalValues.favoritedList) {
-      GlobalValues.favoritedItems
-          .add(FavoriteItems(e['name'], e['image'], e['isFav'], e['image-banner']));
+      GlobalValues.favoritedItems.add(
+          FavoriteItems(e['name'], e['image'], e['isFav'], e['image-banner']));
     }
     if ((GlobalValues.favoritedItems.length) * 114.5 >
         GlobalValues.logicalWidth) {
@@ -54,8 +55,7 @@ class _FavoritesListState extends State<FavoritesList> with AutomaticKeepAliveCl
   Widget build(BuildContext context) {
     return SizedBox(
       height: 150,
-      child: 
-      Consumer<FavoritesProvider>(builder: (_, __, ___) {
+      child: Consumer<FavoritesProvider>(builder: (_, __, ___) {
         return Stack(
           children: [
             CustomScrollView(
@@ -160,7 +160,7 @@ class _FavoritesListState extends State<FavoritesList> with AutomaticKeepAliveCl
     }
     controller.jumpTo(jumpValue);
   }
-  
+
   @override
   bool get wantKeepAlive => true;
 }

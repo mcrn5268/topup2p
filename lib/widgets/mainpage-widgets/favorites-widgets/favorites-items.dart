@@ -35,56 +35,56 @@ class FavoriteItemsState extends State<FavoriteItems> {
         elevation: 0,
         color: Colors.transparent,
         child: Stack(children: [
-          Container(
-            clipBehavior: Clip.hardEdge,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20.0),
-            ),
-            child: InkWell(
-              onTap: () {
-                Navigator.of(context)
-                    .push(
-                  MaterialPageRoute(
-                    builder: (_) =>
-                        ChangeNotifierProvider<FavoritesProvider>.value(
-                      value: FavoritesProvider(),
-                      child: GameSellerList(widget.name, widget.banner),
-                    ),
+          InkWell(
+            onTap: () {
+              Navigator.of(context)
+                  .push(
+                PageRouteBuilder(
+                  pageBuilder: (_, __, ___) =>
+                      ChangeNotifierProvider<FavoritesProvider>.value(
+                    value: FavoritesProvider(),
+                    child: GameSellerList(widget.name, widget.banner),
                   ),
-                )
-                    .then((value) {
-                  setState(() {
-                    Provider.of<FavoritesProvider>(context, listen: false)
-                        .notifList();
-                  });
+                  transitionsBuilder: (_, a, __, c) =>
+                      FadeTransition(opacity: a, child: c),
+                ),
+              )
+                  .then((value) {
+                setState(() {
+                  Provider.of<FavoritesProvider>(context, listen: false)
+                      .notifList();
                 });
-              },
-              child: Column(
-                children: [
-                  Expanded(flex: 3, child: Image.asset(widget.image)),
-                  Expanded(
-                    child: Container(
-                      width: double.infinity,
-                      color: Colors.grey,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            widget.name,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(fontSize: 10),
-                          ),
-                        ],
-                      ),
+              });
+            },
+            child: Column(
+              children: [
+                Expanded(
+                  flex: 3,
+                  child: ClipRRect(
+                      borderRadius: BorderRadius.circular(20.0),
+                      child: Image.asset(widget.image)),
+                ),
+                Expanded(
+                  child: Container(
+                    width: double.infinity,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          widget.name,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(fontSize: 10),
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
-            ),  
+                ),
+              ],
+            ),
           ),
-         // Consumer<FavoritesProvider>(builder: (_, __, ___) {
-            //return 
-            FavoritesIcon(widget.name, 20)
+          // Consumer<FavoritesProvider>(builder: (_, __, ___) {
+          //return
+          FavoritesIcon(widget.name, 20)
           //}),
         ]),
       ),

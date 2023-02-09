@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../profile.dart';
+
 class ProfileButton extends StatelessWidget {
   const ProfileButton({super.key});
 
@@ -13,7 +15,13 @@ class ProfileButton extends StatelessWidget {
           children: [
             ElevatedButton(
               onPressed: () {
-                //skip
+                Navigator.push(
+                  context,
+                  PageRouteBuilder(
+                    pageBuilder: (_, __, ___) => const ProfilePage(),
+                    transitionsBuilder: (_, a, __, c) => FadeTransition(opacity: a, child: c),
+                  ),
+                );
               },
               child: Row(
                 children: const <Widget>[Icon(Icons.person_outline_sharp)],

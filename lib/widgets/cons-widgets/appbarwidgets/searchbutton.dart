@@ -56,24 +56,6 @@ class SearchD extends SearchDelegate {
       icon: const Icon(Icons.arrow_back_ios_outlined,
           color: Colors.black)); //close searchbar
 
-  // @override
-  // Widget buildResults(BuildContext context) => Center(
-  //   child: Text(query),
-  // );
-
-  // @override
-  // Widget buildResults(BuildContext context){
-  //   //return GameSellerList('Mobile Legends', 'assets/gameslogos-banner/1-b.jpeg');
-  //   return Navigator.of(context).push(
-  //     MaterialPageRoute(
-  //       builder: (BuildContext context) => Provider(
-  //         create: (context) => InventoryItem(),
-  //         builder: (context, child) => GameSellerList('Mobile Legends', 'assets/gameslogos-banner/1-b.jpeg'),
-  //       ),
-  //     ),
-  //   );
-  // }
-
   @override
   Widget buildResults(BuildContext context) {
     // TODO: implement buildResults
@@ -107,7 +89,6 @@ class SearchD extends SearchDelegate {
 String getBanner(String name) {
   var temp =
       GlobalValues.theMap.where((element) => element['name'] == name).toList();
-  print(temp[0]['image-banner']);
 
-  return 'assets/gameslogos-banner/1-b.jpeg';
+  return temp[0]['image-banner'];
 }

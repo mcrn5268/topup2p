@@ -1,5 +1,9 @@
 import 'dart:convert';
-
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_ui_auth/firebase_ui_auth.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'app_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:topup2p/widgets/login.dart';
@@ -10,11 +14,33 @@ import 'package:topup2p/widgets/mainpage-widgets/favorites-widgets/favorites.dar
 import 'package:topup2p/widgets/mainpage-widgets/games-widgets/games.dart';
 import 'package:topup2p/global/globals.dart';
 import 'package:topup2p/widgets/seller/seller.dart';
+import 'package:topup2p/global/globals.dart' as GlobalValues;
 
-void main() {
-  WidgetsFlutterBinding.ensureInitialized();
-  //const GamesList().initImages();
-  runApp(const Topup2p());
+import 'firebase_options.dart';
+import 'widgets/forgotpassword.dart';
+
+// Future<void> main() async {
+//   WidgetsFlutterBinding.ensureInitialized();
+
+//   // runApp(ChangeNotifierProvider(
+//   //   create: (context) => ApplicationState(),
+//   //   builder: ((context, child) => const Topup2p()),
+//   // ));
+//   await Firebase.initializeApp(
+//     options: DefaultFirebaseOptions.currentPlatform,
+//   );
+//   runApp(ChangeNotifierProvider(
+//     create: (context) => ApplicationState(),
+//     builder: ((context, child) => const Topup2p()),
+//   ));
+// }
+
+void main(List<String> args) {
+  runApp(ChangeNotifierProvider(
+    create: (context) => ApplicationState(),
+    builder: ((context, child) => const Topup2p()),
+  ));
+  //runApp(const Topup2p());
 }
 
 class Topup2p extends StatelessWidget {
@@ -45,8 +71,18 @@ class Topup2p extends StatelessWidget {
         ),
         primarySwatch: Colors.blueGrey,
       ),
+      home: Consumer<ApplicationState>(builder: (context, appState, _) {
+        return GlobalValues.isLoggedIn
+            //ApplicationState().loggedIn
+            ? const MainPage()
+            : const LoginPage();
+      }),
+
+      //ApplicationState().loggedIn ? const MainPage() : const LoginPage(),
+
       //home: const GameSellerList('Mobile Legends'),
-      home: const MainPage(),
+      //home: const MainPage(),
+      //home: const LoginPage(),
     );
   }
 }

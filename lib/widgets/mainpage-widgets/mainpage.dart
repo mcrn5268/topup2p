@@ -11,6 +11,7 @@ import 'package:topup2p/global/globals.dart' as GlobalValues;
 import 'package:provider/provider.dart';
 import 'package:topup2p/provider/favoritesprovider.dart';
 
+import '../../app_state.dart';
 import '../../global/globals.dart';
 
 class MainPage extends StatefulWidget {
@@ -75,7 +76,8 @@ class _MainPageState extends State<MainPage> {
                 child: Builder(
                   builder: ((context) {
                     return Scaffold(
-                        appBar: AppBarWidget(true, true, GlobalValues.isLoggedIn),
+                        appBar:
+                            AppBarWidget(true, true, GlobalValues.isLoggedIn),
                         body: ListView(
                           addAutomaticKeepAlives: true,
                           shrinkWrap: false,

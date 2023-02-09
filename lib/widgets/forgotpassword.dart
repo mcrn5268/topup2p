@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-class ForgotPage extends StatelessWidget {
-  const ForgotPage({super.key});
+class ForgotPasswordPage extends StatelessWidget {
+  const ForgotPasswordPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    
+    //Back to log in page
     Widget backButton = Column(
       children: [
         Row(

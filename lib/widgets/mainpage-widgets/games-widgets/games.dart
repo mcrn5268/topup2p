@@ -50,55 +50,34 @@ class _GamesListState extends State<GamesList> {
                 elevation: 0,
                 color: Colors.transparent,
                 child: Stack(children: [
-                  Container(
-                    clipBehavior: Clip.hardEdge,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20.0),
-                    ),
-                    child: InkWell(
-                      onTap: () {
-                        MainPageNavigator(
-                            mapKey['name'], mapKey['image-banner']);
-
-                        // Navigator.of(context)
-                        //     .push(
-                        //   MaterialPageRoute(
-                        //     builder: (_) =>
-                        //         ChangeNotifierProvider<FavoritesProvider>.value(
-                        //       value: FavoritesProvider(),
-                        //       child: GameSellerList(
-                        //           mapKey['name'], mapKey['image-banner']),
-                        //     ),
-                        //   ),
-                        // )
-                        //     .then((value) {
-                        //   //setState(() {
-                        //   Provider.of<FavoritesProvider>(context, listen: false)
-                        //       .notifList();
-                        //   //});
-                        // });
-                      },
-                      child: Column(
-                        children: [
-                          Expanded(
-                              flex: 3, child: Image.asset(mapKey['image']!)),
-                          Expanded(
-                            child: Container(
-                              width: double.infinity,
-                              color: Colors.grey,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    mapKey['name']!,
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ],
-                              ),
+                  InkWell(
+                    onTap: () {
+                      MainPageNavigator(mapKey['name'], mapKey['image-banner']);
+                    },
+                    child: Column(
+                      children: [
+                        Expanded(
+                          flex: 3,
+                          child: ClipRRect(
+                              borderRadius: BorderRadius.circular(20.0),
+                              child: Image.asset(mapKey['image']!)),
+                        ),
+                        Expanded(
+                          child: Container(
+                            width: double.infinity,
+                            //color: Colors.grey,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  mapKey['name']!,
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
                   //Consumer<FavoritesProvider>(builder: (_, __, ___) {
@@ -129,12 +108,21 @@ void MainPageNavigator(String name, String banner, {bool? flag}) {
   if (flag == null) {
     Navigator.of(gamesContext)
         .push(
-      MaterialPageRoute(
-        builder: (_) => ChangeNotifierProvider<FavoritesProvider>.value(
+      PageRouteBuilder(
+        pageBuilder: (_, __, ___) =>
+            ChangeNotifierProvider<FavoritesProvider>.value(
           value: FavoritesProvider(),
           child: GameSellerList(name, banner),
         ),
+        transitionsBuilder: (_, a, __, c) =>
+            FadeTransition(opacity: a, child: c),
       ),
+      // MaterialPageRoute(
+      //   builder: (_) => ChangeNotifierProvider<FavoritesProvider>.value(
+      //     value: FavoritesProvider(),
+      //     child: GameSellerList(name, banner),
+      //   ),
+      // ),
     )
         .then((value) {
       //setState(() {
@@ -144,17 +132,18 @@ void MainPageNavigator(String name, String banner, {bool? flag}) {
   } else {
     Navigator.of(gamesContext)
         .pushReplacement(
-      MaterialPageRoute(
-        builder: (_) => ChangeNotifierProvider<FavoritesProvider>.value(
+      PageRouteBuilder(
+        pageBuilder: (_, __, ___) =>
+            ChangeNotifierProvider<FavoritesProvider>.value(
           value: FavoritesProvider(),
           child: GameSellerList(name, banner),
         ),
+        transitionsBuilder: (_, a, __, c) =>
+            FadeTransition(opacity: a, child: c),
       ),
     )
         .then((value) {
-      //setState(() {
       Provider.of<FavoritesProvider>(gamesContext, listen: false).notifList();
-      //});
     });
   }
 }

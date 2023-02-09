@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+//HEADLINE text theme
+
 class HeadLine6 extends StatelessWidget {
   const HeadLine6(this.text,{super.key});
 

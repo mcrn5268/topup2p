@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:topup2p/widgets/login.dart';
 
-class SignupButton extends StatelessWidget {
-  const SignupButton({super.key});
+class LogInButton extends StatelessWidget {
+  const LogInButton({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +14,15 @@ class SignupButton extends StatelessWidget {
           children: [
             ElevatedButton(
               onPressed: () {
-                //skip
+                //Navigator.of(context).push(MaterialPageRoute(builder: (context) => const RegisterPage()));
+                Navigator.pushReplacement(
+                  context,
+                  PageRouteBuilder(
+                    pageBuilder: (_, __, ___) => const LoginPage(),
+                    transitionsBuilder: (_, a, __, c) =>
+                        FadeTransition(opacity: a, child: c),
+                  ),
+                );
               },
               style: ElevatedButton.styleFrom(
                 shape: RoundedRectangleBorder(
@@ -23,7 +32,7 @@ class SignupButton extends StatelessWidget {
               child: Row(
                 children: const <Widget>[
                   Text(
-                    'Sign Up',
+                    'Log In',
                   ),
                 ],
               ),

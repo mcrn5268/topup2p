@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "706195142533",
+    "project_id": "topup2p",
+    "storage_bucket": "topup2p.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:706195142533:android:f152f1ff24cf8eb07076ec",
+        "android_client_info": {
+          "package_name": "com.example.topup2p"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "706195142533-n28fbh2h673mp0mvo89urci7p3s2hoh6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBAc5oubAXVKc7Kn3r_uT6IMNVJfwPnFsU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "706195142533-n28fbh2h673mp0mvo89urci7p3s2hoh6.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "706195142533-8s87gkgqa3h4kbl0eveij3oglks8b8a3.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.topup2p"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

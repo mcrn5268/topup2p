@@ -1,14 +1,27 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:topup2p/widgets/cons-widgets/customdivider.dart';
 import 'package:topup2p/widgets/register.dart';
 import 'package:topup2p/widgets/forgotpassword.dart';
 import 'package:topup2p/widgets/mainpage-widgets/mainpage.dart';
 
-class LoginPage extends StatelessWidget {
+import '../logout.dart';
+
+class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  final TextEditingController _email = TextEditingController();
+
+  final TextEditingController _pass = TextEditingController();
+  String? _errorText;
+  String? _errorText2;
   @override
   Widget build(BuildContext context) {
     Widget loginSection = Padding(
@@ -17,31 +30,69 @@ class LoginPage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           TextFormField(
-            decoration: const InputDecoration(
+            controller: _email,
+            decoration: InputDecoration(
               hintText: 'Email',
+              errorText: _errorText,
             ),
+            onChanged: (textt) {
+              setState(() {
+                _errorText = null;
+              });
+            },
           ),
           TextFormField(
-            decoration: const InputDecoration(
+            controller: _pass,
+            decoration: InputDecoration(
               hintText: 'Password',
+              errorText: _errorText2,
             ),
+            onChanged: (textt) {
+              setState(() {
+                _errorText2 = null;
+              });
+            },
             obscureText: true,
           ),
           const SizedBox(
             height: 25,
           ),
           Row(
-            //mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Expanded(
                 child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => MainPage()),
-                    );
+                  onPressed: () async {
+                    try {
+                      UserCredential userCredential = await FirebaseAuth
+                          .instance
+                          .signInWithEmailAndPassword(
+                              //email: _email.text, password: _pass.text
+                              email: "barry.allen@example.com",
+                              password: "SuperSecretPassword!");
+                    } on FirebaseAuthException catch (e) {
+                      if (e.code == 'user-not-found') {
+                        if (_email.text == '') {
+                          _errorText = 'Please enter an email.';
+                        } else {
+                          _errorText = 'No user found for that email.';
+                        }
+                      } else if (e.code == 'wrong-password') {
+                        if (_email.text == '') {
+                          _errorText2 = 'Please enter a password.';
+                        } else {
+                          _errorText2 = 'Wrong password provided for that email.';
+                        }
+                      }
+                      setState(() {});
+                    }
+
+                    // Navigator.push(
+                    //   context,
+                    //   MaterialPageRoute(builder: (context) => MainPage()),
+                    // );
                   },
                   style: ElevatedButton.styleFrom(
+                    side: const BorderSide(color: Colors.black),
                     shape: const StadiumBorder(),
                     padding: const EdgeInsets.all(15),
                   ),
@@ -79,12 +130,6 @@ class LoginPage extends StatelessWidget {
                 children: const [
                   TextSpan(
                     text: 'Forgot password?',
-                    //recognizer: TapGestureRecognizer()..onTap = () => const ForgotPage(),
-                    // recognizer: TapGestureRecognizer()
-                    //   ..onTap = () {
-                    //     print('Forgot Password');
-                    //     const ForgotPage();
-                    //   },
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                     ),
@@ -93,13 +138,15 @@ class LoginPage extends StatelessWidget {
               ),
             ),
             onTap: () {
-              Navigator.of(context).push(MaterialPageRoute(builder: (context) => const ForgotPage()));
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => const ForgotPasswordPage()));
               //MaterialPageRoute(builder: (context) => const SecondRoute()),
             },
           ),
         ],
       ),
     );
+    //LOG IN with google
     Widget loginWith = Column(
       children: [
         Row(
@@ -113,6 +160,7 @@ class LoginPage extends StatelessWidget {
         ),
       ],
     );
+    //don't have an account? sign up
     Widget signupSection = Padding(
       padding: const EdgeInsets.only(top: 40),
       child: Column(
@@ -145,6 +193,7 @@ class LoginPage extends StatelessWidget {
         ],
       ),
     );
+    //skip to main page -- to show games list
     Widget skipButton = Column(
       children: [
         Row(
@@ -152,7 +201,10 @@ class LoginPage extends StatelessWidget {
           children: [
             ElevatedButton(
               onPressed: () {
-                //skip
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const MainPage()),
+                );
               },
               child: Row(
                 children: const <Widget>[
@@ -177,7 +229,10 @@ class LoginPage extends StatelessWidget {
                 skipButton,
                 Image.asset(
                   'assets/images/logo.png',
-                  width: MediaQuery.of(context).orientation == Orientation.landscape ? 300 : 700,
+                  width: MediaQuery.of(context).orientation ==
+                          Orientation.landscape
+                      ? 300
+                      : 700,
                 ),
                 loginSection,
                 forgotPassword,
