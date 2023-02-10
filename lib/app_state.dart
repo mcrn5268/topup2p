@@ -10,6 +10,7 @@ import 'firebase_options.dart';
 //bool _loggedIn = false;
 
 class ApplicationState extends ChangeNotifier {
+  int _runCount = 0;
   ApplicationState() {
     init();
   }
@@ -33,7 +34,10 @@ class ApplicationState extends ChangeNotifier {
         GlobalValues.isLoggedIn = false;
         //_loggedIn = false;
       }
-      notifyListeners();
+      _runCount++;
+      //if (_runCount != 1) {
+        notifyListeners();
+      //}
     });
   }
 }

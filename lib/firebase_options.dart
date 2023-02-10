@@ -17,10 +17,7 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'you can reconfigure this by running the FlutterFire CLI again.',
-      );
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -28,10 +25,7 @@ class DefaultFirebaseOptions {
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for macos - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return macos;
       case TargetPlatform.windows:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for windows - '
@@ -49,11 +43,22 @@ class DefaultFirebaseOptions {
     }
   }
 
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyCqACeqlCd9Qr_rWYRd4Q5BqStINiR9AKE',
+    appId: '1:706195142533:web:c4bf4ed0ea577eff7076ec',
+    messagingSenderId: '706195142533',
+    projectId: 'topup2p',
+    authDomain: 'topup2p.firebaseapp.com',
+    databaseURL: 'https://topup2p-default-rtdb.asia-southeast1.firebasedatabase.app',
+    storageBucket: 'topup2p.appspot.com',
+  );
+
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyBAc5oubAXVKc7Kn3r_uT6IMNVJfwPnFsU',
     appId: '1:706195142533:android:f152f1ff24cf8eb07076ec',
     messagingSenderId: '706195142533',
     projectId: 'topup2p',
+    databaseURL: 'https://topup2p-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'topup2p.appspot.com',
   );
 
@@ -62,6 +67,18 @@ class DefaultFirebaseOptions {
     appId: '1:706195142533:ios:da407c67be33264a7076ec',
     messagingSenderId: '706195142533',
     projectId: 'topup2p',
+    databaseURL: 'https://topup2p-default-rtdb.asia-southeast1.firebasedatabase.app',
+    storageBucket: 'topup2p.appspot.com',
+    iosClientId: '706195142533-8s87gkgqa3h4kbl0eveij3oglks8b8a3.apps.googleusercontent.com',
+    iosBundleId: 'com.example.topup2p',
+  );
+
+  static const FirebaseOptions macos = FirebaseOptions(
+    apiKey: 'AIzaSyAUZvV6V_fSprE-7e2hAgP5rOt0Tbfgwjw',
+    appId: '1:706195142533:ios:da407c67be33264a7076ec',
+    messagingSenderId: '706195142533',
+    projectId: 'topup2p',
+    databaseURL: 'https://topup2p-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'topup2p.appspot.com',
     iosClientId: '706195142533-8s87gkgqa3h4kbl0eveij3oglks8b8a3.apps.googleusercontent.com',
     iosBundleId: 'com.example.topup2p',

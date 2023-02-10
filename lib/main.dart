@@ -35,7 +35,7 @@ import 'widgets/forgotpassword.dart';
 //   ));
 // }
 
-void main(List<String> args) {
+void main() {
   runApp(ChangeNotifierProvider(
     create: (context) => ApplicationState(),
     builder: ((context, child) => const Topup2p()),
@@ -72,9 +72,10 @@ class Topup2p extends StatelessWidget {
         primarySwatch: Colors.blueGrey,
       ),
       home: Consumer<ApplicationState>(builder: (context, appState, _) {
+        print(GlobalValues.isLoggedIn);
         return GlobalValues.isLoggedIn
             //ApplicationState().loggedIn
-            ? const MainPage()
+            ? MainPage()
             : const LoginPage();
       }),
 

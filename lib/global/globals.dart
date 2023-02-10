@@ -1,6 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:topup2p/widgets/mainpage-widgets/favorites-widgets/favorites-items.dart';
 import 'dart:ui';
+
+final db = FirebaseFirestore.instance;
 
 final List<String> productItems = [
   'Mobile Legends',
@@ -77,7 +81,8 @@ final List<String> productItems = [
   'Xbox Gift Card (US)',
   'Minecraft'
 ];
-late final List<Map<String, dynamic>> theMap = [];
+//theMap = GamesMap write.dart
+late List<Map<String, dynamic>> theMap = [];
 final Map<bool, String> forIcon = {
   true: 'assets/icons/bookmark-icon-yellow.png',
   false: 'assets/icons/bookmark-icon-white.png'

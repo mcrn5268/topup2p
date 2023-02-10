@@ -1,11 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:topup2p/global/globals.dart';
 import 'package:topup2p/widgets/cons-widgets/customdivider.dart';
+import 'package:topup2p/cloud/writeDB.dart';
 
 class RegisterPage extends StatefulWidget {
-  const RegisterPage({super.key});
-
+  RegisterPage({super.key});
+  late Future futures;
   @override
   State<RegisterPage> createState() => _RegisterPageState();
 }
@@ -156,6 +158,9 @@ class _RegisterPageState extends State<RegisterPage> {
                                 email: "barry.allen@example.com",
                                 password: "SuperSecretPassword!");
                         if (mounted) {
+                          //send initial data to cloud
+                          widget.futures = initImages(
+                              userCredential, _Fname.text, _Lname.text);
                           Navigator.pop(context);
                         }
                       } on FirebaseAuthException catch (e) {

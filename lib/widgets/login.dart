@@ -186,7 +186,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
             onTap: () {
               Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => const RegisterPage()));
+                  builder: (context) => RegisterPage()));
               //MaterialPageRoute(builder: (context) => const SecondRoute()),
             },
           ),
@@ -203,7 +203,7 @@ class _LoginPageState extends State<LoginPage> {
               onPressed: () {
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (context) => const MainPage()),
+                  MaterialPageRoute(builder: (context) => MainPage()),
                 );
               },
               child: Row(
