@@ -15,7 +15,7 @@ class FavoritesProvider with ChangeNotifier {
     item['isFav'] = !item['isFav'];
     if (item['isFav']) {
       GlobalValues.favoritedItems
-          .add(FavoriteItems(item['name'], item['image'], item['isFav'], item['image-banner']));
+          .add(FavoriteItems(item['name'], item['image'], item['isFav'], item['image_banner']));
     } else {
       GlobalValues.favoritedItems.removeWhere((i) => i.name == item['name']);
     }

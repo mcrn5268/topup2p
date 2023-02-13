@@ -45,6 +45,7 @@ dependencies:
   shared_preferences: ^2.0.17
   font_awesome_flutter: ^10.3.0
   firebase_database: ^10.0.10
+  sqflite: ^2.2.4
 
 dev_dependencies:
   flutter_test:

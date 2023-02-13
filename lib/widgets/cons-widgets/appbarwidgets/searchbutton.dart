@@ -90,5 +90,5 @@ String getBanner(String name) {
   var temp =
       GlobalValues.theMap.where((element) => element['name'] == name).toList();
 
-  return temp[0]['image-banner'];
+  return temp[0]['image_banner'];
 }

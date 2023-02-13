@@ -2,6 +2,9 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:topup2p/sqflite/firestore-sqflite.dart';
+import 'package:topup2p/sqflite/sqfliite.dart';
+import 'package:topup2p/sqflite/sqflite-global.dart';
 import 'package:topup2p/widgets/cons-widgets/customdivider.dart';
 import 'package:topup2p/widgets/register.dart';
 import 'package:topup2p/widgets/forgotpassword.dart';
@@ -69,6 +72,14 @@ class _LoginPageState extends State<LoginPage> {
                               //email: _email.text, password: _pass.text
                               email: "barry.allen@example.com",
                               password: "SuperSecretPassword!");
+                      if (mounted) {
+                        //----should be on register----
+                        // await DatabaseHelper().checkDatabase();
+                        // await DatabaseHelper().checkUserData();
+                        // //-----------------------------
+                        //await checkAndUpdateData();
+                        //after checking, query sqflite data
+                      }
                     } on FirebaseAuthException catch (e) {
                       if (e.code == 'user-not-found') {
                         if (_email.text == '') {
@@ -80,7 +91,8 @@ class _LoginPageState extends State<LoginPage> {
                         if (_email.text == '') {
                           _errorText2 = 'Please enter a password.';
                         } else {
-                          _errorText2 = 'Wrong password provided for that email.';
+                          _errorText2 =
+                              'Wrong password provided for that email.';
                         }
                       }
                       setState(() {});
@@ -185,8 +197,8 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
             onTap: () {
-              Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => RegisterPage()));
+              Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => RegisterPage()));
               //MaterialPageRoute(builder: (context) => const SecondRoute()),
             },
           ),

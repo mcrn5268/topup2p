@@ -43,7 +43,7 @@ class _FavoritesListState extends State<FavoritesList>
 
     for (var e in GlobalValues.favoritedList) {
       GlobalValues.favoritedItems.add(
-          FavoriteItems(e['name'], e['image'], e['isFav'], e['image-banner']));
+          FavoriteItems(e['name'], e['image'], e['isFav'], e['image_banner']));
     }
     if ((GlobalValues.favoritedItems.length) * 114.5 >
         GlobalValues.logicalWidth) {

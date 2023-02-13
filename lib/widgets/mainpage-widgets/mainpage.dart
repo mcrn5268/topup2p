@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:topup2p/cloud/readDB.dart';
+import 'package:topup2p/sqflite/sqfliite.dart';
+import 'package:topup2p/sqflite/sqflite-global.dart';
 import 'package:topup2p/widgets/mainpage-widgets/favorites-widgets/favorites.dart';
 import 'package:topup2p/widgets/mainpage-widgets/games-widgets/games.dart';
 import 'package:topup2p/widgets/cons-widgets/appbar.dart';
@@ -26,19 +28,26 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-
   Future<void> checkFutureCompletion() async {
-    print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-    readData();
+    //await DatabaseHelper().getData();
     //check again - remove RegisterPage().futures
-    List<Future> futures = [RegisterPage().futures, readData()];
-    
+
+    await DatabaseHelper().checkDatabase();
+    await DatabaseHelper().checkUserData();
+    await getSqfliteData();
+
+    //await DatabaseHelper().deleteDB();
+
+    // List<Map<String, dynamic>> result =
+    //     await DatabaseHelper().getUserGameData();
+    // print("result main page $result");
+    List<Future> futures = [RegisterPage().futures, DatabaseHelper().checkDatabase(), DatabaseHelper().checkUserData(), getSqfliteData()];
+
     await Future.wait(futures);
   }
 
   @override
   Widget build(BuildContext context) {
-    //print height
     return FutureBuilder(
         future: checkFutureCompletion(),
         builder: (ctx, snapshot) {

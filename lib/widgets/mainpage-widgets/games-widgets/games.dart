@@ -52,7 +52,7 @@ class _GamesListState extends State<GamesList> {
                 child: Stack(children: [
                   InkWell(
                     onTap: () {
-                      MainPageNavigator(mapKey['name'], mapKey['image-banner']);
+                      MainPageNavigator(mapKey['name'], mapKey['image_banner']);
                     },
                     child: Column(
                       children: [

@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:topup2p/global/globals.dart';
+import 'package:topup2p/sqflite/sqfliite.dart';
 import 'package:topup2p/widgets/cons-widgets/customdivider.dart';
 import 'package:topup2p/cloud/writeDB.dart';
 
@@ -159,8 +160,10 @@ class _RegisterPageState extends State<RegisterPage> {
                                 password: "SuperSecretPassword!");
                         if (mounted) {
                           //send initial data to cloud
-                          widget.futures = initImages(
+                          widget.futures = await initImages(
                               userCredential, _Fname.text, _Lname.text);
+                          // DatabaseHelper().checkDatabase();
+                          // DatabaseHelper().checkUserData();
                           Navigator.pop(context);
                         }
                       } on FirebaseAuthException catch (e) {

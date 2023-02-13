@@ -26,7 +26,7 @@ Future initImages(
     late final Map<String, dynamic> tempMap = {};
     tempMap['name'] = GlobalValues.productItems[i];
     tempMap['image'] = imagePaths[i];
-    tempMap['image-banner'] = imagePathsBanner[i];
+    tempMap['image_banner'] = imagePathsBanner[i];
     tempMap['isFav'] = false;
     GamesMap.add(tempMap);
   }
@@ -38,7 +38,7 @@ Future initImages(
   //----------------firebase firestore---------
 
   Future<void> batchWrite() async {
-    final batch = db.batch();
+    final batch = dbInstance.batch();
 
     //user info
     final user = <String, dynamic>{
@@ -51,17 +51,17 @@ Future initImages(
       }
     };
 
-    var userRef = db.collection("users").doc("normal");
+    var userRef = dbInstance.collection("users").doc("normal");
     batch.set(userRef, user);
 
     //user game data
     for (var data in GamesMap) {
       Map<String, dynamic> gameData = {
         "image": data["image"],
-        "image-banner": data["image-banner"],
+        "image_banner": data["image_banner"],
         "isFav": data["isFav"]
       };
-      var gamesRef = db
+      var gamesRef = dbInstance
           .collection("user-games-data")
           .doc(userCredential.user!.uid)
           .collection("games")
@@ -94,7 +94,7 @@ Future initImages(
   // for (Map<String, dynamic> item in GamesMap) {
   //   Map<String, dynamic> gameData = {
   //     "image": item["image"],
-  //     "image-banner": item["image-banner"],
+  //     "image_banner": item["image_banner"],
   //     "isFav": item["isFav"]
   //   };
   //   FirebaseDatabase.instance

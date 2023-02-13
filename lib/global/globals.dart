@@ -4,7 +4,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:topup2p/widgets/mainpage-widgets/favorites-widgets/favorites-items.dart';
 import 'dart:ui';
 
-final db = FirebaseFirestore.instance;
+final dbInstance = FirebaseFirestore.instance;
+final FirebaseAuth auth = FirebaseAuth.instance;
+final User? user = auth.currentUser;
+Map<String, dynamic>? usersNormal;
 
 final List<String> productItems = [
   'Mobile Legends',
