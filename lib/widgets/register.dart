@@ -8,7 +8,6 @@ import 'package:topup2p/cloud/writeDB.dart';
 
 class RegisterPage extends StatefulWidget {
   RegisterPage({super.key});
-  late Future futures;
   @override
   State<RegisterPage> createState() => _RegisterPageState();
 }
@@ -160,10 +159,11 @@ class _RegisterPageState extends State<RegisterPage> {
                                 password: "SuperSecretPassword!");
                         if (mounted) {
                           //send initial data to cloud
-                          widget.futures = await initImages(
+                          await userDataFirestore(
                               userCredential, _Fname.text, _Lname.text);
                           // DatabaseHelper().checkDatabase();
                           // DatabaseHelper().checkUserData();
+                          print("navigator pop");
                           Navigator.pop(context);
                         }
                       } on FirebaseAuthException catch (e) {

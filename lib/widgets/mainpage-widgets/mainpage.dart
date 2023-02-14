@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:topup2p/cloud/readDB.dart';
+import 'package:topup2p/sqflite/firestore-sqflite.dart';
 import 'package:topup2p/sqflite/sqfliite.dart';
 import 'package:topup2p/sqflite/sqflite-global.dart';
 import 'package:topup2p/widgets/mainpage-widgets/favorites-widgets/favorites.dart';
@@ -28,28 +29,27 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  Future<void> checkFutureCompletion() async {
-    //await DatabaseHelper().getData();
-    //check again - remove RegisterPage().futures
+  // Future<void> FutureCall() async {
+  //   print('FutureCall');
+  //   await DatabaseHelper().checkDatabase();
+  //   print('checkDB');
+  //   await DatabaseHelper().checkUserData();
+  //   print('checkUserData');
+  // }
 
-    await DatabaseHelper().checkDatabase();
-    await DatabaseHelper().checkUserData();
-    await getSqfliteData();
-
-    //await DatabaseHelper().deleteDB();
-
-    // List<Map<String, dynamic>> result =
-    //     await DatabaseHelper().getUserGameData();
-    // print("result main page $result");
-    List<Future> futures = [RegisterPage().futures, DatabaseHelper().checkDatabase(), DatabaseHelper().checkUserData(), getSqfliteData()];
-
-    await Future.wait(futures);
-  }
 
   @override
   Widget build(BuildContext context) {
+    //FutureCall();
     return FutureBuilder(
-        future: checkFutureCompletion(),
+        //future: Future.wait([DatabaseHelper().checkDatabase(), DatabaseHelper().checkUserData(), getSqfliteData()]),
+        future: DatabaseHelper().checkDatabase().then((value) {
+          return DatabaseHelper().checkUserData().then((value) {
+            return checkAndUpdateData().then((value) {
+              return getSqfliteData();
+            });
+          });
+        }),
         builder: (ctx, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             return ChangeNotifierProvider<FavoritesProvider>(

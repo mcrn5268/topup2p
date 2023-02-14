@@ -77,7 +77,6 @@ class _LoginPageState extends State<LoginPage> {
                         // await DatabaseHelper().checkDatabase();
                         // await DatabaseHelper().checkUserData();
                         // //-----------------------------
-                        //await checkAndUpdateData();
                         //after checking, query sqflite data
                       }
                     } on FirebaseAuthException catch (e) {

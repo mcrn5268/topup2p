@@ -7,8 +7,11 @@ import 'package:flutter/services.dart';
 
 import '../global/globals.dart';
 
-Future initImages(
+Future userDataFirestore(
     UserCredential userCredential, String Fname, String Lname) async {
+  print('userDataFirestore');
+
+  /* ------------- TEMPORARY --------------
   late final List<Map<String, dynamic>> GamesMap = [];
 
   final manifestContent = await rootBundle.loadString('AssetManifest.json');
@@ -27,78 +30,52 @@ Future initImages(
     tempMap['name'] = GlobalValues.productItems[i];
     tempMap['image'] = imagePaths[i];
     tempMap['image_banner'] = imagePathsBanner[i];
-    tempMap['isFav'] = false;
+    //tempMap['isFav'] = false;
     GamesMap.add(tempMap);
   }
-
-  // final alovelaceDocumentRef = db.collection("users").doc("alovelace");
-  // final usersCollectionRef = db.collection("users");
-  //final aLovelaceDocRef = db.doc("users/alovelace");
-
-  //----------------firebase firestore---------
+-----------------------------------------------
+*/
 
   Future<void> batchWrite() async {
+    print('batch write');
     final batch = dbInstance.batch();
 
     //user info
     final user = <String, dynamic>{
-      userCredential.user!.uid: {
-        "name": {
-          "first": Fname,
-          "last": Lname,
-        },
-        "email": userCredential.user!.email
-      }
+      "name": {
+        // "first": Fname,
+        // "last": Lname,
+        "first": "Laf",
+        "last": "Ly",
+      },
+      "email": userCredential.user!.email,
+      "type": "normal"
     };
 
-    var userRef = dbInstance.collection("users").doc("normal");
+    var userRef = dbInstance.collection("users").doc(userCredential.user!.uid);
     batch.set(userRef, user);
 
     //user game data
-    for (var data in GamesMap) {
-      Map<String, dynamic> gameData = {
-        "image": data["image"],
-        "image_banner": data["image_banner"],
-        "isFav": data["isFav"]
-      };
+    List<Map<String, dynamic>> gameData = [];
+    for (var i = 0; i < productItems.length; i++) {
+      final Map<String, dynamic> tempMap = {};
+      //all false since it's register - first write to DB
+      tempMap[productItems[i]] = false;
+      gameData.add(tempMap);
+    }
+
+    for (var data in gameData) {
+      var gameName = data.keys.first;
+      var gameIsFav = data[gameName];
+
       var gamesRef = dbInstance
-          .collection("user-games-data")
-          .doc(userCredential.user!.uid)
-          .collection("games")
-          .doc(data['name']);
-      batch.set(gamesRef, gameData);
+          .collection("user_games_data")
+          .doc(userCredential.user!.uid);
+      batch.set(gamesRef, {gameName: gameIsFav}, SetOptions(merge: true));
     }
 
     await batch.commit();
   }
 
   await batchWrite();
-// Add a new document with a generated ID
-  // db.collection("users").add(user).then((DocumentReference doc) =>
-  //     print('DocumentSnapshot added with ID: ${doc.id}'));
-
-  //----------------realtime database---------
-
-  //write users info to realtime database
-  // DatabaseReference accountReg =
-  //     FirebaseDatabase.instance.ref().child("users/normal");
-
-  // await accountReg.set({
-  //   userCredential.user!.uid: {
-  //     "name": name,
-  //     "email": userCredential.user!.email
-  //   }
-  // });
-
-  // //write json to database initial games data
-  // for (Map<String, dynamic> item in GamesMap) {
-  //   Map<String, dynamic> gameData = {
-  //     "image": item["image"],
-  //     "image_banner": item["image_banner"],
-  //     "isFav": item["isFav"]
-  //   };
-  //   FirebaseDatabase.instance
-  //       .ref("games/${userCredential.user!.uid}/${item["name"]}")
-  //       .set(gameData);
-  // }
 }
