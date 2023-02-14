@@ -100,22 +100,15 @@ class DatabaseHelper {
   //insert data database
   Future<void> insertData() async {
     print('insert data');
-    var docSnapshot = await dbInstance.collection('users').doc('normal').get();
-    if (docSnapshot.exists) {
-      print('insert data if');
-      usersNormal = docSnapshot.data();
-    }
+    var docSnapshot = await dbInstance.collection('users').doc(user!.uid).get();
     final db = await database;
     try {
       var gameDataMap = await readData();
       print('insert data try');
       await db.transaction((transaction) async {
         print('insert data transaction execute1');
-        print("ID: ${user!.uid}");
-        print("FName: ${usersNormal?['name']['first']}");
-        print("LName: ${usersNormal?['name']['last']}");
         await transaction.execute(
-          'INSERT INTO user(userID, fname, lname) VALUES("${user!.uid}", "${usersNormal?['name']['first']}", "${usersNormal?['name']['last']}")',
+          'INSERT INTO user(userID, fname, lname) VALUES("${user!.uid}", "${docSnapshot.data()?['name']['first']}", "${docSnapshot.data()?['name']['last']}")',
         );
         print('insert data transaction execute1 done');
         print('insert data for loop outside');

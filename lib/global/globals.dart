@@ -7,8 +7,8 @@ import 'dart:ui';
 final dbInstance = FirebaseFirestore.instance;
 final FirebaseAuth auth = FirebaseAuth.instance;
 final User? user = auth.currentUser;
-Map<String, dynamic>? usersNormal;
-
+Map<String, dynamic>? usersInfo;
+var selectedSort = 1;
 final List<String> productItems = [
   'Mobile Legends',
   'Valorant',

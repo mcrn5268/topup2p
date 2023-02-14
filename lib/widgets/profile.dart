@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:topup2p/global/globals.dart';
 import 'package:topup2p/widgets/login.dart';
 import 'package:topup2p/global/globals.dart' as GlobalValues;
 
@@ -37,7 +38,7 @@ class ProfilePage extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.all(20.0),
                     child: Text(
-                      'John Smith',
+                      "${usersInfo?['name']['first']} ${usersInfo?['name']['last']}",
                       style: TextStyle(
                         fontSize: 35.0,
                         letterSpacing: 1.5,
@@ -69,7 +70,8 @@ class ProfilePage extends StatelessWidget {
               children: [
                 ListTile(
                   leading: Icon(Icons.person),
-                  title: Text('John Smith'),
+                  title: Text(
+                      "${usersInfo?['name']['first']} ${usersInfo?['name']['last']}"),
                 ),
                 const Divider(),
                 ListTile(
@@ -79,7 +81,7 @@ class ProfilePage extends StatelessWidget {
                 const Divider(),
                 ListTile(
                   leading: Icon(Icons.email),
-                  title: Text('john.smith@john.smith'),
+                  title: Text("${usersInfo?['email']}"),
                 ),
                 const Divider(),
               ],

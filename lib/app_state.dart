@@ -4,6 +4,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:topup2p/global/globals.dart' as GlobalValues;
+import 'package:topup2p/sqflite/firestore-sqflite.dart';
+import 'package:topup2p/sqflite/sqfliite.dart';
 
 import 'firebase_options.dart';
 
@@ -26,17 +28,20 @@ class ApplicationState extends ChangeNotifier {
       EmailAuthProvider(),
     ]);
 
-    FirebaseAuth.instance.authStateChanges().listen((user) {
+    FirebaseAuth.instance.authStateChanges().listen((user) async {
       if (user != null) {
         //_loggedIn = true;
         GlobalValues.isLoggedIn = true;
+        await DatabaseHelper().checkDatabase();
+        await DatabaseHelper().checkUserData();
+        await checkAndUpdateData();
       } else {
         GlobalValues.isLoggedIn = false;
         //_loggedIn = false;
       }
       _runCount++;
       //if (_runCount != 1) {
-        notifyListeners();
+      notifyListeners();
       //}
     });
   }

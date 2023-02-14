@@ -7,6 +7,7 @@ import 'package:topup2p/widgets/mainpage-widgets/mainpage.dart';
 import 'package:topup2p/widgets/icons/favoriteicon.dart';
 import 'package:provider/provider.dart';
 import 'package:topup2p/provider/favoritesprovider.dart';
+import 'package:topup2p/widgets/mainpage-widgets/sort-games.dart';
 import 'package:topup2p/widgets/seller/seller.dart';
 
 late var gamesContext;
@@ -35,6 +36,40 @@ class _GamesListState extends State<GamesList> {
     return Column(
       children: [
         //change to slivergrid
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(right: 20),
+              child: DropdownButton(
+                icon: Icon(
+                  Icons.sort,
+                ),
+                value: GlobalValues.selectedSort,
+                items: [
+                  DropdownMenuItem(
+                    child: Text('0-9 A-Z'),
+                    value: 1,
+                  ),
+                  DropdownMenuItem(
+                    child: Text('Popularity'),
+                    value: 2,
+                  ),
+                ],
+                onChanged: (Object? value) {
+                  setState(() {
+                    GlobalValues.selectedSort = value as int;
+                    if (value == 1) {
+                      GamesSort().AtoZ();
+                    } else if (value == 2) {
+                      GamesSort().popuarity();
+                    }
+                  });
+                },
+              ),
+            ),
+          ],
+        ),
         GridView.count(
           physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,

@@ -28,10 +28,6 @@ import '../global/globals.dart';
 Future<List<Map<String, dynamic>>> readData() async {
   //List<Map<String, dynamic>> listMap = [];
   print("READ DATAAAAAAAAA");
-  var docSnapshot = await dbInstance.collection('users').doc(user!.uid).get();
-  if (docSnapshot.exists) {
-    usersNormal = docSnapshot.data();
-  }
   List<Map<String, dynamic>> readDBMap = [];
   final docRef = await dbInstance.collection("games_data");
   await docRef.get().then((querySnapshot) {

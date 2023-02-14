@@ -15,6 +15,7 @@ import 'package:topup2p/widgets/cons-widgets/loadingscreen.dart';
 import 'package:topup2p/global/globals.dart' as GlobalValues;
 import 'package:provider/provider.dart';
 import 'package:topup2p/provider/favoritesprovider.dart';
+import 'package:topup2p/widgets/mainpage-widgets/sort-games.dart';
 
 import '../../app_state.dart';
 import '../../cloud/writeDB.dart';
@@ -33,14 +34,14 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     //FutureCall();
     return FutureBuilder(
-        //future: Future.wait([DatabaseHelper().checkDatabase(), DatabaseHelper().checkUserData(), getSqfliteData()]),
-        future: DatabaseHelper().checkDatabase().then((value) {
-          return DatabaseHelper().checkUserData().then((value) {
-            return checkAndUpdateData().then((value) {
-              return getSqfliteData();
-            });
-          });
-        }),
+        future: Future.wait([getSqfliteData()]),
+        // future: DatabaseHelper().checkDatabase().then((value) {
+        //   return DatabaseHelper().checkUserData().then((value) {
+        //     return checkAndUpdateData().then((value) {
+        //       return getSqfliteData();
+        //     });
+        //   });
+        // }),
         builder: (ctx, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             return ChangeNotifierProvider<FavoritesProvider>(
