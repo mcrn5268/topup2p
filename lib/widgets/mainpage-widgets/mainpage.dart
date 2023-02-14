@@ -29,15 +29,6 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  // Future<void> FutureCall() async {
-  //   print('FutureCall');
-  //   await DatabaseHelper().checkDatabase();
-  //   print('checkDB');
-  //   await DatabaseHelper().checkUserData();
-  //   print('checkUserData');
-  // }
-
-
   @override
   Widget build(BuildContext context) {
     //FutureCall();
