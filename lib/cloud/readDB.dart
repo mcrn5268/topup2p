@@ -1,33 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
-import '../global/globals.dart';
-
-// Future readData() async {
-//   //List<Map<String, dynamic>> listMap = [];
-//   print("READ DATAAAAAAAAA");
-//   final docRef =
-//       await dbInstance.collection("user-games-data").doc(user!.uid).collection("games");
-//   await docRef.get().then((querySnapshot) {
-//     querySnapshot.docs.forEach((document) {
-//       theMap.add({
-//         "name": document.id,
-//         "image_banner": document.data()['image_banner'],
-//         "image": document.data()['image'],
-//         "isFav": document.data()['isFav']
-//       });
-//     });
-//   });
-
-//   var docSnapshot = await dbInstance.collection('users').doc('normal').get();
-//   if (docSnapshot.exists) {
-//     usersNormal = docSnapshot.data();
-//   }
-// }
+import 'package:topup2p/user/widgets/seller/seller.dart';
+import 'package:topup2p/global/globals.dart';
 
 Future<List<Map<String, dynamic>>> readData() async {
-  //List<Map<String, dynamic>> listMap = [];
-  print("READ DATAAAAAAAAA");
+  //iterating documents
   List<Map<String, dynamic>> readDBMap = [];
   final docRef = await dbInstance.collection("games_data");
   await docRef.get().then((querySnapshot) {
@@ -40,18 +17,7 @@ Future<List<Map<String, dynamic>>> readData() async {
     });
   });
 
-  // var docRef2 = FirebaseFirestore.instance.collection('user_games_data');
-  // docRef2.doc(user!.uid).snapshots().listen((docSnapshot) {
-  //   if (docSnapshot.exists) {
-  //     Map<String, dynamic> data = docSnapshot.data()!;
-  //     for (var map in readDBMap) {
-  //       if()
-  //     }
-  //     // You can then retrieve the value from the Map like this:
-  //     var name = data['name'];
-  //   }
-  // });
-
+  //iterating document fields
   await dbInstance
       .collection("user_games_data")
       .doc(user!.uid)
@@ -67,9 +33,37 @@ Future<List<Map<String, dynamic>>> readData() async {
       }
     });
   });
-  // var docSnapshot = await dbInstance.collection('users').doc('normal').get();
-  // if (docSnapshot.exists) {
-  //   usersNormal = docSnapshot.data();
-  // }
   return readDBMap;
+}
+
+Future<void> readSellerData(String gameName) async {
+  //List<Map<String, dynamic>> gameShops = [];
+  if (gameShopList.isNotEmpty) {
+    gameShopList.clear();
+  }
+  try {
+    await dbInstance
+        .collection("seller_games_data")
+        .doc(gameName)
+        .get()
+        .then((documentSnapshot) {
+      Map<String, dynamic> documentData =
+          documentSnapshot.data() as Map<String, dynamic>;
+      documentData.forEach((field, value) {
+        gameShopList.add({
+          'shop-name': field,
+          'game-rates': value['rates'],
+          'mop': value['mop']
+        });
+      });
+    });
+  } catch (e) {
+    print('error $e');
+  }
+  if (gameShopList.isNotEmpty) {
+    sellerFlag = true;
+  } else {
+    sellerFlag = false;
+  }
+  // return gameShops;
 }

@@ -9,35 +9,8 @@ import '../global/globals.dart';
 
 Future userDataFirestore(
     UserCredential userCredential, String Fname, String Lname) async {
-  print('userDataFirestore');
-
-  /* ------------- TEMPORARY --------------
-  late final List<Map<String, dynamic>> GamesMap = [];
-
-  final manifestContent = await rootBundle.loadString('AssetManifest.json');
-
-  final Map<String, dynamic> manifestMap = json.decode(manifestContent);
-
-  final imagePaths = manifestMap.keys
-      .where((String key) => key.contains('assets/gameslogos/'))
-      .toList();
-  final imagePathsBanner = manifestMap.keys
-      .where((String key) => key.contains('assets/gameslogos-banner/'))
-      .toList();
-
-  for (int i = 0; i < GlobalValues.productItems.length; i++) {
-    late final Map<String, dynamic> tempMap = {};
-    tempMap['name'] = GlobalValues.productItems[i];
-    tempMap['image'] = imagePaths[i];
-    tempMap['image_banner'] = imagePathsBanner[i];
-    //tempMap['isFav'] = false;
-    GamesMap.add(tempMap);
-  }
------------------------------------------------
-*/
 
   Future<void> batchWrite() async {
-    print('batch write');
     final batch = dbInstance.batch();
 
     //user info
@@ -49,11 +22,13 @@ Future userDataFirestore(
         "last": "Ly",
       },
       "email": userCredential.user!.email,
-      "type": "normal"
     };
 
     var userRef = dbInstance.collection("users").doc(userCredential.user!.uid);
     batch.set(userRef, user);
+    
+    var usertypeRef = dbInstance.collection("user_types").doc(userCredential.user!.uid);
+    batch.set(usertypeRef, {'type': 'normal'});
 
     //user game data
     List<Map<String, dynamic>> gameData = [];

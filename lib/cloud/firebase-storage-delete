@@ -1,0 +1,21 @@
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:firebase_core/firebase_core.dart';
+
+Future<void> deleteFolderContents(String folderPath) async {
+  // Initialize Firebase app if not already initialized
+  if (Firebase.apps.isEmpty) {
+    await Firebase.initializeApp();
+  }
+  
+  // Get a reference to the storage instance and folder
+  final storage = FirebaseStorage.instance;
+  final folderRef = storage.ref().child(folderPath);
+  
+  // List all the items (files and subfolders) in the folder
+  final items = await folderRef.listAll();
+  
+  // Delete each item in the folder
+  for (final item in items.items) {
+    await item.delete();
+  }
+}

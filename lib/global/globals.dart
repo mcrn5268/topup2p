@@ -1,14 +1,21 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:topup2p/widgets/mainpage-widgets/favorites-widgets/favorites-items.dart';
+import 'package:topup2p/user/widgets/mainpage-widgets/favorites-widgets/favorites-items.dart';
 import 'dart:ui';
 
 final dbInstance = FirebaseFirestore.instance;
 final FirebaseAuth auth = FirebaseAuth.instance;
-final User? user = auth.currentUser;
+User? user;
 Map<String, dynamic>? usersInfo;
-var selectedSort = 1;
+var selectedSort = 2;
+var userType;
+final dbStorageInstace = FirebaseStorage.instance;
+//----------seller---------
+Map<String, dynamic> sellerData = {};
+List<String> threeMops = ['GCash', 'UnionBank', 'Metrobank'];
+//-------------------------
 final List<String> productItems = [
   'Mobile Legends',
   'Valorant',
@@ -100,6 +107,7 @@ bool RVisible = false;
 var pixelRatio = window.devicePixelRatio;
 var logicalScreenSize = window.physicalSize / pixelRatio;
 var logicalWidth = logicalScreenSize.width;
+var logicalHeight = logicalScreenSize.height;
 
 final List<Map<String, dynamic>> shopList = [
   {
@@ -119,6 +127,7 @@ final List<Map<String, dynamic>> shopList = [
     'shops': ['7/11', 'Ministop']
   },
 ];
+List<Map<String, dynamic>> gameShopList = [];
 final List<Map<String, dynamic>> gameShop = [
   {
     'shop-name': 'Diskounted',

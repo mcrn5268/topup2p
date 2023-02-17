@@ -3,21 +3,22 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:topup2p/seller/seller-main.dart';
 import 'app_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:topup2p/widgets/login.dart';
-import 'package:topup2p/widgets/register.dart';
-import 'package:topup2p/widgets/seller/seller.dart';
-import 'package:topup2p/widgets/mainpage-widgets/mainpage.dart';
-import 'package:topup2p/widgets/mainpage-widgets/favorites-widgets/favorites.dart';
-import 'package:topup2p/widgets/mainpage-widgets/games-widgets/games.dart';
+import 'package:topup2p/user/widgets/login.dart';
+import 'package:topup2p/user/widgets/register.dart';
+import 'package:topup2p/user/widgets/seller/seller.dart';
+import 'package:topup2p/user/widgets/mainpage-widgets/mainpage.dart';
+import 'package:topup2p/user/widgets/mainpage-widgets/favorites-widgets/favorites.dart';
+import 'package:topup2p/user/widgets/mainpage-widgets/games-widgets/games.dart';
 import 'package:topup2p/global/globals.dart';
-import 'package:topup2p/widgets/seller/seller.dart';
+import 'package:topup2p/user/widgets/seller/seller.dart';
 import 'package:topup2p/global/globals.dart' as GlobalValues;
 
 import 'firebase_options.dart';
-import 'widgets/forgotpassword.dart';
+import 'user/widgets/forgotpassword.dart';
 
 // Future<void> main() async {
 //   WidgetsFlutterBinding.ensureInitialized();
@@ -75,7 +76,9 @@ class Topup2p extends StatelessWidget {
         print(GlobalValues.isLoggedIn);
         return GlobalValues.isLoggedIn
             //ApplicationState().loggedIn
-            ? MainPage()
+            ? (userType == 'normal')
+                ? const MainPage()
+                : const SellerMain()
             : const LoginPage();
       }),
 
