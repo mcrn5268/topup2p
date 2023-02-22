@@ -321,9 +321,9 @@ class _EditProfileState extends State<EditProfile> {
                           child: Stack(
                             children: [
                               Container(
-                                height: _flag ? logicalWidth : logicalWidth / 2,
+                                height: _flag ? MediaQuery.of(context).size.width : MediaQuery.of(context).size.width / 2,
                                 width:
-                                    _flag ? logicalHeight : logicalHeight / 2,
+                                    _flag ? MediaQuery.of(context).size.height : MediaQuery.of(context).size.height / 2,
                                 child: ClipPath(
                                     clipper: const ShapeBorderClipper(
                                         shape: CircleBorder()),
@@ -345,11 +345,11 @@ class _EditProfileState extends State<EditProfile> {
                                     shape: BoxShape.circle,
                                   ),
                                   height: _flag
-                                      ? logicalWidth / 7
-                                      : logicalWidth / 9,
+                                      ? MediaQuery.of(context).size.width / 7
+                                      : MediaQuery.of(context).size.width / 9,
                                   width: _flag
-                                      ? logicalHeight / 7
-                                      : logicalHeight / 9,
+                                      ? MediaQuery.of(context).size.height / 7
+                                      : MediaQuery.of(context).size.height / 9,
                                   child: ClipPath(
                                       clipper: const ShapeBorderClipper(
                                           shape: CircleBorder()),

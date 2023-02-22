@@ -3,6 +3,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:topup2p/cons-widgets/loadingscreen.dart';
 import 'package:topup2p/global/globals.dart';
+import 'package:topup2p/seller/seller-items.dart';
 import 'package:topup2p/seller/widgets/messages.dart';
 import 'package:topup2p/seller/widgets/seller-home/seller-home-page.dart';
 import 'package:topup2p/seller/widgets/seller-profile/seller-profile.dart';
@@ -14,59 +15,71 @@ class SellerMain extends StatefulWidget {
   const SellerMain({this.index, super.key});
 
   @override
-  State<SellerMain> createState() => _SellerMain();
+  State<SellerMain> createState() => _SellerMainState();
 }
 
-class _SellerMain extends State<SellerMain> {
+class _SellerMainState extends State<SellerMain> {
+  bool _isLoading = false;
   late int _currentIndex;
   final List<Widget> _children = [
     SellerMainPage(),
     ChatScreen(),
     SellerProfile(),
   ];
+  final PageStorageBucket bucket = PageStorageBucket();
+
   @override
   void initState() {
     super.initState();
+    _isLoading = true;
+    executeSellerFuture();
     _currentIndex = widget.index ?? 0;
+  }
+
+  Future<void> executeSellerFuture() async {
+    await getSellerSqfliteData();
+    await checkAndUpdateDataSeller();
+    await sellerGamesItems().loadItems();
+    print('sellerItems length ${sellerItems.length}');
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: FutureBuilder(
-          future: getSellerSqfliteData()
-              .then((value) => checkAndUpdateDataSeller()),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done) {
-              return _children[_currentIndex];
-            } else {
-              return const LoadingScreen();
-            }
-          }),
-
-      //_children[_currentIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        onTap: onTabTapped,
-        currentIndex: _currentIndex,
-        type: BottomNavigationBarType.fixed,
-        showSelectedLabels: false,
-        showUnselectedLabels: false,
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.message),
-            label: 'Messages',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
-      ),
-    );
+    return _isLoading
+        ? const LoadingScreen()
+        : Scaffold(
+            body: PageStorage(
+              bucket: bucket,
+              child: IndexedStack(
+                index: _currentIndex,
+                children: _children,
+              ),
+            ),
+            bottomNavigationBar: BottomNavigationBar(
+              onTap: onTabTapped,
+              currentIndex: _currentIndex,
+              type: BottomNavigationBarType.fixed,
+              showSelectedLabels: false,
+              showUnselectedLabels: false,
+              items: [
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.home),
+                  label: 'Home',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.message),
+                  label: 'Messages',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.person),
+                  label: 'Profile',
+                ),
+              ],
+            ),
+          );
   }
 
   void onTabTapped(int index) {

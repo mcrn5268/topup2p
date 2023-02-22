@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:topup2p/user/widgets/login.dart';
+import 'package:topup2p/login.dart';
 
 class LogInButton extends StatelessWidget {
   const LogInButton({super.key});

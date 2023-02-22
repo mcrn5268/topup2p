@@ -55,6 +55,7 @@ class _FavoritesListState extends State<FavoritesList>
   //arrow_back_ios_outlined
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return SizedBox(
       height: 150,
       child: Consumer<FavoritesProvider>(builder: (_, __, ___) {

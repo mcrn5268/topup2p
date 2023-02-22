@@ -37,30 +37,47 @@ Future<void> checkAndUpdateData() async {
 }
 
 Future<void> checkAndUpdateDataSeller() async {
-  
+  print('checkAndUpdateDataSeller');
   final doc =
-      await dbInstance.collection('sellers').doc(sellerData["sname"]).get();
+      await dbInstance.collection('sellers').doc('${sellerData["sname"]}');
   final db = await DatabaseHelper().database;
   final result = await db.rawQuery(
-      'SELECT mop_name, account_name, account_number FROM seller_mop_data WHERE sellerID = "${user!.uid}"');
+      'SELECT mop_name, account_name, account_number, mop_status FROM seller_mop_data WHERE sellerID = "${user!.uid}"');
+
   if (result.isNotEmpty) {
-    for (var i = 0; i < threeMops.length; i++) {
-      final firestoreValue1 = doc.get('MoP.${threeMops[i]}.account_name');
-      final firestoreValue2 = doc.get('MoP.${threeMops[i]}.account_num');
+    for (var i = 0; i < result.length; i++) {
+      // final firestoreValue1 = doc.get('MoP.${threeMops[i]}.account_name');
+      // final firestoreValue2 = doc.get('MoP.${threeMops[i]}.account_num');
+      doc.get().then((DocumentSnapshot documentSnapshot) async {
+        if (documentSnapshot.exists) {
+          Map<String, dynamic> data =
+              documentSnapshot.data() as Map<String, dynamic>;
+          String acctName =
+              data['MoP']['${result[i]["mop_name"]}']['account_name'];
+          String acctNum =
+              data['MoP']['${result[i]["mop_name"]}']['account_number'];
+          String mopStatus = data['MoP']['${result[i]["mop_name"]}']['status'];
 
-      final mop_name = result[i]['mop_name'];
-      final accont_name = result[i]['account_name'];
-      final accont_num = result[i]['account_number'];
+          if (acctName != '${result[i]["mop_name"]}' ||
+              acctNum != '${result[i]["account_number"]}' ||
+              mopStatus != '${result[i]["mop_status"]}') {
+            // The data needs to be updated
 
-      if (firestoreValue1 != accont_name || firestoreValue2 != accont_num) {
-        // The data needs to be updated
-
-        // Execute an UPDATE statement to update the corresponding columns in the SQLite database with the values from the Firestore document
-        await db.rawQuery(
-            'UPDATE seller_mop_data SET account_name = ?, account_number = ? WHERE sellerID = ?',
-            [firestoreValue1, firestoreValue2, '${user!.uid}']);
-      }
+            // Execute an UPDATE statement to update the corresponding columns in the SQLite database with the values from the Firestore document
+            await db.rawQuery(
+                'UPDATE seller_mop_data SET account_name = ?, account_number = ?, mop_status = ? WHERE sellerID = ? and mop_name = ?',
+                [
+                  acctName,
+                  acctNum,
+                  mopStatus,
+                  '${user!.uid}',
+                  '${threeMops[i]}'
+                ]);
+          }
+        } else {
+          print('documentsnapshot doesnt exist');
+        }
+      });
     }
   }
-
 }

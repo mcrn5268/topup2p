@@ -12,7 +12,8 @@ import 'package:topup2p/cons-widgets/loadingscreen.dart';
 import 'package:topup2p/user/widgets/textwidgets/headline6.dart';
 import 'package:topup2p/user/widgets/icons/favoriteicon.dart';
 
-  bool sellerFlag = false;
+bool sellerFlag = false;
+
 class GameSellerList extends StatefulWidget {
   GameSellerList(this.gameName, this.gameBanner, {super.key});
   final String gameBanner;
@@ -67,7 +68,22 @@ class _GameSellerListState extends State<GameSellerList> {
                       padding: const EdgeInsets.all(15.0),
                       child: Container(
                           decoration: BoxDecoration(
-                              border: Border.all(color: Colors.black)),
+                            color: Theme.of(context).scaffoldBackgroundColor,
+                            border: Border.fromBorderSide(
+                              BorderSide(
+                                color: Colors.grey.withOpacity(0.5),
+                                width: 1.0,
+                                style: BorderStyle.solid,
+                              ),
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.5),
+                                blurRadius: 7,
+                                offset: Offset(0, 3),
+                              ),
+                            ],
+                          ),
                           height: 150,
                           child: Row(
                             children: [
@@ -80,7 +96,7 @@ class _GameSellerListState extends State<GameSellerList> {
                                     shape: BoxShape.circle,
                                     image: DecorationImage(
                                         image: AssetImage(
-                                            'assets/images/estore.png')),
+                                            'assets/images/store-placeholder.png')),
                                   ),
                                 ),
                               ),
@@ -113,39 +129,59 @@ class _GameSellerListState extends State<GameSellerList> {
                                       padding: const EdgeInsets.only(bottom: 5),
                                       child: Text(widget.gameName),
                                     ),
-                                    Row(
-                                      children: [
-                                        for (var i = 1;
-                                            i <=
-                                                ((val['game-rates'].length) / 3)
-                                                    .ceil();
-                                            i++) ...[
-                                          Expanded(
-                                              child: Column(
-                                            children: [
-                                              for (var j = (i == 1)? 0 : (i == 2)? 3: 6;j < i * 3 && j <val['game-rates'].length;j++) ...[
-                                                Text(
-                                                    "₱${val['game-rates']['rate${j+1}']['php']} : ${val['game-rates']['rate${j+1}']['digGoods']}")
-                                              ]
-                                            ],
-                                          )),
-                                        ],
-                                      ],
-                                    ),
-                                    SizedBox(
-                                      height: 28,
+                                    Expanded(
                                       child: Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         children: [
                                           for (var i = 1;
-                                              i <= val['mop'].length;
+                                              i <=
+                                                  ((val['game-rates'].length) /
+                                                          3)
+                                                      .ceil();
                                               i++) ...[
-                                            Image.asset(
-                                                'assets/images/MoP/${val["mop"]["mop$i"]}.png',
-                                                width: 50)
-                                          ]
+                                            Expanded(
+                                              child: Column(
+                                                children: [
+                                                  for (var j = (i == 1)
+                                                          ? 0
+                                                          : (i == 2)
+                                                              ? 3
+                                                              : 6;
+                                                      j < i * 3 &&
+                                                          j <
+                                                              val['game-rates']
+                                                                  .length;
+                                                      j++) ...[
+                                                    Text(
+                                                        "₱${val['game-rates']['rate${j}']['php']} : ${val['game-rates']['rate${j}']['digGoods']}")
+                                                  ]
+                                                ],
+                                              ),
+                                            ),
+                                          ],
                                         ],
+                                      ),
+                                    ),
+                                    Center(
+                                      child: SizedBox(
+                                        height: 28,
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            for (var key
+                                                in val['mop'].keys) ...[
+                                              if (key == 'mop1' ||
+                                                  key == 'mop2' ||
+                                                  key == 'mop3') ...[
+                                                Image.asset(
+                                                    'assets/images/MoP/${val['mop'][key]}.png',
+                                                    width: 50)
+                                              ]
+                                            ]
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ]))

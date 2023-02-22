@@ -117,8 +117,8 @@ class DatabaseHelper {
     } else if (userType == 'seller') {
       //seller
       await _dbdb.transaction((txn) async {
-        result = await txn
-            .query('seller', where: 'sellerID = ?', whereArgs: ['${user!.uid}']);
+        result = await txn.query('seller',
+            where: 'sellerID = ?', whereArgs: ['${user!.uid}']);
       });
     }
 
@@ -151,7 +151,7 @@ class DatabaseHelper {
           }
         });
       } catch (e) {
-        print('Error in transaction: $e');
+        print('Error in transaction1: $e');
       }
     } else if (userType == 'seller') {
       //seller
@@ -164,7 +164,7 @@ class DatabaseHelper {
           );
         });
       } catch (e) {
-        print('Error in transaction: $e');
+        print('Error in transaction2: $e');
       }
     }
   }
@@ -213,3 +213,4 @@ class DatabaseHelper {
     await deleteDatabase(path);
   }
 }
+

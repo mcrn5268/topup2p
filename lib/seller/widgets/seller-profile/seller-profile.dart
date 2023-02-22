@@ -5,11 +5,11 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:topup2p/cons-widgets/appbarwidgets/signoutbutton.dart';
 import 'package:topup2p/seller/widgets/seller-profile/edit-profile.dart';
-import 'package:topup2p/seller/widgets/seller-profile/update-card-db.dart';
+import 'package:topup2p/cloud/update-card-db.dart';
 import 'package:topup2p/seller/widgets/sellerregister.dart';
 import 'package:topup2p/global/globals.dart';
-import 'package:topup2p/seller/widgets/wallets.dart';
-import 'package:topup2p/user/widgets/login.dart';
+import 'package:topup2p/seller/widgets/wallet/wallets.dart';
+import 'package:topup2p/login.dart';
 import 'package:topup2p/global/globals.dart';
 
 class SellerProfile extends StatelessWidget {
@@ -28,21 +28,10 @@ class SellerProfile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('seller-profile sellerData');
     bool flag = sellerData['image'] == 'assets/images/store-placeholder.png';
     return SafeArea(
       child: Scaffold(
-        // appBar: AppBar(
-        //   backgroundColor: Colors.transparent,
-        //   flexibleSpace: Padding(
-        //     padding: const EdgeInsets.only(right: 8.0),
-        //     child: Row(
-        //       mainAxisAlignment: MainAxisAlignment.end,
-        //       children: [
-        //         const SignoutButton(),
-        //       ],
-        //     ),
-        //   ),
-        // ),
         body: ListView(children: [
           Stack(
             alignment: Alignment.bottomCenter,
@@ -103,7 +92,7 @@ class SellerProfile extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       Icon(Icons.edit, color: Colors.grey),
-                      Text('Ediit Profile')
+                      Text('Edit Profile')
                     ],
                   ),
                   onTap: () {
@@ -133,20 +122,19 @@ class SellerProfile extends StatelessWidget {
                 ),
                 const Divider(),
                 InkWell(
-                  child: ListTile(
-                    leading: Icon(Icons.wallet),
-                    title: const Text("Wallets"),
-                    trailing: Icon(Icons.arrow_forward_ios_outlined),
-                  ),
-                  onTap: () => Navigator.push(
-                      context,
-                      PageRouteBuilder(
-                        pageBuilder: (_, __, ___) => SellerWallets(),
-                        transitionsBuilder: (_, a, __, c) =>
-                            FadeTransition(opacity: a, child: c),
-                      ),
-                    ).then((_) => updateSellerFirestore())
-                ),
+                    child: ListTile(
+                      leading: Icon(Icons.wallet),
+                      title: const Text("Wallets"),
+                      trailing: Icon(Icons.arrow_forward_ios_outlined),
+                    ),
+                    onTap: () => Navigator.push(
+                          context,
+                          PageRouteBuilder(
+                            pageBuilder: (_, __, ___) => SellerWallets(),
+                            transitionsBuilder: (_, a, __, c) =>
+                                FadeTransition(opacity: a, child: c),
+                          ),
+                        ).then((_) => updateSellerFirestore())),
                 const Divider(),
               ],
             ),

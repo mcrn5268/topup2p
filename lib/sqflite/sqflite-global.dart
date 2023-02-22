@@ -10,8 +10,8 @@ Future<void> getSqfliteData() async {
     usersInfo = docSnapshot.data();
   }
   final db = await DatabaseHelper().database;
-  final result = await db
-      .query('user_games_data', where: 'userID = ?', whereArgs: ['${user!.uid}']);
+  final result = await db.query('user_games_data',
+      where: 'userID = ?', whereArgs: ['${user!.uid}']);
   List<Map<String, dynamic>> resultList = result.cast<Map<String, dynamic>>();
   for (var i = 0; i < resultList.length; i++) {
     Map<String, dynamic> tempMap = Map.of(resultList[i]);
@@ -28,9 +28,12 @@ Future<List<Map<String, dynamic>>> getAllData() async {
 }
 
 Future<void> getSellerSqfliteData() async {
+  print('getSellerSqfliteData1');
   final db = await DatabaseHelper().database;
-  final result =
-      await db.query('seller', where: 'sellerID = ?', whereArgs: ['${user!.uid}']);
+  print('getSellerSqfliteData2');
+  final result = await db
+      .query('seller', where: 'sellerID = ?', whereArgs: ['${user!.uid}']);
+  print('getSellerSqfliteData3');
   if (result.isNotEmpty) {
     final row = result.first;
     final map = <String, String>{};

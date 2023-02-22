@@ -166,7 +166,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             .instance
                             .createUserWithEmailAndPassword(
                                 //email: _email.text, password: _pass.text
-                                email: "barry.allen1@example.com",
+                                email: "barry.allen@example.com",
                                 password: "SuperSecretPassword!");
                         if (mounted) {
                           setState(() {

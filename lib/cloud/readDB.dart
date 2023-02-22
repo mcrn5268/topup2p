@@ -50,11 +50,13 @@ Future<void> readSellerData(String gameName) async {
       Map<String, dynamic> documentData =
           documentSnapshot.data() as Map<String, dynamic>;
       documentData.forEach((field, value) {
-        gameShopList.add({
-          'shop-name': field,
-          'game-rates': value['rates'],
-          'mop': value['mop']
-        });
+        if (value['status'] == 'enabled') {
+          gameShopList.add({
+            'shop-name': field,
+            'game-rates': value['rates'],
+            'mop': value['mop']
+          });
+        }
       });
     });
   } catch (e) {
@@ -65,5 +67,4 @@ Future<void> readSellerData(String gameName) async {
   } else {
     sellerFlag = false;
   }
-  // return gameShops;
 }

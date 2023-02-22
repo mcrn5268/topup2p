@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../user/logout.dart';
+import '../../logout.dart';
 
 class SignoutButton extends StatelessWidget {
   const SignoutButton({super.key});
