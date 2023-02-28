@@ -53,7 +53,7 @@ dependencies:
   flutter_switch: ^0.3.2 
   flutter_typeahead: ^4.3.4
   flutter_keyboard_visibility: ^5.4.0
-  dependencies:
+  collection: ^1.17.0
   flutter_staggered_animations: ^1.0.0
 
 dev_dependencies:

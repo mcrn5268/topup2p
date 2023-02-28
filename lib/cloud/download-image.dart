@@ -1,12 +1,14 @@
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
-import 'package:topup2p/global/globals.dart';
+import 'package:topup2p/models/user_model.dart';
 
-Future<String> ImagetoAssets(String url) async {
+//DOWNLOAD IMAGE FROM DOWNLOAD URL GIVEN FROM FIRESTORE STORAGE THEN STORE LOCALLY
+
+Future<String> ImagetoAssets(String url, String uid) async {
   final response = await http.get(Uri.parse(url));
   final documentDirectory = await getApplicationDocumentsDirectory();
-  final filePath = '${documentDirectory.path}/assets/images/${user!.uid}';
+  final filePath = '${documentDirectory.path}/assets/images/$uid';
   String folderPath = await createFolderIfNotExist(filePath);
 
   Uri uri = Uri.parse(url);

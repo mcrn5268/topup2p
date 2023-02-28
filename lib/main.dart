@@ -1,51 +1,18 @@
-import 'dart:convert';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_ui_auth/firebase_ui_auth.dart';
-import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:topup2p/cons-widgets/loadingscreen.dart';
-import 'package:topup2p/seller/seller-items.dart';
-import 'package:topup2p/seller/seller-main.dart';
-import 'package:topup2p/sqflite/firestore-sqflite.dart';
-import 'package:topup2p/sqflite/sqflite-global.dart';
-import 'app_state.dart';
+import 'package:topup2p/providers/favorites_provider.dart';
+import 'package:topup2p/providers/payment_provider.dart';
+import 'package:topup2p/providers/sell_items_provder.dart';
+import 'package:topup2p/screens/login.dart';
+import 'package:topup2p/screens/seller/seller_main.dart';
+import 'package:topup2p/screens/user/user_main.dart';
+import 'package:topup2p/utilities/globals.dart';
+import 'package:topup2p/utilities/models_utils.dart';
+import 'package:topup2p/widgets/loading_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:topup2p/login.dart';
-import 'package:topup2p/user/widgets/register.dart';
-import 'package:topup2p/user/widgets/seller/seller.dart';
-import 'package:topup2p/user/widgets/mainpage-widgets/mainpage.dart';
-import 'package:topup2p/user/widgets/mainpage-widgets/favorites-widgets/favorites.dart';
-import 'package:topup2p/user/widgets/mainpage-widgets/games-widgets/games.dart';
-import 'package:topup2p/global/globals.dart';
-import 'package:topup2p/user/widgets/seller/seller.dart';
-import 'package:topup2p/global/globals.dart' as GlobalValues;
-
-import 'firebase_options.dart';
-import 'user/widgets/forgotpassword.dart';
-
-// Future<void> main() async {
-//   WidgetsFlutterBinding.ensureInitialized();
-
-//   // runApp(ChangeNotifierProvider(
-//   //   create: (context) => ApplicationState(),
-//   //   builder: ((context, child) => const Topup2p()),
-//   // ));
-//   await Firebase.initializeApp(
-//     options: DefaultFirebaseOptions.currentPlatform,
-//   );
-//   runApp(ChangeNotifierProvider(
-//     create: (context) => ApplicationState(),
-//     builder: ((context, child) => const Topup2p()),
-//   ));
-// }
+import 'package:topup2p/providers/user_provider.dart';
 
 void main() {
-  runApp(ChangeNotifierProvider(
-    create: (context) => ApplicationState(),
-    builder: ((context, child) => const Topup2p()),
-  ));
-  //runApp(const Topup2p());
+  runApp(const Topup2p());
 }
 
 class Topup2p extends StatelessWidget {
@@ -53,57 +20,70 @@ class Topup2p extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Topup2p',
-      theme: ThemeData(
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.transparent,
-            foregroundColor: Colors.black,
-            elevation: 0,
-            shadowColor: Colors.transparent,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => UserProvider()),
+      ],
+      child: MaterialApp(
+        title: 'Topup2p',
+        theme: ThemeData(
+          elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.transparent,
+              foregroundColor: Colors.black,
+              elevation: 0,
+              shadowColor: Colors.transparent,
+            ),
           ),
+          textTheme: const TextTheme(
+            displayLarge:
+                TextStyle(fontSize: 72.0, fontWeight: FontWeight.bold),
+            titleLarge: TextStyle(fontSize: 26.0, fontStyle: FontStyle.italic),
+            bodyMedium: TextStyle(fontSize: 14.0, fontFamily: 'Hind'),
+          ),
+          appBarTheme: const AppBarTheme(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            toolbarHeight: 66,
+          ),
+          primarySwatch: Colors.blueGrey,
+          // pageTransitionsTheme: PageTransitionsTheme(
+          //   builders: {
+          //     TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
+          //     TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+          //   },
+          // ),
         ),
-        textTheme: const TextTheme(
-          displayLarge: TextStyle(fontSize: 72.0, fontWeight: FontWeight.bold),
-          titleLarge: TextStyle(fontSize: 26.0, fontStyle: FontStyle.italic),
-          bodyMedium: TextStyle(fontSize: 14.0, fontFamily: 'Hind'),
+        home: Consumer<UserProvider>(
+          builder: (context, UserProvider, _) {
+            if (UserProvider.user == null) {
+              // User is not logged in
+              return LoginScreen();
+            } else {
+              // User is logged in
+              itemsObjectList = convertMapsToItems(productItemsMap);
+
+              if (UserProvider.user!.type == 'normal') {
+                return ChangeNotifierProvider(
+                  create: (_) => FavoritesProvider(),
+                  child: UserMainScreen(),
+                );
+              } else if (UserProvider.user!.type == 'seller') {
+                //toadd
+                return MultiProvider(
+                  providers: [
+                    ChangeNotifierProvider(create: (_) => PaymentProvider()),
+                    ChangeNotifierProvider(create: (_) => SellItemsProvider()),
+                  ],
+                  child: SellerMain(),
+                );
+              } else {
+                return Center(child: const Text('Something went wrong'));
+              }
+            }
+          },
         ),
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          toolbarHeight: 66,
-        ),
-        primarySwatch: Colors.blueGrey,
       ),
-      home: Consumer<ApplicationState>(builder: (context, appState, _) {
-        print(GlobalValues.isLoggedIn);
-        if (GlobalValues.isLoggedIn) {
-          if (userType == 'normal') {
-            return const MainPage();
-          } else {
-            //return FutureBuilder(
-            //   future: executeSellerFuture(),
-            //   builder: (context, snapshot) {
-            //     if (snapshot.connectionState == ConnectionState.done) {
-              
-                   return const SellerMain();
-            //     } else {
-            //       return const LoadingScreen();
-            //     }
-            //   },
-            // );
-          }
-        } else {
-          return const LoginPage();
-        }
-      }),
-
-      //ApplicationState().loggedIn ? const MainPage() : const LoginPage(),
-
-      //home: const GameSellerList('Mobile Legends'),
-      //home: const MainPage(),
-      //home: const LoginPage(),
     );
   }
 }
