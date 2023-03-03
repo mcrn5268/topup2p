@@ -78,12 +78,12 @@ class _GameSellScreenState extends State<GameSellScreen> {
                             await FirestoreService().read(
                                 collection: 'messages',
                                 documentId: 'users_conversations',
-                                subcollection: Provider.of<UserProvider>(
+                                subcollection: shop['info']['uid'],
+                                subdocumentId: Provider.of<UserProvider>(
                                         context,
                                         listen: false)
                                     .user!
-                                    .uid,
-                                subdocumentId: shop['info']['uid']);
+                                    .uid);
                         if (snapshot != null) {
                           convId = snapshot['conversationId'];
                         }

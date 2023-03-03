@@ -67,7 +67,7 @@ class FirestoreService {
       }
     } catch (e) {
       print(
-          'Something went wrong FirestoreService.read $collection $documentId');
+          'Something went wrong FirestoreService.read $collection $documentId $e');
       return null;
     }
   }
@@ -239,6 +239,7 @@ class FirestoreService {
   }
 
   Future<String> conversationId(String? id) async {
+    print('id $id ddd');
     if (id == null) {
       late String returnId;
       bool flag = true;
@@ -270,6 +271,7 @@ class FirestoreService {
       required String otherUserId,
       required String otherUserName,
       required String otherUserImage,
+      required String type,
       required String message}) async {
     UserProvider userProvider =
         Provider.of<UserProvider>(context, listen: false);
@@ -281,7 +283,7 @@ class FirestoreService {
         'image': userProvider.user!.image_url
       },
       'last_msg': {
-        'msg': message,
+        'msg': {'type': type, 'content': message},
         'isSeen': false,
         'timestamp': timeStamp,
         'sender': userProvider.user!.uid
@@ -294,19 +296,15 @@ class FirestoreService {
         'image': otherUserImage
       },
       'last_msg': {
-        'msg': message,
+        'msg': {'type': type, 'content': message},
         'timestamp': timeStamp,
         'sender': userProvider.user!.uid
       }
     };
     Map<String, dynamic> forConv = {
       'timestamp': timeStamp,
-      'msg': message,
+      'msg': {'type': type, 'content': message},
       'sender': userProvider.user!.uid
-    };
-    Map<String, dynamic> forUsersConv = {
-      'conversationId': conversationId,
-      'isSeen': false
     };
     create(
         collection: 'messages',
@@ -327,12 +325,21 @@ class FirestoreService {
         documentId: 'conversations',
         data: forConv,
         subcollection: conversationId);
+    //other user
     create(
         collection: 'messages',
         documentId: 'users_conversations',
-        data: forUsersConv,
+        data: {'conversationId': conversationId, 'isSeen': false},
         subcollection: otherUserId,
         subdocumentId: userProvider.user!.uid,
+        merge: false);
+    //the user
+    create(
+        collection: 'messages',
+        documentId: 'users_conversations',
+        data: {'conversationId': conversationId, 'isSeen': true},
+        subcollection: userProvider.user!.uid,
+        subdocumentId: otherUserId,
         merge: false);
   }
 }

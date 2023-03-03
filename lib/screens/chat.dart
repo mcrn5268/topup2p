@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -9,6 +11,7 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
 import 'package:topup2p/cloud/firestore.dart';
 import 'package:topup2p/providers/user_provider.dart';
+import 'package:topup2p/utilities/image_file_utils.dart';
 import 'package:topup2p/utilities/other_utils.dart';
 import 'package:chat_bubbles/chat_bubbles.dart';
 import 'package:intl/intl.dart';
@@ -33,6 +36,7 @@ class _ChatScreenState extends State<ChatScreen> {
   final _scrollController = ScrollController();
   late Future<String> forconvId;
   String? conversationId;
+  bool _flag = false;
   @override
   void initState() {
     super.initState();
@@ -54,6 +58,8 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     UserProvider userProvider =
         Provider.of<UserProvider>(context, listen: false);
+    PlatformFile? pickedFile;
+
     return Scaffold(
         appBar: AppBar(
           leading: IconButton(
@@ -193,15 +199,60 @@ class _ChatScreenState extends State<ChatScreen> {
                                                   padding:
                                                       const EdgeInsets.only(
                                                           top: 5, bottom: 5),
-                                                  child: BubbleSpecialOne(
-                                                    text: msg,
-                                                    isSender: isSender,
-                                                    color: Colors.blueGrey,
-                                                    textStyle: TextStyle(
-                                                      fontSize: 20,
-                                                      color: Colors.white,
-                                                    ),
-                                                  ),
+                                                  child: msg['type'] == 'text'
+                                                      ? BubbleSpecialOne(
+                                                          text: msg['content'],
+                                                          isSender: isSender,
+                                                          color:
+                                                              Colors.blueGrey,
+                                                          textStyle: TextStyle(
+                                                            fontSize: 20,
+                                                            color: Colors.white,
+                                                          ),
+                                                        )
+                                                      : BubbleNormalImage(
+                                                          isSender: isSender,
+                                                          image: Image.network(
+                                                            msg['content'],
+                                                            loadingBuilder:
+                                                                (context, child,
+                                                                    progress) {
+                                                              if (progress ==
+                                                                  null) {
+                                                                WidgetsBinding
+                                                                    .instance
+                                                                    .addPostFrameCallback(
+                                                                        (_) {
+                                                                  _scrollController
+                                                                      .animateTo(
+                                                                    _scrollController
+                                                                        .position
+                                                                        .maxScrollExtent,
+                                                                    duration: const Duration(
+                                                                        milliseconds:
+                                                                            1),
+                                                                    curve: Curves
+                                                                        .easeOut,
+                                                                  );
+                                                                });
+                                                              }
+                                                              return progress !=
+                                                                      null
+                                                                  ? const SizedBox(
+                                                                      height:
+                                                                          100,
+                                                                      child: Center(
+                                                                          child:
+                                                                              CircularProgressIndicator()),
+                                                                    )
+                                                                  : child;
+                                                            },
+                                                          ),
+                                                          color:
+                                                              Colors.blueGrey,
+                                                          tail: true,
+                                                          id: 'image $index',
+                                                        ),
                                                 ),
                                                 if (formattedTime.isNotEmpty)
                                                   Padding(
@@ -245,49 +296,113 @@ class _ChatScreenState extends State<ChatScreen> {
                         );
                       }
                     })),
-            Padding(
-              padding: const EdgeInsets.all(10),
-              child: Row(
+            StatefulBuilder(
+              builder: (context, setState) => Column(
                 children: [
-                  Icon(Icons.camera_alt),
-                  Expanded(
-                      child: Padding(
-                    padding: const EdgeInsets.only(left: 10, right: 10),
-                    child: Container(
-                        decoration: BoxDecoration(
-                            color: Colors.blueGrey[50],
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(20))),
-                        child: Padding(
-                          padding: const EdgeInsets.only(
-                              left: 15, right: 15, bottom: 5),
-                          child: TextField(
-                            controller: _controller,
+                  Visibility(
+                    visible: _flag,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: Container(
+                            height: 100,
+                            decoration: BoxDecoration(
+                                image: pickedFile != null
+                                    ? DecorationImage(
+                                        image:
+                                            FileImage(File(pickedFile!.path!)))
+                                    : null),
                           ),
+                        ),
+                        IconButton(
+                            onPressed: () {
+                              setState(() {
+                                _flag = false;
+                                pickedFile = null;
+                              });
+                            },
+                            icon: Icon(
+                              Icons.close,
+                              color: Colors.grey,
+                            ))
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Row(
+                      children: [
+                        GestureDetector(
+                            onTap: () async {
+                              pickedFile = await selectImageFile();
+                              setState(() {
+                                _flag = true;
+                              });
+                            },
+                            child: Icon(Icons.camera_alt)),
+                        Expanded(
+                            child: Padding(
+                          padding: const EdgeInsets.only(left: 10, right: 10),
+                          child: Container(
+                              decoration: BoxDecoration(
+                                  color: Colors.blueGrey[50],
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(20))),
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 15, right: 15, bottom: 5),
+                                child: TextField(
+                                  controller: _controller,
+                                ),
+                              )),
                         )),
-                  )),
-                  IconButton(
-                    icon: Icon(Icons.send),
-                    onPressed: () {
-                      FirestoreService().sendMessage(
-                          conversationId: conversationId!,
-                          message: _controller.text,
-                          context: context,
-                          otherUserId: widget.userId,
-                          otherUserImage: widget.userImage,
-                          otherUserName: widget.userName);
-                      _controller.clear();
-                      try {
-                        _scrollController.animateTo(
-                          _scrollController.position.maxScrollExtent,
-                          duration: Duration(milliseconds: 200),
-                          curve: Curves.easeOut,
-                        );
-                      } catch (e) {
-                        print('scroll error $e');
-                      }
-                    },
-                  )
+                        IconButton(
+                          icon: Icon(Icons.send),
+                          onPressed: () async {
+                            if (pickedFile != null) {
+                              String url = await uploadImageFile(
+                                  pickedFile!, conversationId!);
+                              FirestoreService().sendMessage(
+                                  conversationId: conversationId!,
+                                  message: url,
+                                  context: context,
+                                  otherUserId: widget.userId,
+                                  otherUserImage: widget.userImage,
+                                  otherUserName: widget.userName,
+                                  type: 'image');
+
+                              setState(() {
+                                pickedFile = null;
+                                _flag = false;
+                              });
+                            }
+                            if (_controller.text.length > 0) {
+                              FirestoreService().sendMessage(
+                                  conversationId: conversationId!,
+                                  message: _controller.text,
+                                  context: context,
+                                  otherUserId: widget.userId,
+                                  otherUserImage: widget.userImage,
+                                  otherUserName: widget.userName,
+                                  type: 'text');
+                            }
+
+                            _controller.clear();
+                            try {
+                              _scrollController.animateTo(
+                                _scrollController.position.maxScrollExtent,
+                                duration: Duration(milliseconds: 200),
+                                curve: Curves.easeOut,
+                              );
+                            } catch (e) {
+                              print('scroll error $e');
+                            }
+                          },
+                        )
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),

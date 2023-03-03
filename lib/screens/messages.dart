@@ -75,8 +75,12 @@ class _MessagesScreenState extends State<MessagesScreen> {
                       : false;
 
                   final msg = last_msg['sender'] == userProvider.user!.uid
-                      ? 'You: ${last_msg['msg']}'
-                      : last_msg['msg'];
+                      ? last_msg['msg']['type'] == 'text'
+                          ? 'You: ${last_msg['msg']['content']}'
+                          : 'You: 🖼️'
+                      : last_msg['msg']['type'] == 'text'
+                          ? '${last_msg['msg']['content']}'
+                          : '🖼️';
                   if (last_msg['timestamp'] != null) {
                     final lastMsgTime =
                         (last_msg['timestamp'] as Timestamp).toDate();
@@ -167,6 +171,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                                   subdocumentId:
                                                       other_user['uid']);
                                           if (snapshot != null) {
+                                            print('snapshot not null');
                                             convId = snapshot['conversationId'];
                                             if (last_msg['isSeen'] == false) {
                                               FirestoreService().create(
