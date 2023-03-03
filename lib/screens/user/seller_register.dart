@@ -101,7 +101,8 @@ class _SellerRegisterScreenState extends State<SellerRegisterScreen> {
                     final updateData = <String, dynamic>{
                       "name": _Sname.text,
                       "type": "seller",
-                      "image": assetsPath
+                      "image": assetsPath,
+                      "image_url": urlDownload??'placeholder'
                     };
                     //update users info to sellers info (ex: name to shop name)
                     await FirestoreService()

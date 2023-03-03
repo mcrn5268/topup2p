@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:topup2p/screens/user/user_home.dart';
 import 'package:topup2p/utilities/globals.dart';
 
@@ -7,26 +8,16 @@ class SearchButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Row(
-          children: [
-            ElevatedButton(
-              onPressed: () {
-                showSearch(
-                  context: context,
-                  delegate: MySearchDelegate(),
-                );
-              },
-              child: Row(
-                children: const <Widget>[Icon(Icons.search_outlined)],
-              ),
-            )
-          ],
-        ),
-      ],
+    return ElevatedButton(
+      onPressed: () {
+        showSearch(
+          context: context,
+          delegate: MySearchDelegate(),
+        );
+      },
+      child: Row(
+        children: const <Widget>[Icon(Icons.search_outlined)],
+      ),
     );
   }
 }
@@ -76,11 +67,20 @@ class MySearchDelegate extends SearchDelegate {
       itemCount: matchingSuggestions.length,
       itemBuilder: (BuildContext context, int index) {
         final String title = matchingSuggestions[index]['name'];
-        return ListTile(
-            title: Text(title),
-            onTap: () {
-              GameItemScreenNavigator(title, false);
-            });
+        return AnimationConfiguration.staggeredList(
+          position: index,
+          duration: const Duration(milliseconds: 375),
+          child: SlideAnimation(
+            verticalOffset: 50.0,
+            child: FadeInAnimation(
+              child: ListTile(
+                  title: Text(title),
+                  onTap: () {
+                    GameItemScreenNavigator(title, false);
+                  }),
+            ),
+          ),
+        );
       },
     );
   }

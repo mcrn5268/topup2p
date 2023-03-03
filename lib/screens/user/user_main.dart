@@ -23,16 +23,15 @@ class _UserMainScreenState extends State<UserMainScreen> {
         Provider.of<UserProvider>(context, listen: false);
     return FutureBuilder(
         //check for favorited items in firestore for UI
-        future:
-            FirestoreService().read('user_games_data', userProvider.user!.uid),
+        future: FirestoreService().read(
+            collection: 'user_games_data', documentId: userProvider.user!.uid),
         builder: (ctx, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             if (snapshot.hasData) {
               // Read Firestore data into a List of MapEntry objects
-              final data = snapshot.data!.entries.toList();
-
+              List<MapEntry<String, dynamic>> data =
+                  snapshot.data!.entries.toList();
               // Sort the List based on the order of fields in the Firestore document - inverted
-              //data.sort((a, b) => a.key.compareTo(b.key));
               if (data.length > 1) {
                 data.sort((a, b) => a.value.compareTo(b.value));
               }
@@ -53,7 +52,6 @@ class _UserMainScreenState extends State<UserMainScreen> {
                   addAutomaticKeepAlives: true,
                   shrinkWrap: false,
                   children: const <Widget>[
-                    Divider(),
                     HeadLine6('FAVORITES'),
                     FavoritesList(),
                     Divider(),

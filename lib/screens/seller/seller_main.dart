@@ -23,12 +23,8 @@ class SellerMain extends StatefulWidget {
 class _SellerMainState extends State<SellerMain> {
   bool _isLoading = false;
   late int _currentIndex;
-  final List<Widget> _children = [
-    SellerMainScreen(),
-    ChatScreen(),
-    ProfileScreen(),
-  ];
   final PageStorageBucket bucket = PageStorageBucket();
+  late final List<Widget> _children;
 
   @override
   void initState() {
@@ -36,11 +32,19 @@ class _SellerMainState extends State<SellerMain> {
     _isLoading = true;
     readSellerFirestore();
     _currentIndex = widget.index ?? 0;
+
+    _children = [
+      SellerMainScreen(),
+      MessagesScreen(),
+      ProfileScreen(),
+    ];
   }
 
   Future<void> readSellerFirestore() async {
-    Map<String, dynamic>? sellerData = await FirestoreService().read('sellers',
-        Provider.of<UserProvider>(context, listen: false).user!.name);
+    Map<String, dynamic>? sellerData = await FirestoreService().read(
+        collection: 'sellers',
+        documentId:
+            Provider.of<UserProvider>(context, listen: false).user!.name);
     if (sellerData != null) {
       //MoPs
       try {
@@ -62,7 +66,8 @@ class _SellerMainState extends State<SellerMain> {
           }
         }
       } catch (e) {
-        print('Something went wrong with reading seller MoP data from Firestore: $e');
+        print(
+            'Something went wrong with reading seller MoP data from Firestore: $e');
       }
       //MoPs
       try {
@@ -78,7 +83,8 @@ class _SellerMainState extends State<SellerMain> {
           });
         }
       } catch (e) {
-        print('Something went wrong with reading seller games data from Firestore: $e');
+        print(
+            'Something went wrong with reading seller games data from Firestore: $e');
       }
     }
     setState(() {
@@ -88,6 +94,31 @@ class _SellerMainState extends State<SellerMain> {
 
   @override
   Widget build(BuildContext context) {
+    Widget _buildMessageIcon() {
+      return StreamBuilder(
+          stream: FirestoreService().getSeenStream(
+              Provider.of<UserProvider>(context, listen: false).user!.uid),
+          builder: (context, snapshot) {
+            return Stack(
+              children: [
+                Icon(Icons.message),
+                Visibility(
+                  visible: snapshot.hasData,
+                  child: Align(
+                    alignment: Alignment.topRight,
+                    child: Container(
+                      width: 10,
+                      height: 10,
+                      decoration: BoxDecoration(
+                          shape: BoxShape.circle, color: Colors.red),
+                    ),
+                  ),
+                )
+              ],
+            );
+          });
+    }
+
     return _isLoading
         ? const LoadingScreen()
         : Scaffold(
@@ -98,25 +129,51 @@ class _SellerMainState extends State<SellerMain> {
                 children: _children,
               ),
             ),
-            bottomNavigationBar: BottomNavigationBar(
-              onTap: onTabTapped,
-              currentIndex: _currentIndex,
-              type: BottomNavigationBarType.fixed,
-              showSelectedLabels: false,
-              showUnselectedLabels: false,
-              items: [
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.home),
-                  label: 'Home',
+            bottomNavigationBar: Stack(
+              children: [
+                BottomNavigationBar(
+                  onTap: onTabTapped,
+                  currentIndex: _currentIndex,
+                  type: BottomNavigationBarType.fixed,
+                  showSelectedLabels: false,
+                  showUnselectedLabels: false,
+                  items: [
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.home),
+                      label: 'Home',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.message),
+                      label: 'Messages',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.person),
+                      label: 'Profile',
+                    ),
+                  ],
                 ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.message),
-                  label: 'Messages',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.person),
-                  label: 'Profile',
-                ),
+                Positioned(
+                    right: MediaQuery.of(context).size.width / 2 - 15,
+                    bottom: 35,
+                    child: StreamBuilder(
+                        stream: FirestoreService().getSeenStream(
+                            Provider.of<UserProvider>(context, listen: false)
+                                .user!
+                                .uid),
+                        builder: (context, snapshot) {
+                          return Visibility(
+                            visible: snapshot.hasData,
+                            child: Align(
+                              alignment: Alignment.topRight,
+                              child: Container(
+                                width: 10,
+                                height: 10,
+                                decoration: BoxDecoration(
+                                    shape: BoxShape.circle, color: Colors.red),
+                              ),
+                            ),
+                          );
+                        }))
               ],
             ),
           );

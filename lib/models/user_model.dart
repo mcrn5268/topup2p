@@ -5,6 +5,7 @@ class UserModel {
   //final String phoneNumber;
   final String type;
   String image;
+  String image_url;
 
   UserModel(
       {required this.uid,
@@ -12,5 +13,6 @@ class UserModel {
       required this.name,
       //required this.phoneNumber,
       required this.type,
-      required this.image});
+      required this.image,
+      required this.image_url});
 }

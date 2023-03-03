@@ -6,6 +6,7 @@ import 'package:topup2p/providers/user_provider.dart';
 
 Widget getImage(context) {
   UserProvider userProvider = Provider.of<UserProvider>(context, listen: false);
+  print('userProvider.user!.image ${userProvider.user!.image}');
   if (userProvider.user!.image == 'assets/images/person-placeholder.png' ||
       userProvider.user!.image == 'assets/images/store-placeholder.png') {
     return CircleAvatar(

@@ -27,12 +27,14 @@ class UserProvider extends ChangeNotifier {
           email: _user!.email,
           name: name ?? _user!.name,
           type: type ?? _user!.type,
-          image: image ?? _user!.image);
+          image: image ?? _user!.image,
+          image_url: image ?? _user!.image_url);
       notifyListeners();
     }
   }
 
   Future<void> init() async {
+    print('init');
     await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform);
 
@@ -47,25 +49,21 @@ class UserProvider extends ChangeNotifier {
       } else {
         print('User is currently signed out!');
       }
-      try {
-        print(
-            'UserModel ${_user!.uid} ${_user!.name} ${_user!.email} ${_user!.type} ');
-      } catch (e) {
-        print('UserModel = null');
-      }
       notifyListeners();
     });
   }
 
   Future<void> signIn(User? user) async {
-    final firestoreUserData = await FirestoreService().read('users', user!.uid);
+    final firestoreUserData = await FirestoreService()
+        .read(collection: 'users', documentId: user!.uid);
     final userData = UserModel(
         uid: user.uid,
         email: user.email ?? '',
         name: firestoreUserData!['name'],
         //phoneNumber: _phoneNumberController.text,
         type: firestoreUserData['type'],
-        image: firestoreUserData['image']);
+        image: firestoreUserData['image'],
+        image_url: firestoreUserData['image_url']);
     if (_user == null) {
       setUser(userData);
     }

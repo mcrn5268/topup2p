@@ -55,6 +55,7 @@ dependencies:
   flutter_keyboard_visibility: ^5.4.0
   collection: ^1.17.0
   flutter_staggered_animations: ^1.0.0
+  chat_bubbles: ^1.4.0
 
 dev_dependencies:
   flutter_test:

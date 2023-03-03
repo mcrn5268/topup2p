@@ -17,34 +17,30 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor:
           (fromProfile != null) ? Colors.blueGrey : Colors.transparent,
       leading: leadingIcon(context),
+      shape: Border(bottom: BorderSide(color: Colors.grey, width: 1)),
       flexibleSpace: Padding(
         padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
         child: SafeArea(
+            child: Center(
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              Expanded(
-                  child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  if (search == true) ...[
-                    const SearchButton(),
-                  ],
-                  if (isloggedin == true) ...[
-                    MessageButton(fromProfile: fromProfile),
-                    if (fromProfile == true) ...[
-                      const SignoutButton(),
-                    ] else ...[
-                      const ProfileButton(),
-                    ]
-                  ] else ...[
-                    const LogInButton(),
-                  ],
-                ],
-              )),
+              if (search == true) ...[
+                const SearchButton(),
+              ],
+              if (isloggedin == true) ...[
+                MessageButton(fromProfile: fromProfile),
+                if (fromProfile == true) ...[
+                  const SignoutButton(),
+                ] else ...[
+                  const ProfileButton(),
+                ]
+              ] else ...[
+                const LogInButton(),
+              ],
             ],
           ),
-        ),
+        )),
       ),
     );
   }
@@ -69,5 +65,5 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+  Size get preferredSize => const Size.fromHeight(66);
 }

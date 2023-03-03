@@ -4,8 +4,8 @@ import 'package:topup2p/cloud/firestore.dart';
 import 'package:topup2p/models/item_model.dart';
 import 'package:topup2p/providers/favorites_provider.dart';
 import 'package:topup2p/providers/user_provider.dart';
-import 'package:topup2p/providers/user_provider.singleton.dart';
-import 'package:topup2p/utilities/convert_utils.dart';
+import 'package:topup2p/screens/chat.dart';
+import 'package:topup2p/utilities/other_utils.dart';
 import 'package:topup2p/utilities/image_file_utils.dart';
 import 'package:topup2p/utilities/models_utils.dart';
 import 'package:topup2p/widgets/appbar/appbar.dart';
@@ -28,7 +28,8 @@ class _GameSellScreenState extends State<GameSellScreen> {
     FavoritesProvider favProvider =
         Provider.of<FavoritesProvider>(context, listen: false);
     return FutureBuilder(
-        future: FirestoreService().read('seller_games_data', widget.gameName),
+        future: FirestoreService()
+            .read(collection: 'seller_games_data', documentId: widget.gameName),
         builder: ((context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             favProvider.addItems(widget.favorites);
@@ -70,145 +71,178 @@ class _GameSellScreenState extends State<GameSellScreen> {
                     FavoritesIcon(widget.gameName, 50)
                   ]),
                   ...shopList.map(
-                    (shop) => Padding(
-                      padding: const EdgeInsets.all(15.0),
-                      child: Container(
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).scaffoldBackgroundColor,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.5),
-                                blurRadius: 7,
-                                offset: Offset(0, 2),
-                              ),
-                            ],
+                    (shop) => GestureDetector(
+                      onTap: () async {
+                        String? convId;
+                        final Map<String, dynamic>? snapshot =
+                            await FirestoreService().read(
+                                collection: 'messages',
+                                documentId: 'users_conversations',
+                                subcollection: Provider.of<UserProvider>(
+                                        context,
+                                        listen: false)
+                                    .user!
+                                    .uid,
+                                subdocumentId: shop['info']['uid']);
+                        if (snapshot != null) {
+                          convId = snapshot['conversationId'];
+                        }
+                        Navigator.push(
+                          context,
+                          PageRouteBuilder(
+                            pageBuilder: (_, __, ___) => ChatScreen(
+                              convId: convId,
+                              userId: shop['info']['uid'],
+                              userName: shop['info']['name'],
+                              userImage: shop['info']['image'],
+                            ),
+                            transitionsBuilder: (_, a, __, c) =>
+                                FadeTransition(opacity: a, child: c),
                           ),
-                          height: 150,
-                          child: Row(
-                            children: [
-                              Padding(
-                                padding:
-                                    const EdgeInsets.fromLTRB(15, 0, 15, 0),
-                                child: shop['info']['image'] ==
-                                        'assets/images/store-placeholder.png'
-                                    ? Container(
-                                        width: 100,
-                                        decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            image: DecorationImage(
-                                                fit: BoxFit.cover,
-                                                image: AssetImage(
-                                                    'assets/images/store-placeholder.png'))),
-                                      )
-                                    : Container(
-                                        width: 100,
-                                        decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            image: DecorationImage(
-                                                fit: BoxFit.cover,
-                                                image: NetworkImage(
-                                                    shop['info']['image']))),
-                                      ),
-                              ),
-                              Expanded(
-                                  flex: 3,
-                                  child: Column(children: [
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 5),
-                                      child: Stack(
-                                        children: [
-                                          Container(
-                                            alignment: Alignment.center,
-                                            child: Text(
-                                              shop['shop_name'],
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .titleLarge,
-                                              textAlign: TextAlign.center,
-                                            ),
-                                          ),
-                                          Container(
-                                              alignment: Alignment.centerRight,
-                                              child: const Icon(Icons
-                                                  .arrow_forward_ios_outlined)),
-                                        ],
-                                      ),
-                                    ),
-                                    const Divider(),
-                                    Padding(
-                                      padding: const EdgeInsets.only(bottom: 5),
-                                      child: Text(widget.gameName),
-                                    ),
-                                    Expanded(
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          for (var i = 1;
-                                              i <=
-                                                  ((shop['rates'].length) / 3)
-                                                      .ceil();
-                                              i++) ...[
-                                            Expanded(
-                                              child: Column(
-                                                children: [
-                                                  for (var j = (i == 1)
-                                                          ? 0
-                                                          : (i == 2)
-                                                              ? 3
-                                                              : 6;
-                                                      j < i * 3 &&
-                                                          j <
-                                                              shop['rates']
-                                                                  .length;
-                                                      j++) ...[
-                                                    Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .center,
-                                                      children: [
-                                                        Text(
-                                                            "₱${shop['rates']['rate${j}']['php']} : ${shop['rates']['rate${j}']['digGoods']}"),
-                                                        Image.asset(
-                                                          gameIcon(
-                                                              widget.gameName),
-                                                          width: 10,
-                                                          height: 10,
-                                                        )
-                                                      ],
-                                                    )
-                                                  ]
-                                                ],
+                        );
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.all(15.0),
+                        child: Container(
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).scaffoldBackgroundColor,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey.withOpacity(0.5),
+                                  blurRadius: 7,
+                                  offset: Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            height: 150,
+                            child: Row(
+                              children: [
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(15, 0, 15, 0),
+                                  child: shop['info']['image'] ==
+                                          'assets/images/store-placeholder.png'
+                                      ? Container(
+                                          width: 100,
+                                          decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              image: DecorationImage(
+                                                  fit: BoxFit.cover,
+                                                  image: AssetImage(
+                                                      'assets/images/store-placeholder.png'))),
+                                        )
+                                      : Container(
+                                          width: 100,
+                                          decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              image: DecorationImage(
+                                                  fit: BoxFit.cover,
+                                                  image: NetworkImage(
+                                                      shop['info']['image']))),
+                                        ),
+                                ),
+                                Expanded(
+                                    flex: 3,
+                                    child: Column(children: [
+                                      Padding(
+                                        padding: const EdgeInsets.only(top: 5),
+                                        child: Stack(
+                                          children: [
+                                            Container(
+                                              alignment: Alignment.center,
+                                              child: Text(
+                                                shop['shop_name'],
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .titleLarge,
+                                                textAlign: TextAlign.center,
                                               ),
                                             ),
+                                            Container(
+                                                alignment:
+                                                    Alignment.centerRight,
+                                                child: const Icon(Icons
+                                                    .arrow_forward_ios_outlined)),
                                           ],
-                                        ],
+                                        ),
                                       ),
-                                    ),
-                                    Center(
-                                      child: SizedBox(
-                                        height: 28,
+                                      const Divider(),
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(bottom: 5),
+                                        child: Text(widget.gameName),
+                                      ),
+                                      Expanded(
                                         child: Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.center,
                                           children: [
-                                            for (var key
-                                                in shop['mop'].keys) ...[
-                                              if (key == 'mop1' ||
-                                                  key == 'mop2' ||
-                                                  key == 'mop3') ...[
-                                                Image.asset(
-                                                    'assets/images/MoP/${shop['mop'][key]}.png',
-                                                    width: 50)
-                                              ]
-                                            ]
+                                            for (var i = 1;
+                                                i <=
+                                                    ((shop['rates'].length) / 3)
+                                                        .ceil();
+                                                i++) ...[
+                                              Expanded(
+                                                child: Column(
+                                                  children: [
+                                                    for (var j = (i == 1)
+                                                            ? 0
+                                                            : (i == 2)
+                                                                ? 3
+                                                                : 6;
+                                                        j < i * 3 &&
+                                                            j <
+                                                                shop['rates']
+                                                                    .length;
+                                                        j++) ...[
+                                                      Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .center,
+                                                        children: [
+                                                          Text(
+                                                              "₱${shop['rates']['rate${j}']['php']} : ${shop['rates']['rate${j}']['digGoods']}"),
+                                                          Image.asset(
+                                                            gameIcon(widget
+                                                                .gameName),
+                                                            width: 10,
+                                                            height: 10,
+                                                          )
+                                                        ],
+                                                      )
+                                                    ]
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
                                           ],
                                         ),
                                       ),
-                                    ),
-                                  ]))
-                            ],
-                          )),
+                                      Center(
+                                        child: SizedBox(
+                                          height: 28,
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              for (var key
+                                                  in shop['mop'].keys) ...[
+                                                if (key == 'mop1' ||
+                                                    key == 'mop2' ||
+                                                    key == 'mop3') ...[
+                                                  Image.asset(
+                                                      'assets/images/MoP/${shop['mop'][key]}.png',
+                                                      width: 50)
+                                                ]
+                                              ]
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ]))
+                              ],
+                            )),
+                      ),
                     ),
                   )
                 ],

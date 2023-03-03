@@ -46,9 +46,9 @@ class _FavoritesIconState extends State<FavoritesIcon> {
                     'user_games_data', userProvider.user!.uid, widget.itemName);
               } else {
                 FirestoreService().create(
-                    'user_games_data',
-                    userProvider.user!.uid,
-                    {widget.itemName: FieldValue.serverTimestamp()});
+                    collection: 'user_games_data',
+                    documentId: userProvider.user!.uid,
+                    data: {widget.itemName: FieldValue.serverTimestamp()});
               }
               favProvider.toggleFavorite(itemObject, true);
 

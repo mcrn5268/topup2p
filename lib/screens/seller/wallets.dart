@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
 import 'package:topup2p/models/payment_model.dart';
 import 'package:topup2p/providers/payment_provider.dart';
@@ -60,12 +61,14 @@ class _SellerWalletsScreenState extends State<SellerWalletsScreen> {
                 Icons.arrow_back_ios_outlined,
                 color: Colors.black,
               )),
+          centerTitle: true,
           title: Text(
             'Wallets',
             style: TextStyle(
               color: Colors.black, // try a different color here
             ),
           ),
+      shape: Border(bottom: BorderSide(color: Colors.grey, width: 1)),
         ),
         body: Consumer<PaymentProvider>(builder: (context, paymentProvider, _) {
           return Stack(
@@ -88,45 +91,60 @@ class _SellerWalletsScreenState extends State<SellerWalletsScreen> {
                       itemCount: paymentProvider.payments.length,
                       itemBuilder: (BuildContext context, int index) {
                         var paymentItem = paymentProvider.payments[index];
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 10),
-                          child: InkWell(
-                            onTap: () => toCardWallet(card: paymentItem),
-                            child: Stack(
-                              alignment: AlignmentDirectional.center,
-                              children: [
-                                Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(50),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.grey.withOpacity(0.5),
-                                        blurRadius: 7,
-                                        spreadRadius: 2,
-                                        offset: Offset(0, 2),
+                        return AnimationConfiguration.staggeredList(
+                          position: index,
+                          duration: const Duration(milliseconds: 375),
+                          child: SlideAnimation(
+                            verticalOffset: 50.0,
+                            child: FadeInAnimation(
+                              child: Padding(
+                                padding: const EdgeInsets.only(bottom: 10),
+                                child: InkWell(
+                                  onTap: () => toCardWallet(card: paymentItem),
+                                  child: Stack(
+                                    alignment: AlignmentDirectional.center,
+                                    children: [
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(50),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color:
+                                                  Colors.grey.withOpacity(0.5),
+                                              blurRadius: 7,
+                                              spreadRadius: 2,
+                                              offset: Offset(0, 2),
+                                            ),
+                                          ],
+                                        ),
+                                        foregroundDecoration: BoxDecoration(
+                                          color: paymentItem.isEnabled
+                                              ? Colors.transparent
+                                              : Colors.grey,
+                                          backgroundBlendMode:
+                                              BlendMode.saturation,
+                                        ),
+                                        child: Image.asset(
+                                          paymentItem.paymentimage,
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width -
+                                              100,
+                                        ),
                                       ),
+                                      Align(
+                                          alignment:
+                                              AlignmentDirectional.centerEnd,
+                                          child: Container(
+                                              width: 30.0,
+                                              height: 30.0,
+                                              child: Icon(Icons
+                                                  .arrow_forward_ios_outlined))),
                                     ],
                                   ),
-                                  foregroundDecoration: BoxDecoration(
-                                    color: paymentItem.isEnabled
-                                        ? Colors.transparent
-                                        : Colors.grey,
-                                    backgroundBlendMode: BlendMode.saturation,
-                                  ),
-                                  child: Image.asset(
-                                    paymentItem.paymentimage,
-                                    width:
-                                        MediaQuery.of(context).size.width - 100,
-                                  ),
                                 ),
-                                Align(
-                                    alignment: AlignmentDirectional.centerEnd,
-                                    child: Container(
-                                        width: 30.0,
-                                        height: 30.0,
-                                        child: Icon(
-                                            Icons.arrow_forward_ios_outlined))),
-                              ],
+                              ),
                             ),
                           ),
                         );

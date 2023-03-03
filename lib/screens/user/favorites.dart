@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
 import 'package:topup2p/providers/favorites_provider.dart';
 import 'package:topup2p/screens/user/seller.dart';
@@ -73,63 +74,78 @@ class _FavoritesListState extends State<FavoritesList>
                   scrollDirection: Axis.horizontal,
                   itemCount: favoritedLength,
                   itemBuilder: (context, index) {
-                    return SizedBox(
-                      width: 114.5,
-                      child: Card(
-                        //key: ValueKey(widget.name),
-                        elevation: 0,
-                        color: Colors.transparent,
-                        child: Stack(children: [
-                          GestureDetector(
-                            onTap: () {
-                              GameItemScreenNavigator(
-                                  favProvider.favorites[index].name, true);
-                            },
-                            child: Column(
-                              children: [
-                                Expanded(
-                                  flex: 3,
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(20.0),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.grey.withOpacity(0.5),
-                                          spreadRadius: 2,
-                                          blurRadius: 5,
-                                          offset: Offset(0,
-                                              2), // changes position of shadow
+                    return AnimationConfiguration.staggeredList(
+                      position: index,
+                      duration: const Duration(milliseconds: 375),
+                      child: SlideAnimation(
+                        horizontalOffset: 50.0,
+                        child: FadeInAnimation(
+                          child: SizedBox(
+                            width: 114.5,
+                            child: Card(
+                              //key: ValueKey(widget.name),
+                              elevation: 0,
+                              color: Colors.transparent,
+                              child: Stack(children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    GameItemScreenNavigator(
+                                        favProvider.favorites[index].name,
+                                        true);
+                                  },
+                                  child: Column(
+                                    children: [
+                                      Expanded(
+                                        flex: 3,
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(20.0),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.grey
+                                                    .withOpacity(0.5),
+                                                spreadRadius: 2,
+                                                blurRadius: 5,
+                                                offset: Offset(0,
+                                                    2), // changes position of shadow
+                                              ),
+                                            ],
+                                          ),
+                                          child: ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(20.0),
+                                              child: Image.asset(favProvider
+                                                  .favorites[index].image)),
                                         ),
-                                      ],
-                                    ),
-                                    child: ClipRRect(
-                                        borderRadius:
-                                            BorderRadius.circular(20.0),
-                                        child: Image.asset(favProvider
-                                            .favorites[index].image)),
+                                      ),
+                                      Expanded(
+                                        child: Container(
+                                          width: double.infinity,
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Text(
+                                                favProvider
+                                                    .favorites[index].name,
+                                                textAlign: TextAlign.center,
+                                                style: const TextStyle(
+                                                    fontSize: 10),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                                Expanded(
-                                  child: Container(
-                                    width: double.infinity,
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          favProvider.favorites[index].name,
-                                          textAlign: TextAlign.center,
-                                          style: const TextStyle(fontSize: 10),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
+                                FavoritesIcon(
+                                    favProvider.favorites[index].name, 20)
+                              ]),
                             ),
                           ),
-                          FavoritesIcon(favProvider.favorites[index].name, 20)
-                        ]),
+                        ),
                       ),
                     );
                   }),

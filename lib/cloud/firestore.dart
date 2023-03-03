@@ -1,12 +1,22 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:topup2p/providers/user_provider.dart';
+import 'package:topup2p/utilities/other_utils.dart';
 
 class FirestoreService {
   FirebaseFirestore _db = FirebaseFirestore.instance;
 
   Future<void> create(
-      String collection, String documentId, Map<String, dynamic> data,
-      {String? subcollection, String? subdocumentId, bool merge = true}) async {
+      {required String collection,
+      required String documentId,
+      required Map<String, dynamic> data,
+      String? subcollection,
+      String? subdocumentId,
+      bool merge = true}) async {
     if (subcollection == null && subdocumentId == null) {
       await _db
           .collection(collection)
@@ -29,8 +39,11 @@ class FirestoreService {
     }
   }
 
-  Future<dynamic> read(String collection, String documentId,
-      {String? subcollection, String? subdocumentId}) async {
+  Future<dynamic> read(
+      {required String collection,
+      required String documentId,
+      String? subcollection,
+      String? subdocumentId}) async {
     try {
       if (subcollection == null && subdocumentId == null) {
         DocumentSnapshot snapshot =
@@ -96,9 +109,9 @@ class FirestoreService {
   }
 
   Future<void> replaceDocumentnCollection(String old, String neww) async {
-    final oldData = await read('sellers', old);
+    final oldData = await read(collection: 'sellers', documentId: old);
     delete('sellers', old);
-    create('sellers', neww, oldData);
+    create(collection: 'sellers', documentId: neww, data: oldData);
     renameSubcollection('seller_games_data', old, neww);
   }
 
@@ -185,5 +198,141 @@ class FirestoreService {
     } else {
       return 'assets/images/store-placeholder.png';
     }
+  }
+
+  Stream<DocumentSnapshot?> getSeenStream(String uid) {
+    return FirebaseFirestore.instance
+        .collection('messages')
+        .doc('users_conversations')
+        .collection(uid)
+        .where('isSeen', isEqualTo: false)
+        .limit(1)
+        .snapshots()
+        .map((querySnapshot) {
+      if (querySnapshot.docs.isEmpty) {
+        return null;
+      } else {
+        return querySnapshot.docs[0];
+      }
+    });
+  }
+
+  Stream<QuerySnapshot> getStream(
+      {required String docId,
+      required String subcollectionName,
+      bool flag = true}) {
+    final CollectionReference mainCollectionRef = _db.collection('messages');
+    final CollectionReference subCollectionRef =
+        mainCollectionRef.doc(docId).collection(subcollectionName);
+
+    // Add an orderBy clause to sort by the timestamp field in ascending order
+    if (flag) {
+      return subCollectionRef
+          .orderBy('timestamp', descending: false)
+          .snapshots();
+    } else {
+      //timestamp is inside a map field
+      return subCollectionRef
+          .orderBy(FieldPath(['last_msg', 'timestamp']), descending: true)
+          .snapshots();
+    }
+  }
+
+  Future<String> conversationId(String? id) async {
+    if (id == null) {
+      late String returnId;
+      bool flag = true;
+      while (flag) {
+        String generatedID = generateID();
+        print('generatedID1 $generatedID ');
+        final CollectionReference mainCollectionRef =
+            _db.collection('messages');
+        final snapshottt = await mainCollectionRef
+            .doc('conversations')
+            .collection(generatedID)
+            .limit(1)
+            .get();
+
+        if (snapshottt.docs.isEmpty) {
+          returnId = generatedID;
+          flag = false;
+        }
+      }
+      return returnId;
+    } else {
+      return id;
+    }
+  }
+
+  Future<void> sendMessage(
+      {required String conversationId,
+      required BuildContext context,
+      required String otherUserId,
+      required String otherUserName,
+      required String otherUserImage,
+      required String message}) async {
+    UserProvider userProvider =
+        Provider.of<UserProvider>(context, listen: false);
+    var timeStamp = FieldValue.serverTimestamp();
+    Map<String, dynamic> forUsers = {
+      'other_user': {
+        'uid': userProvider.user!.uid,
+        'name': userProvider.user!.name,
+        'image': userProvider.user!.image_url
+      },
+      'last_msg': {
+        'msg': message,
+        'isSeen': false,
+        'timestamp': timeStamp,
+        'sender': userProvider.user!.uid
+      }
+    };
+    Map<String, dynamic> forUsers2 = {
+      'other_user': {
+        'uid': otherUserId,
+        'name': otherUserName,
+        'image': otherUserImage
+      },
+      'last_msg': {
+        'msg': message,
+        'timestamp': timeStamp,
+        'sender': userProvider.user!.uid
+      }
+    };
+    Map<String, dynamic> forConv = {
+      'timestamp': timeStamp,
+      'msg': message,
+      'sender': userProvider.user!.uid
+    };
+    Map<String, dynamic> forUsersConv = {
+      'conversationId': conversationId,
+      'isSeen': false
+    };
+    create(
+        collection: 'messages',
+        documentId: 'users',
+        data: forUsers,
+        subcollection: otherUserId,
+        subdocumentId: conversationId,
+        merge: false);
+    create(
+        collection: 'messages',
+        documentId: 'users',
+        data: forUsers2,
+        subcollection: userProvider.user!.uid,
+        subdocumentId: conversationId,
+        merge: false);
+    create(
+        collection: 'messages',
+        documentId: 'conversations',
+        data: forConv,
+        subcollection: conversationId);
+    create(
+        collection: 'messages',
+        documentId: 'users_conversations',
+        data: forUsersConv,
+        subcollection: otherUserId,
+        subdocumentId: userProvider.user!.uid,
+        merge: false);
   }
 }

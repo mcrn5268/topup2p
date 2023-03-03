@@ -1,40 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:topup2p/utilities/firestore_auth_utils.dart';
-
+import 'package:topup2p/cloud/firebase_auth.dart';
 
 class SignoutButton extends StatelessWidget {
   const SignoutButton({super.key});
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Row(
-          children: [
-            ElevatedButton(
-              onPressed: () {
-                _dialogBuilder(context);
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor:Colors.white,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                    side: const BorderSide(color: Colors.red)),
-              ),
-              child: Row(
-                children: <Widget>[
-                  Text(
-                    'Sign Out',
-                    style:
-                        TextStyle(color:Colors.red ),
-                  ),
-                ],
-              ),
-            )
-          ],
-        ),
-      ],
+    return ElevatedButton(
+      onPressed: () {
+        _dialogBuilder(context);
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30),
+            side: const BorderSide(color: Colors.red)),
+      ),
+      child: Row(
+        children: <Widget>[
+          Text(
+            'Sign Out',
+            style: TextStyle(color: Colors.red),
+          ),
+        ],
+      ),
     );
   }
 

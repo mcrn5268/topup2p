@@ -47,10 +47,10 @@ class _AddUpdateWalletScreenState extends State<AddUpdateWalletScreen> {
 
   @override
   void dispose() {
-    super.dispose();
     _controllername.dispose();
     _controllernum.dispose();
     _typeAheadController.dispose();
+    super.dispose();
   }
 
   @override

@@ -48,61 +48,71 @@ class _GamesListState extends State<GamesList> {
           crossAxisSpacing: 5,
           padding: const EdgeInsets.all(10),
           children: <Widget>[
-            ...itemsObjectList.map(
-              (item) => Card(
-                key: ValueKey('${item.name}-games'),
-                elevation: 0,
-                color: Colors.transparent,
-                child: Stack(children: [
-                  GestureDetector(
-                    onTap: () {
-                      GameItemScreenNavigator(item.name, true);
-                    },
-                    child: Column(
-                      children: [
-                        Expanded(
-                          flex: 3,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20.0),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.withOpacity(0.5),
-                                  spreadRadius: 2,
-                                  blurRadius: 5,
-                                  offset: Offset(
-                                      0, 2), // changes position of shadow
-                                ),
-                              ],
-                            ),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(20.0),
-                              child: Image.asset(item.image),
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Container(
-                            width: double.infinity,
-                            //color: Colors.grey,
+            ...itemsObjectList.map((item) =>
+                AnimationConfiguration.staggeredGrid(
+                  position: itemsObjectList.indexOf(item),
+                  duration: const Duration(milliseconds: 375),
+                  columnCount:
+                      _showMore ? itemsObjectList.length : countRow * 3,
+                  child: ScaleAnimation(
+                    child: FadeInAnimation(
+                      child: Card(
+                        key: ValueKey('${item.name}-games'),
+                        elevation: 0,
+                        color: Colors.transparent,
+                        child: Stack(children: [
+                          GestureDetector(
+                            onTap: () {
+                              GameItemScreenNavigator(item.name, true);
+                            },
                             child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Text(
-                                  item.name,
-                                  textAlign: TextAlign.center,
+                                Expanded(
+                                  flex: 3,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(20.0),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.grey.withOpacity(0.5),
+                                          spreadRadius: 2,
+                                          blurRadius: 5,
+                                          offset: Offset(0,
+                                              2), // changes position of shadow
+                                        ),
+                                      ],
+                                    ),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(20.0),
+                                      child: Image.asset(item.image),
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Container(
+                                    width: double.infinity,
+                                    //color: Colors.grey,
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          item.name,
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                 ),
                               ],
                             ),
                           ),
-                        ),
-                      ],
+                          FavoritesIcon(item.name, 35)
+                        ]),
+                      ),
                     ),
                   ),
-                  FavoritesIcon(item.name, 35)
-                ]),
-              ),
-            )
+                ))
           ].take(_showMore ? itemsObjectList.length : countRow * 3).toList(),
         ),
         InkWell(

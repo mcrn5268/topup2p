@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
 import 'package:topup2p/cloud/firestore.dart';
 import 'package:topup2p/models/item_model.dart';
@@ -16,6 +17,7 @@ class SellerMainScreen extends StatefulWidget {
   @override
   _SellerMainScreenState createState() => _SellerMainScreenState();
 }
+
 //tocheck keepalive
 class _SellerMainScreenState extends State<SellerMainScreen> {
   final PageStorageBucket _bucket = PageStorageBucket();
@@ -35,7 +37,7 @@ class _SellerMainScreenState extends State<SellerMainScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-                '₱ ${data["rates"]["rate$index"]["php"]} : ${data["rates"]["rate$index"]["digGoods"]}'),
+                '₱ ${data["rates"]["rate$index"]["php"]}  :  ${data["rates"]["rate$index"]["digGoods"]} '),
             Image.asset(
               icon,
               width: 10,
@@ -64,10 +66,11 @@ class _SellerMainScreenState extends State<SellerMainScreen> {
               Center(
                 child: FutureBuilder(
                   future: FirestoreService().read(
-                      'seller_games_data_2',
-                      Provider.of<UserProvider>(context, listen: false)
-                          .user!
-                          .name,
+                      collection: 'seller_games_data_2',
+                      documentId:
+                          Provider.of<UserProvider>(context, listen: false)
+                              .user!
+                              .name,
                       subcollection: game,
                       subdocumentId: game),
                   builder: (BuildContext context, snapshot) {
@@ -118,6 +121,15 @@ class _SellerMainScreenState extends State<SellerMainScreen> {
     PaymentProvider paymentProvider =
         Provider.of<PaymentProvider>(context, listen: false);
     return Scaffold(
+      appBar: AppBar(
+          centerTitle: true,
+          title: Text(
+            'Games',
+            style: TextStyle(
+              color: Colors.black, // try a different color here
+            ),
+          ),
+          shape: Border(bottom: BorderSide(color: Colors.grey, width: 1))),
       body: PageStorage(
         key: PageStorageKey('sellerHomePage'),
         bucket: _bucket,
@@ -139,76 +151,63 @@ class _SellerMainScreenState extends State<SellerMainScreen> {
                     Item item = map.keys.first;
                     //value
                     String status = map.values.first;
-                    return Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: ColorFiltered(
-                        colorFilter: (status == 'disabled')
-                            ? ColorFilter.mode(
-                                Colors.grey, BlendMode.saturation)
-                            : ColorFilter.mode(
-                                Colors.transparent, BlendMode.saturation),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.5),
-                                spreadRadius: 2,
-                                blurRadius: 5,
-                                offset:
-                                    Offset(0, 2), // changes position of shadow
+                    return AnimationConfiguration.staggeredList(
+                      position: index,
+                      duration: const Duration(milliseconds: 375),
+                      child: SlideAnimation(
+                        verticalOffset: 50.0,
+                        child: FadeInAnimation(
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(10, 3, 10, 3),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(15),
+                                color: Colors.white,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.5),
+                                    spreadRadius: 2,
+                                    blurRadius: 5,
+                                    offset: Offset(
+                                        0, 2), // changes position of shadow
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                          child: InkWell(
-                            child: ListTile(
-                              title: Text('${item.name}  ⓘ'),
-                              subtitle: Text('$status'),
-                              leading: CircleAvatar(
-                                backgroundImage: AssetImage(
-                                    getImage('${item.name}', 'image')),
-                              ),
-                              trailing: IconButton(
-                                icon: Icon(Icons.settings),
-                                onPressed: () async {
-                                  final sellItems = await Navigator.push(
-                                    context,
-                                    PageRouteBuilder(
-                                      pageBuilder: (_, __, ___) =>
-                                          MultiProvider(
-                                        providers: [
-                                          ChangeNotifierProvider<
-                                              SellItemsProvider>.value(
-                                            value: SellItemsProvider(),
-                                          ),
-                                          ChangeNotifierProvider<
-                                              PaymentProvider>.value(
-                                            value: PaymentProvider(),
-                                          ),
-                                        ],
-                                        child: AddItemSell(siProvider.Sitems,
-                                            paymentProvider.payments,
-                                            update: true, game: item.name),
+                              child: InkWell(
+                                child: ListTile(
+                                  title: Text('${item.name}  ⓘ'),
+                                  subtitle: Text(
+                                    '$status',
+                                    style: TextStyle(
+                                        color: status == 'disabled'
+                                            ? Colors.red
+                                            : Colors.grey),
+                                  ),
+                                  leading: ClipOval(
+                                    child: ColorFiltered(
+                                      colorFilter: (status == 'disabled')
+                                          ? ColorFilter.mode(
+                                              Colors.grey, BlendMode.saturation)
+                                          : ColorFilter.mode(Colors.transparent,
+                                              BlendMode.saturation),
+                                      child: CircleAvatar(
+                                        backgroundImage: AssetImage(
+                                            getImage('${item.name}', 'image')),
                                       ),
-                                      transitionsBuilder: (_, a, __, c) =>
-                                          FadeTransition(opacity: a, child: c),
                                     ),
-                                  );
-
-                                  if (sellItems != null) {
-                                    if (siProvider.Sitems.length !=
-                                        sellItems.length) {
-                                      siProvider.clearItems();
-                                      siProvider.addItems(sellItems);
-                                    }
-                                    setState(() {});
-                                  }
+                                  ),
+                                  trailing: IconButton(
+                                    icon: Icon(Icons.settings),
+                                    onPressed: () async {
+                                      // your code here
+                                    },
+                                  ),
+                                ),
+                                onTap: () {
+                                  _showDialog(item.name);
                                 },
                               ),
                             ),
-                            onTap: () {
-                              _showDialog(item.name);
-                            },
                           ),
                         ),
                       ),

@@ -81,9 +81,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
         //'phone_number': _phoneNumberController.text,
         'type': 'normal',
         //todo
-        'image': 'assets/images/person-placeholder.png'
+        'image': 'assets/images/person-placeholder.png',
+        'image_url': 'placeholder'
       };
-      FirestoreService().create('users', '${authResult.user!.uid}', userData);
+      FirestoreService().create(
+          collection: 'users',
+          documentId: '${authResult.user!.uid}',
+          data: userData);
 
       // Update the user data in the UserProvider
       final user = UserModel(
@@ -93,7 +97,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
           //phoneNumber: _phoneNumberController.text,
           type: 'normal',
           //todo image
-          image: 'assets/images/person-placeholder.png');
+          image: 'assets/images/person-placeholder.png',
+          image_url: 'placeholder');
       Provider.of<UserProvider>(context, listen: false).setUser(user);
     } catch (e) {
       // Display an error message
@@ -108,12 +113,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   void dispose() {
-    super.dispose();
     _Fname.dispose();
     _Lname.dispose();
     _email.dispose();
     _pass.dispose();
     _Cpass.dispose();
+    super.dispose();
   }
 
   @override

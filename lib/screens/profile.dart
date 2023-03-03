@@ -195,8 +195,10 @@ class ProfileScreen extends StatelessWidget {
                                 .addAll(paymentMap); // Add payment map to 'MoP'
                           }
 
-                          FirestoreService().create('sellers',
-                              userProvider.user!.name, forSellersMap);
+                          FirestoreService().create(
+                              collection: 'sellers',
+                              documentId: userProvider.user!.name,
+                              data: forSellersMap);
                         }
                       }),
                   const Divider(),

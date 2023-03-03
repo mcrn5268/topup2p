@@ -35,7 +35,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         _errorMessage = 'Shop name is required';
       });
     } else {
-      final document = await FirestoreService().read('sellers', value);
+      final document = await FirestoreService()
+          .read(collection: 'sellers', documentId: value);
       bool flag = document == null ? false : true;
       setState(() {
         _errorMessage = flag ? 'Shop name is already taken' : null;
@@ -45,8 +46,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   void dispose() {
-    super.dispose();
     _Sname.dispose();
+    super.dispose();
   }
 
   @override
@@ -105,41 +106,55 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               userProvider.user!.type == 'seller'
                                   ? 'assets/images/store-placeholder.png'
                                   : 'assets/images/person-placeholder.png';
+                          Map<String, dynamic> imageMap = {'image': assetsPath};
+                          //todo fix other images use image_url for some images
                           if (urlDownload != null) {
-                            assetsPath = await ImagetoAssets(
+                            imageMap['image'] = await ImagetoAssets(
                                 urlDownload!, userProvider.user!.uid);
+                            imageMap['image_url'] = urlDownload;
                           }
-                          FirestoreService().create('users',
-                              userProvider.user!.uid, {'image': assetsPath});
-                          userProvider.updateUser(image: assetsPath);
-                          Map<String, dynamic> sellerData =
-                              await FirestoreService()
-                                  .read('sellers', userProvider.user!.name);
-                          sellerData['games'].forEach((key, value) {
-                            FirestoreService().create(
-                                'seller_games_data_2',
-                                userProvider.user!.name,
-                                {
-                                  'info': {'image': urlDownload}
-                                },
-                                subcollection: key,
-                                subdocumentId: key);
-                            FirestoreService()
-                                .create('seller_games_data', key, {
-                              userProvider.user!.name: {
-                                'info': {'image': urlDownload}
-                              }
+                          FirestoreService().create(
+                              collection: 'users',
+                              documentId: userProvider.user!.uid,
+                              data: imageMap);
+                          userProvider.updateUser(image: imageMap['image']);
+                          if (userProvider.user!.type == 'seller') {
+                            Map<String, dynamic> sellerData =
+                                await FirestoreService().read(
+                                    collection: 'sellers',
+                                    documentId: userProvider.user!.name);
+                            sellerData['games'].forEach((key, value) {
+                              FirestoreService().create(
+                                  collection: 'seller_games_data_2',
+                                  documentId: userProvider.user!.name,
+                                  data: {
+                                    'info': {'image': urlDownload}
+                                  },
+                                  subcollection: key,
+                                  subdocumentId: key);
+                              FirestoreService().create(
+                                  collection: 'seller_games_data',
+                                  documentId: key,
+                                  data: {
+                                    userProvider.user!.name: {
+                                      'info': {'image': urlDownload}
+                                    }
+                                  });
                             });
-                          });
+                          }
                         }
 
                         //name is changed
                         if (_Sname.text != userProvider.user!.name) {
-                          FirestoreService().create('users',
-                              userProvider.user!.uid, {'name': _Sname.text});
-                          FirestoreService().replaceDocumentnCollection(
-                              userProvider.user!.name, _Sname.text);
-                          userProvider.updateUser(name: _Sname.text);
+                          FirestoreService().create(
+                              collection: 'users',
+                              documentId: userProvider.user!.uid,
+                              data: {'name': _Sname.text});
+                          if (userProvider.user!.type == 'seller') {
+                            FirestoreService().replaceDocumentnCollection(
+                                userProvider.user!.name, _Sname.text);
+                            userProvider.updateUser(name: _Sname.text);
+                          }
                         }
                         Navigator.pop(context);
 
