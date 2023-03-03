@@ -59,6 +59,7 @@ class _ChatScreenState extends State<ChatScreen> {
     UserProvider userProvider =
         Provider.of<UserProvider>(context, listen: false);
     PlatformFile? pickedFile;
+    bool _loading = false;
 
     return Scaffold(
         appBar: AppBar(
@@ -200,7 +201,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                                       const EdgeInsets.only(
                                                           top: 5, bottom: 5),
                                                   child: msg['type'] == 'text'
-                                                      ? BubbleSpecialOne(
+                                                      ? BubbleNormal(
                                                           text: msg['content'],
                                                           isSender: isSender,
                                                           color:
@@ -216,36 +217,23 @@ class _ChatScreenState extends State<ChatScreen> {
                                                             msg['content'],
                                                             loadingBuilder:
                                                                 (context, child,
-                                                                    progress) {
-                                                              if (progress ==
+                                                                    loadingProgress) {
+                                                              if (loadingProgress !=
                                                                   null) {
-                                                                WidgetsBinding
-                                                                    .instance
-                                                                    .addPostFrameCallback(
-                                                                        (_) {
+                                                                    
+                                                                _scrollController
+                                                                    .animateTo(
                                                                   _scrollController
-                                                                      .animateTo(
-                                                                    _scrollController
-                                                                        .position
-                                                                        .maxScrollExtent,
-                                                                    duration: const Duration(
-                                                                        milliseconds:
-                                                                            1),
-                                                                    curve: Curves
-                                                                        .easeOut,
-                                                                  );
-                                                                });
+                                                                      .position
+                                                                      .maxScrollExtent,
+                                                                  duration: Duration(
+                                                                      milliseconds:
+                                                                          200),
+                                                                  curve: Curves
+                                                                      .easeOut,
+                                                                );
                                                               }
-                                                              return progress !=
-                                                                      null
-                                                                  ? const SizedBox(
-                                                                      height:
-                                                                          100,
-                                                                      child: Center(
-                                                                          child:
-                                                                              CircularProgressIndicator()),
-                                                                    )
-                                                                  : child;
+                                                              return child;
                                                             },
                                                           ),
                                                           color:
