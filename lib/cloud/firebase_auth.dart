@@ -4,7 +4,8 @@ import 'package:topup2p/main.dart';
 
 Future<void> signOut(context) async {
   await FirebaseAuth.instance.signOut();
-
+  //todo replace this with
+  //Restart.restartApp();
   Navigator.of(context).pushReplacement(
     MaterialPageRoute(
       builder: (_) => const Topup2p(),

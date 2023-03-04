@@ -197,7 +197,7 @@ class ProfileScreen extends StatelessWidget {
 
                           FirestoreService().create(
                               collection: 'sellers',
-                              documentId: userProvider.user!.name,
+                              documentId: userProvider.user!.uid,
                               data: forSellersMap);
                         }
                       }),

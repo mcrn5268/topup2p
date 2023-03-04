@@ -121,7 +121,7 @@ class _GameSellScreenState extends State<GameSellScreen> {
                                   padding:
                                       const EdgeInsets.fromLTRB(15, 0, 15, 0),
                                   child: shop['info']['image'] ==
-                                          'assets/images/store-placeholder.png'
+                                          'placeholder'
                                       ? Container(
                                           width: 100,
                                           decoration: BoxDecoration(
@@ -227,13 +227,9 @@ class _GameSellScreenState extends State<GameSellScreen> {
                                             children: [
                                               for (var key
                                                   in shop['mop'].keys) ...[
-                                                if (key == 'mop1' ||
-                                                    key == 'mop2' ||
-                                                    key == 'mop3') ...[
-                                                  Image.asset(
-                                                      'assets/images/MoP/${shop['mop'][key]}.png',
-                                                      width: 50)
-                                                ]
+                                                Image.asset(
+                                                    'assets/images/MoP/${shop['mop'][key]}.png',
+                                                    width: 50)
                                               ]
                                             ],
                                           ),

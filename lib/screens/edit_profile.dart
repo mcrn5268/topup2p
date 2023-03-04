@@ -34,13 +34,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       setState(() {
         _errorMessage = 'Shop name is required';
       });
-    } else {
-      final document = await FirestoreService()
-          .read(collection: 'sellers', documentId: value);
-      bool flag = document == null ? false : true;
-      setState(() {
-        _errorMessage = flag ? 'Shop name is already taken' : null;
-      });
     }
   }
 
@@ -118,19 +111,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               documentId: userProvider.user!.uid,
                               data: imageMap);
                           userProvider.updateUser(image: imageMap['image']);
+                          //if user is seller
                           if (userProvider.user!.type == 'seller') {
                             Map<String, dynamic> sellerData =
                                 await FirestoreService().read(
                                     collection: 'sellers',
-                                    documentId: userProvider.user!.name);
+                                    documentId: userProvider.user!.uid);
                             sellerData['games'].forEach((key, value) {
                               FirestoreService().create(
-                                  collection: 'seller_games_data_2',
+                                  collection: 'users',
                                   documentId: userProvider.user!.name,
                                   data: {
                                     'info': {'image': urlDownload}
                                   },
-                                  subcollection: key,
+                                  subcollection: 'games',
                                   subdocumentId: key);
                               FirestoreService().create(
                                   collection: 'seller_games_data',
@@ -146,15 +140,61 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
                         //name is changed
                         if (_Sname.text != userProvider.user!.name) {
+                          //purpose is because the processing of firestore is async and won't be using await
+                          //ifi not stored then userProvider.user!.name will be updated before being used by FirestoreService
+                          String oldName = userProvider.user!.name;
+                          //update seller_games_data and seller - games subcollection
+                          if (userProvider.user!.type == 'seller') {
+                            Map<String, dynamic> sellerData =
+                                await FirestoreService().read(
+                                    collection: 'sellers',
+                                    documentId: userProvider.user!.uid);
+                            sellerData['games'].forEach((key, value) async {
+                              //seller_games_data
+
+                              //read seller_games_data old data
+                              Map<String, dynamic> oldFieldSGD =
+                                  await FirestoreService().read(
+                                      collection: 'seller_games_data',
+                                      documentId: key);
+                              Map<String, dynamic> newField =
+                                  oldFieldSGD[oldName];
+                              newField['info']['name'] = _Sname.text;
+                              //write seller_games_data new data
+                              FirestoreService().create(
+                                  collection: 'seller_games_data',
+                                  documentId: key,
+                                  data: {_Sname.text: newField});
+
+                              //delete seller_games_data old data
+                              FirestoreService().deleteField(
+                                  collection: 'seller_games_data',
+                                  documentId: key,
+                                  field: oldName);
+
+                              //update users - subcollection
+                              FirestoreService().create(
+                                  collection: 'sellers',
+                                  documentId: userProvider.user!.uid,
+                                  data: {
+                                    'info': {'name': _Sname.text}
+                                  },
+                                  subcollection: 'games',
+                                  subdocumentId: key);
+                            });
+                            userProvider.updateUser(name: _Sname.text);
+                          }
+
+                          //update users collection
                           FirestoreService().create(
                               collection: 'users',
                               documentId: userProvider.user!.uid,
                               data: {'name': _Sname.text});
-                          if (userProvider.user!.type == 'seller') {
-                            FirestoreService().replaceDocumentnCollection(
-                                userProvider.user!.name, _Sname.text);
-                            userProvider.updateUser(name: _Sname.text);
-                          }
+                          //update sellers collection
+                          FirestoreService().create(
+                              collection: 'sellers',
+                              documentId: userProvider.user!.uid,
+                              data: {'name': _Sname.text});
                         }
                         Navigator.pop(context);
 

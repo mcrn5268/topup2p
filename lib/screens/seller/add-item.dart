@@ -66,8 +66,6 @@ class _AddItemSellState extends State<AddItemSell> {
             content: const Text(
                 'Rates must not be empty if you wish to add an item!')));
         _ratesFlag = false;
-      } else {
-        _ratesFlag = true;
       }
       setState(() {});
     }
@@ -104,10 +102,10 @@ class _AddItemSellState extends State<AddItemSell> {
               .itemExist(item);
       if (isAlreadyPosted) {
         itemDataMap = await FirestoreService().read(
-            collection: 'seller_games_data_2',
+            collection: 'sellers',
             documentId:
-                Provider.of<UserProvider>(context, listen: false).user!.name,
-            subcollection: gameName,
+                Provider.of<UserProvider>(context, listen: false).user!.uid,
+            subcollection: 'games',
             subdocumentId: gameName);
         if (itemDataMap.isNotEmpty) {
           setState(() {
@@ -418,7 +416,7 @@ class _AddItemSellState extends State<AddItemSell> {
                                       //add the game to sellers collection with status as enabled
                                       await FirestoreService().create(
                                           collection: 'sellers',
-                                          documentId: userProvider.user!.name,
+                                          documentId: userProvider.user!.uid,
                                           data: {
                                             'games': {
                                               _typeAheadController.text:
@@ -459,9 +457,7 @@ class _AddItemSellState extends State<AddItemSell> {
                                                     ? 'enabled'
                                                     : 'disabled',
                                             'name': userProvider.user!.name,
-                                            'image': await FirestoreService()
-                                                .getDownloadURL(
-                                                    userProvider.user!.uid)
+                                            'image': userProvider.user!.image_url
                                           }
                                         }
                                       };
@@ -481,17 +477,15 @@ class _AddItemSellState extends State<AddItemSell> {
                                                   : 'disabled',
                                           'uid': userProvider.user!.uid,
                                           'name': userProvider.user!.name,
-                                          'image': await FirestoreService()
-                                              .getDownloadURL(
-                                                  userProvider.user!.uid)
+                                          'image': userProvider.user!.image_url
                                         }
                                       };
                                       await FirestoreService().create(
-                                        collection: 'seller_games_data_2',
-                                        documentId: userProvider.user!.name,
+                                        collection: 'sellers',
+                                        documentId: userProvider.user!.uid,
                                         data: mapData2,
                                         subcollection:
-                                            _typeAheadController.text,
+                                            'games',
                                         subdocumentId:
                                             _typeAheadController.text,
                                         merge: false,

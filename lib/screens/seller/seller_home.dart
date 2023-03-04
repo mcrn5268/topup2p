@@ -66,12 +66,12 @@ class _SellerMainScreenState extends State<SellerMainScreen> {
               Center(
                 child: FutureBuilder(
                   future: FirestoreService().read(
-                      collection: 'seller_games_data_2',
+                      collection: 'sellers',
                       documentId:
                           Provider.of<UserProvider>(context, listen: false)
                               .user!
-                              .name,
-                      subcollection: game,
+                              .uid,
+                      subcollection: 'games',
                       subdocumentId: game),
                   builder: (BuildContext context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
@@ -199,7 +199,41 @@ class _SellerMainScreenState extends State<SellerMainScreen> {
                                   trailing: IconButton(
                                     icon: Icon(Icons.settings),
                                     onPressed: () async {
-                                      // your code here
+                                      final sellItems = await Navigator.push(
+                                        context,
+                                        PageRouteBuilder(
+                                          pageBuilder: (_, __, ___) =>
+                                              MultiProvider(
+                                            providers: [
+                                              ChangeNotifierProvider<
+                                                  SellItemsProvider>.value(
+                                                value: SellItemsProvider(),
+                                              ),
+                                              ChangeNotifierProvider<
+                                                  PaymentProvider>.value(
+                                                value: PaymentProvider(),
+                                              ),
+                                            ],
+                                            child: AddItemSell(
+                                                siProvider.Sitems,
+                                                paymentProvider.payments,
+                                                update: true,
+                                                game: item.name),
+                                          ),
+                                          transitionsBuilder: (_, a, __, c) =>
+                                              FadeTransition(
+                                                  opacity: a, child: c),
+                                        ),
+                                      );
+
+                                      if (sellItems != null) {
+                                        if (siProvider.Sitems.length !=
+                                            sellItems.length) {
+                                          siProvider.clearItems();
+                                          siProvider.addItems(sellItems);
+                                        }
+                                        setState(() {});
+                                      }
                                     },
                                   ),
                                 ),

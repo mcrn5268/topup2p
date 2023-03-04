@@ -8,7 +8,7 @@ import 'package:topup2p/cloud/firestore.dart';
 import 'package:topup2p/main.dart';
 import 'package:topup2p/providers/favorites_provider.dart';
 import 'dart:io';
-
+import 'package:restart_app/restart_app.dart';
 import 'package:topup2p/providers/user_provider.dart';
 import 'package:topup2p/utilities/image_file_utils.dart';
 import 'package:topup2p/utilities/models_utils.dart';
@@ -102,26 +102,33 @@ class _SellerRegisterScreenState extends State<SellerRegisterScreen> {
                       "name": _Sname.text,
                       "type": "seller",
                       "image": assetsPath,
-                      "image_url": urlDownload??'placeholder'
+                      "image_url": urlDownload ?? 'placeholder'
                     };
                     //update users info to sellers info (ex: name to shop name)
-                    await FirestoreService()
+                    FirestoreService()
                         .update('users', userProvider.user!.uid, updateData);
-                    await FirestoreService()
+                    FirestoreService()
                         .delete('user_games_data', userProvider.user!.uid);
-                    Provider.of<FavoritesProvider>(context, listen: false).clearFavorites();
+                    Provider.of<FavoritesProvider>(context, listen: false)
+                        .clearFavorites();
+                    FirestoreService().create(
+                        collection: 'sellers',
+                        documentId: userProvider.user!.uid,
+                        data: {'name': _Sname.text});
                     setState(() {
                       _isLoading = false;
                     });
-                    Navigator.pushReplacement(
-                      context,
-                      PageRouteBuilder(
-                        pageBuilder: (_, __, ___) => const Topup2p(),
-                        transitionsBuilder: (_, a, __, c) =>
-                            FadeTransition(opacity: a, child: c),
-                      ),
-                    );
-                    userProvider.updateUser(name:_Sname.text ,type:'seller' ,image:assetsPath);
+                    // Navigator.pushReplacement(
+                    //   context,
+                    //   PageRouteBuilder(
+                    //     pageBuilder: (_, __, ___) => const Topup2p(),
+                    //     transitionsBuilder: (_, a, __, c) =>
+                    //         FadeTransition(opacity: a, child: c),
+                    //   ),
+                    // );
+                    // userProvider.updateUser(
+                    //     name: _Sname.text, type: 'seller', image: assetsPath);
+                    Restart.restartApp();
                   }
                 },
                 style: ElevatedButton.styleFrom(
@@ -234,10 +241,9 @@ class _SellerRegisterScreenState extends State<SellerRegisterScreen> {
                               ),
                             ],
                           ),
-                          onTap: () {
-                            setState(() {
-                              pickedFile = selectImageFile() as PlatformFile?;
-                            });
+                          onTap: () async {
+                            pickedFile = await selectImageFile();
+                            setState(() {});
                           },
                         ),
                       ),

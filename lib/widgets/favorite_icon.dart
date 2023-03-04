@@ -43,7 +43,9 @@ class _FavoritesIconState extends State<FavoritesIcon> {
             onPressed: () {
               if (favProvider.isFavorite(itemObject)) {
                 FirestoreService().deleteField(
-                    'user_games_data', userProvider.user!.uid, widget.itemName);
+                    collection: 'user_games_data',
+                    documentId: userProvider.user!.uid,
+                    field: widget.itemName);
               } else {
                 FirestoreService().create(
                     collection: 'user_games_data',

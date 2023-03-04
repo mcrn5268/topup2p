@@ -72,8 +72,8 @@ class Topup2p extends StatelessWidget {
                 //toadd
                 return MultiProvider(
                   providers: [
-                    ChangeNotifierProvider(create: (_) => PaymentProvider()),
                     ChangeNotifierProvider(create: (_) => SellItemsProvider()),
+                    ChangeNotifierProvider(create: (_) => PaymentProvider()),
                   ],
                   child: SellerMain(),
                 );

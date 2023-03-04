@@ -24,7 +24,14 @@ class _SellerMainState extends State<SellerMain> {
   bool _isLoading = false;
   late int _currentIndex;
   final PageStorageBucket bucket = PageStorageBucket();
-  late final List<Widget> _children;
+  final List<Widget> _children = [
+    SellerMainScreen(),
+    MessagesScreen(),
+    ChangeNotifierProvider<SellItemsProvider>.value(
+      value: SellItemsProvider(),
+      child: ProfileScreen(),
+    ),
+  ];
 
   @override
   void initState() {
@@ -32,19 +39,13 @@ class _SellerMainState extends State<SellerMain> {
     _isLoading = true;
     readSellerFirestore();
     _currentIndex = widget.index ?? 0;
-
-    _children = [
-      SellerMainScreen(),
-      MessagesScreen(),
-      ProfileScreen(),
-    ];
   }
 
   Future<void> readSellerFirestore() async {
     Map<String, dynamic>? sellerData = await FirestoreService().read(
         collection: 'sellers',
         documentId:
-            Provider.of<UserProvider>(context, listen: false).user!.name);
+            Provider.of<UserProvider>(context, listen: false).user!.uid);
     if (sellerData != null) {
       //MoPs
       try {
@@ -94,31 +95,6 @@ class _SellerMainState extends State<SellerMain> {
 
   @override
   Widget build(BuildContext context) {
-    Widget _buildMessageIcon() {
-      return StreamBuilder(
-          stream: FirestoreService().getSeenStream(
-              Provider.of<UserProvider>(context, listen: false).user!.uid),
-          builder: (context, snapshot) {
-            return Stack(
-              children: [
-                Icon(Icons.message),
-                Visibility(
-                  visible: snapshot.hasData,
-                  child: Align(
-                    alignment: Alignment.topRight,
-                    child: Container(
-                      width: 10,
-                      height: 10,
-                      decoration: BoxDecoration(
-                          shape: BoxShape.circle, color: Colors.red),
-                    ),
-                  ),
-                )
-              ],
-            );
-          });
-    }
-
     return _isLoading
         ? const LoadingScreen()
         : Scaffold(
