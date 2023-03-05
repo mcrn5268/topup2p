@@ -2,7 +2,7 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:topup2p/providers/favorites_provider.dart';
-import 'package:topup2p/screens/user/seller.dart';
+import 'package:topup2p/screens/user/shop.dart';
 import 'package:topup2p/utilities/globals.dart';
 import 'package:topup2p/widgets/favorite_icon.dart';
 

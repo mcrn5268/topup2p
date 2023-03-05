@@ -123,58 +123,6 @@ class FirestoreService {
     }
   }
 
-  // Future<void> replaceDocumentnCollection(String old, String neww) async {
-  //   final oldData = await read(collection: 'sellers', documentId: old);
-  //   delete('sellers', old);
-  //   create(collection: 'sellers', documentId: neww, data: oldData);
-  //   renameSubcollection('seller_games_data', old, neww);
-  // }
-
-  // Future<void> renameSubcollection(
-  //   String collectionName,
-  //   String oldSubcollectionName,
-  //   String newSubcollectionName,
-  // ) async {
-  //   final collectionRef = _db.collection(collectionName);
-
-  //   final documents = await collectionRef.get();
-  //   for (final document in documents.docs) {
-  //     try {
-  //       final oldSubcollectionRef =
-  //           document.reference.collection(oldSubcollectionName);
-  //       final oldSubcollectionSnapshot =
-  //           await oldSubcollectionRef.limit(1).get();
-
-  //       if (oldSubcollectionSnapshot.docs.isNotEmpty) {
-  //         // Copy documents to new subcollection
-  //         final newSubcollectionRef =
-  //             document.reference.collection(newSubcollectionName);
-  //         final oldSubcollectionDocs = await oldSubcollectionRef.get();
-  //         final batch = _db.batch();
-  //         for (final oldDoc in oldSubcollectionDocs.docs) {
-  //           batch.set(newSubcollectionRef.doc(oldDoc.id), oldDoc.data());
-  //         }
-  //         await batch.commit();
-
-  //         // Delete old subcollection
-  //         await oldSubcollectionRef.get().then((querySnapshot) {
-  //           querySnapshot.docs.forEach((doc) async {
-  //             await doc.reference.delete();
-  //           });
-  //         });
-
-  //         // Create new subcollection
-  //         await document.reference
-  //             .collection(newSubcollectionName)
-  //             .doc()
-  //             .set({});
-  //       }
-  //     } catch (e) {
-  //       print('Error: $e');
-  //     }
-  //   }
-  // }
-
   Future<void> updateSubcollectionDocumentField(
     String collectionName,
     String subcollectionName,
@@ -201,19 +149,6 @@ class FirestoreService {
       }
     }
   }
-
-  // Future<String> getDownloadURL(String uid) async {
-  //   Reference ref = FirebaseStorage.instance.ref().child('assets/images/$uid');
-  //   ListResult result = await ref.listAll();
-  //   if (result.items.isNotEmpty) {
-  //     Reference fileRef = result.items.first;
-  //     String downloadUrl = await fileRef.getDownloadURL();
-  //     print('Download URL: $downloadUrl');
-  //     return downloadUrl;
-  //   } else {
-  //     return 'assets/images/store-placeholder.png';
-  //   }
-  // }
 
   Stream<DocumentSnapshot?> getSeenStream(String uid) {
     return FirebaseFirestore.instance
