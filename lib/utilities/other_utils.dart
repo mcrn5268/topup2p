@@ -1,11 +1,3 @@
-// List<Map<dynamic, dynamic>> mapToList(Map<String, dynamic> map) {
-//   return map.entries.map((entry) {
-//     return {
-//       'shop_name': entry.key,
-//       ...entry.value,
-//     };
-//   }).toList();
-// }
 import 'dart:math';
 
 //generate random ID for conversationID

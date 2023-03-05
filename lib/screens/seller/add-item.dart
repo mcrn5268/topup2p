@@ -376,6 +376,7 @@ class _AddItemSellState extends State<AddItemSell> {
                                 : isEnabled!
                                     ? 'enabled'
                                     : 'disabled',
+                            'uid': userProvider.user!.uid,
                             'name': userProvider.user!.name,
                             'image': userProvider.user!.image_url
                           }

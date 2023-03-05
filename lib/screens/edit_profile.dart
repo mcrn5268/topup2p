@@ -133,6 +133,26 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   });
                             });
                           }
+                          //update messages - image
+                          final forMessages = await FirestoreService().read(
+                              collection: 'messages',
+                              documentId: 'users_conversations',
+                              subcollection: userProvider.user!.uid);
+                          if (forMessages != null) {
+                            List<dynamic> documents = forMessages.docs;
+                            for (var document in documents) {
+
+                              FirestoreService().create(
+                                  collection: 'messages',
+                                  documentId: 'users',
+                                  data: {
+                                    'other_user': {'image': urlDownload}
+                                  },
+                                  subcollection: document.id,
+                                  subdocumentId:
+                                      document.data()!["conversationId"]);
+                            }
+                          }
                         }
 
                         //name is changed
@@ -192,6 +212,27 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               collection: 'sellers',
                               documentId: userProvider.user!.uid,
                               data: {'name': _Sname.text});
+
+                          //update messages - name
+                          final forMessages = await FirestoreService().read(
+                              collection: 'messages',
+                              documentId: 'users_conversations',
+                              subcollection: userProvider.user!.uid);
+                          if (forMessages != null) {
+                            List<dynamic> documents = forMessages.docs;
+                            for (var document in documents) {
+
+                              FirestoreService().create(
+                                  collection: 'messages',
+                                  documentId: 'users',
+                                  data: {
+                                    'other_user': {'name': _Sname.text}
+                                  },
+                                  subcollection: document.id,
+                                  subdocumentId:
+                                      document.data()!["conversationId"]);
+                            }
+                          }
                         }
                         Navigator.pop(context);
 
