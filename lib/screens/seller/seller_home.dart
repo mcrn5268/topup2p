@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
@@ -120,13 +119,223 @@ class _SellerMainScreenState extends State<SellerMainScreen> {
         Provider.of<SellItemsProvider>(context, listen: false);
     PaymentProvider paymentProvider =
         Provider.of<PaymentProvider>(context, listen: false);
+    Widget sellerHomeBody =
+        Consumer<SellItemsProvider>(builder: (context, siProvider, _) {
+      if (siProvider.Sitems.isNotEmpty) {
+        return ListView.builder(
+          key: ValueKey('seller-home-page-listview'),
+          //todo check in release mode if still lagging
+          controller: _scrollController,
+          //physics: NeverScrollableScrollPhysics(),
+          shrinkWrap: true,
+          itemCount: siProvider.Sitems.length,
+          itemBuilder: (context, index) {
+            //map
+            Map<Item, String> map = siProvider.Sitems[index];
+            //key
+            Item item = map.keys.first;
+            //value
+            String status = map.values.first;
+            return AnimationConfiguration.staggeredList(
+              position: index,
+              duration: const Duration(milliseconds: 375),
+              child: SlideAnimation(
+                verticalOffset: 50.0,
+                child: FadeInAnimation(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(10, 3, 10, 3),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            spreadRadius: 2,
+                            blurRadius: 5,
+                            offset: Offset(0, 2), // changes position of shadow
+                          ),
+                        ],
+                      ),
+                      child: InkWell(
+                        child: ListTile(
+                          title: Text('${item.name}  ⓘ'),
+                          subtitle: Text(
+                            '$status',
+                            style: TextStyle(
+                                color: status == 'disabled'
+                                    ? Colors.red
+                                    : Colors.grey),
+                          ),
+                          leading: ClipOval(
+                            child: ColorFiltered(
+                              colorFilter: (status == 'disabled')
+                                  ? ColorFilter.mode(
+                                      Colors.grey, BlendMode.saturation)
+                                  : ColorFilter.mode(
+                                      Colors.transparent, BlendMode.saturation),
+                              child: CircleAvatar(
+                                backgroundImage: AssetImage(
+                                    getImage('${item.name}', 'image')),
+                              ),
+                            ),
+                          ),
+                          trailing: IconButton(
+                            icon: Icon(Icons.settings),
+                            onPressed: () async {
+                              final sellItems = await Navigator.push(
+                                context,
+                                PageRouteBuilder(
+                                  pageBuilder: (_, __, ___) => MultiProvider(
+                                    providers: [
+                                      ChangeNotifierProvider<
+                                          SellItemsProvider>.value(
+                                        value: SellItemsProvider(),
+                                      ),
+                                      ChangeNotifierProvider<
+                                          PaymentProvider>.value(
+                                        value: PaymentProvider(),
+                                      ),
+                                    ],
+                                    child: AddItemSell(
+                                        Sitems: siProvider.Sitems,
+                                        payments: paymentProvider.payments,
+                                        update: true,
+                                        game: item.name),
+                                  ),
+                                  transitionsBuilder: (_, a, __, c) =>
+                                      FadeTransition(opacity: a, child: c),
+                                ),
+                              );
+
+                              if (sellItems != null) {
+                                if (siProvider.Sitems.length !=
+                                    sellItems.length) {
+                                  siProvider.clearItems();
+                                  siProvider.addItems(sellItems);
+                                }
+                                setState(() {});
+                              }
+                            },
+                          ),
+                        ),
+                        onTap: () {
+                          _showDialog(item.name);
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      } else {
+        return Center(
+            child: const Text(
+          "Click + To Post",
+          style: TextStyle(fontSize: 24),
+        ));
+      }
+    });
+    Widget scrollBackup = Positioned(
+        bottom: 100.0,
+        right: 16.0,
+        child: Visibility(
+            visible: _showScrollToTopButton,
+            child: FloatingActionButton(
+              onPressed: () {
+                _scrollController.animateTo(0,
+                    duration: Duration(milliseconds: 500),
+                    curve: Curves.easeInOut);
+              },
+              child: Icon(Icons.arrow_upward),
+            )));
+    Widget addItem = Positioned(
+      bottom: 15.0,
+      right: 16.0,
+      child: FloatingActionButton(
+        onPressed: () async {
+          if (Provider.of<PaymentProvider>(context, listen: false)
+              .payments
+              .isEmpty) {
+            ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: const Text('You must have a wallet')));
+
+            Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (_, __, ___) => MultiProvider(
+                  providers: [
+                    ChangeNotifierProvider<SellItemsProvider>.value(
+                      value: SellItemsProvider(),
+                    ),
+                    ChangeNotifierProvider<PaymentProvider>.value(
+                      value: PaymentProvider(),
+                    ),
+                  ],
+                  child: const SellerMain(index: 2),
+                ),
+                transitionsBuilder: (_, a, __, c) =>
+                    FadeTransition(opacity: a, child: c),
+              ),
+            );
+          } else if (Provider.of<PaymentProvider>(context, listen: false)
+              .payments
+              .any((payment) => payment.isEnabled == true)) {
+            final sellItems = await Navigator.push(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (_, __, ___) => MultiProvider(
+                  providers: [
+                    ChangeNotifierProvider<SellItemsProvider>.value(
+                      value: SellItemsProvider(),
+                    ),
+                    ChangeNotifierProvider<PaymentProvider>.value(
+                      value: PaymentProvider(),
+                    ),
+                  ],
+                  child: AddItemSell(
+                      Sitems: siProvider.Sitems,
+                      payments: paymentProvider.payments),
+                ),
+                transitionsBuilder: (_, a, __, c) =>
+                    FadeTransition(opacity: a, child: c),
+              ),
+            );
+            if (sellItems != null) {
+              if (siProvider.Sitems.length != sellItems.length) {
+                siProvider.clearItems();
+                siProvider.addItems(sellItems);
+              }
+              setState(() {});
+            }
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content:
+                    const Text('You must have at least 1 enabled wallet')));
+
+            Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (_, __, ___) => const SellerMain(index: 2),
+                transitionsBuilder: (_, a, __, c) =>
+                    FadeTransition(opacity: a, child: c),
+              ),
+            );
+          }
+        },
+        backgroundColor: Colors.blueGrey,
+        child: const Icon(Icons.add),
+      ),
+    );
     return Scaffold(
       appBar: AppBar(
           centerTitle: true,
           title: Text(
             'Games',
             style: TextStyle(
-              color: Colors.black, // try a different color here
+              color: Colors.black,
             ),
           ),
           shape: Border(bottom: BorderSide(color: Colors.grey, width: 1))),
@@ -135,223 +344,12 @@ class _SellerMainScreenState extends State<SellerMainScreen> {
         bucket: _bucket,
         child: Stack(
           children: [
-            Consumer<SellItemsProvider>(builder: (context, siProvider, _) {
-              if (siProvider.Sitems.isNotEmpty) {
-                return ListView.builder(
-                  key: ValueKey('seller-home-page-listview'),
-                  //todo check in release mode if still lagging
-                  controller: _scrollController,
-                  //physics: NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  itemCount: siProvider.Sitems.length,
-                  itemBuilder: (context, index) {
-                    //map
-                    Map<Item, String> map = siProvider.Sitems[index];
-                    //key
-                    Item item = map.keys.first;
-                    //value
-                    String status = map.values.first;
-                    return AnimationConfiguration.staggeredList(
-                      position: index,
-                      duration: const Duration(milliseconds: 375),
-                      child: SlideAnimation(
-                        verticalOffset: 50.0,
-                        child: FadeInAnimation(
-                          child: Padding(
-                            padding: const EdgeInsets.fromLTRB(10, 3, 10, 3),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(15),
-                                color: Colors.white,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.5),
-                                    spreadRadius: 2,
-                                    blurRadius: 5,
-                                    offset: Offset(
-                                        0, 2), // changes position of shadow
-                                  ),
-                                ],
-                              ),
-                              child: InkWell(
-                                child: ListTile(
-                                  title: Text('${item.name}  ⓘ'),
-                                  subtitle: Text(
-                                    '$status',
-                                    style: TextStyle(
-                                        color: status == 'disabled'
-                                            ? Colors.red
-                                            : Colors.grey),
-                                  ),
-                                  leading: ClipOval(
-                                    child: ColorFiltered(
-                                      colorFilter: (status == 'disabled')
-                                          ? ColorFilter.mode(
-                                              Colors.grey, BlendMode.saturation)
-                                          : ColorFilter.mode(Colors.transparent,
-                                              BlendMode.saturation),
-                                      child: CircleAvatar(
-                                        backgroundImage: AssetImage(
-                                            getImage('${item.name}', 'image')),
-                                      ),
-                                    ),
-                                  ),
-                                  trailing: IconButton(
-                                    icon: Icon(Icons.settings),
-                                    onPressed: () async {
-                                      final sellItems = await Navigator.push(
-                                        context,
-                                        PageRouteBuilder(
-                                          pageBuilder: (_, __, ___) =>
-                                              MultiProvider(
-                                            providers: [
-                                              ChangeNotifierProvider<
-                                                  SellItemsProvider>.value(
-                                                value: SellItemsProvider(),
-                                              ),
-                                              ChangeNotifierProvider<
-                                                  PaymentProvider>.value(
-                                                value: PaymentProvider(),
-                                              ),
-                                            ],
-                                            child: AddItemSell(
-                                                siProvider.Sitems,
-                                                paymentProvider.payments,
-                                                update: true,
-                                                game: item.name),
-                                          ),
-                                          transitionsBuilder: (_, a, __, c) =>
-                                              FadeTransition(
-                                                  opacity: a, child: c),
-                                        ),
-                                      );
-
-                                      if (sellItems != null) {
-                                        if (siProvider.Sitems.length !=
-                                            sellItems.length) {
-                                          siProvider.clearItems();
-                                          siProvider.addItems(sellItems);
-                                        }
-                                        setState(() {});
-                                      }
-                                    },
-                                  ),
-                                ),
-                                onTap: () {
-                                  _showDialog(item.name);
-                                },
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                );
-              } else {
-                return Center(
-                    child: const Text(
-                  "Click + To Post",
-                  style: TextStyle(fontSize: 24),
-                ));
-              }
-            }),
+            sellerHomeBody,
             Container(
               height: MediaQuery.of(context).size.height,
             ),
-            Positioned(
-                bottom:
-                    100.0, // Adjust this value to change the vertical position of the button
-                right: 16.0,
-                child: Visibility(
-                    visible: _showScrollToTopButton,
-                    child: FloatingActionButton(
-                      onPressed: () {
-                        _scrollController.animateTo(0,
-                            duration: Duration(milliseconds: 500),
-                            curve: Curves.easeInOut);
-                      },
-                      child: Icon(Icons.arrow_upward),
-                    ))),
-            Positioned(
-              bottom:
-                  15.0, // Adjust this value to change the vertical position of the button
-              right: 16.0,
-              child: FloatingActionButton(
-                onPressed: () async {
-                  if (Provider.of<PaymentProvider>(context, listen: false)
-                      .payments
-                      .isEmpty) {
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        content: const Text('You must have a wallet')));
-
-                    Navigator.pushReplacement(
-                      context,
-                      PageRouteBuilder(
-                        pageBuilder: (_, __, ___) => MultiProvider(
-                          providers: [
-                            ChangeNotifierProvider<SellItemsProvider>.value(
-                              value: SellItemsProvider(),
-                            ),
-                            ChangeNotifierProvider<PaymentProvider>.value(
-                              value: PaymentProvider(),
-                            ),
-                          ],
-                          child: const SellerMain(index: 2),
-                        ),
-                        transitionsBuilder: (_, a, __, c) =>
-                            FadeTransition(opacity: a, child: c),
-                      ),
-                    );
-                  } else if (Provider.of<PaymentProvider>(context,
-                          listen: false)
-                      .payments
-                      .any((payment) => payment.isEnabled == true)) {
-                    final sellItems = await Navigator.push(
-                      context,
-                      PageRouteBuilder(
-                        pageBuilder: (_, __, ___) => MultiProvider(
-                          providers: [
-                            ChangeNotifierProvider<SellItemsProvider>.value(
-                              value: SellItemsProvider(),
-                            ),
-                            ChangeNotifierProvider<PaymentProvider>.value(
-                              value: PaymentProvider(),
-                            ),
-                          ],
-                          child: AddItemSell(
-                              siProvider.Sitems, paymentProvider.payments),
-                        ),
-                        transitionsBuilder: (_, a, __, c) =>
-                            FadeTransition(opacity: a, child: c),
-                      ),
-                    );
-                    if (sellItems != null) {
-                      if (siProvider.Sitems.length != sellItems.length) {
-                        siProvider.clearItems();
-                        siProvider.addItems(sellItems);
-                      }
-                      setState(() {});
-                    }
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        content: const Text(
-                            'You must have at least 1 enabled wallet')));
-
-                    Navigator.pushReplacement(
-                      context,
-                      PageRouteBuilder(
-                        pageBuilder: (_, __, ___) => const SellerMain(index: 2),
-                        transitionsBuilder: (_, a, __, c) =>
-                            FadeTransition(opacity: a, child: c),
-                      ),
-                    );
-                  }
-                },
-                backgroundColor: Colors.blueGrey,
-                child: const Icon(Icons.add),
-              ),
-            ),
+            scrollBackup,
+            addItem
           ],
         ),
       ),

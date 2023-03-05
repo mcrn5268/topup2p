@@ -14,7 +14,7 @@ import 'package:topup2p/widgets/favorite_icon.dart';
 import 'package:topup2p/widgets/loading_screen.dart';
 
 class GameSellScreen extends StatefulWidget {
-  GameSellScreen(this.gameName, this.favorites, {super.key});
+  GameSellScreen({required this.gameName, required this.favorites, super.key});
   final String gameName;
   final List<Item> favorites;
   @override
@@ -36,9 +36,9 @@ class _GameSellScreenState extends State<GameSellScreen> {
             favProvider.addItems(widget.favorites);
             return Scaffold(
                 appBar: AppBarWidget(
-                  false,
-                  false,
-                  userProvider.user != null,
+                  home: false,
+                  search: false,
+                  isloggedin: userProvider.user != null,
                   fromGameSellScreen: favProvider.favorites,
                 ),
                 body: sellerBody(snapshot.data != null
@@ -65,7 +65,7 @@ class _GameSellScreenState extends State<GameSellScreen> {
               //height: 210.1,
               child: Image.asset(gameItem!.image_banner),
             ),
-            FavoritesIcon(widget.gameName, 50)
+            FavoritesIcon(itemName: widget.gameName,size: 50)
           ]),
           Flexible(
             child: ListView.builder(

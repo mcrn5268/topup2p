@@ -49,6 +49,8 @@ class _LoginScreenState extends State<LoginScreen> {
               errorText: _errorText,
             ),
             onChanged: (textt) {
+              //if there was an error and the user changed the text
+              //remove the errortext
               setState(() {
                 _errorText = null;
               });
@@ -61,6 +63,8 @@ class _LoginScreenState extends State<LoginScreen> {
               errorText: _errorText2,
             ),
             onChanged: (textt) {
+              //if there was an error and the user changed the text
+              //remove the errortext
               setState(() {
                 _errorText2 = null;
               });
@@ -86,11 +90,13 @@ class _LoginScreenState extends State<LoginScreen> {
                             _isLoading = true;
                           });
                           try {
+                            //Firebase sign in
                             UserCredential userCredential = await FirebaseAuth
                                 .instance
                                 .signInWithEmailAndPassword(
                                     email: _email.text, password: _pass.text);
                             if (mounted) {
+                              //sign in success
                               final userInfo = userCredential.user;
                               Provider.of<UserProvider>(context, listen: false)
                                   .signIn(userInfo);

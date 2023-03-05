@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
@@ -9,7 +8,6 @@ import 'package:topup2p/models/payment_model.dart';
 import 'package:topup2p/providers/payment_provider.dart';
 import 'package:topup2p/providers/sell_items_provder.dart';
 import 'package:topup2p/providers/user_provider.dart';
-import 'package:topup2p/screens/seller/seller_main.dart';
 import 'package:topup2p/utilities/globals.dart';
 import 'package:topup2p/utilities/image_file_utils.dart';
 import 'package:topup2p/utilities/models_utils.dart';
@@ -17,8 +15,12 @@ import 'package:topup2p/utilities/profile_image.dart';
 import 'package:topup2p/widgets/loading_screen.dart';
 
 class AddItemSell extends StatefulWidget {
-  const AddItemSell(this.Sitems, this.payments,
-      {this.update, this.game, super.key});
+  const AddItemSell(
+      {required this.Sitems,
+      required this.payments,
+      this.update,
+      this.game,
+      super.key});
   final bool? update;
   final String? game;
   final List<Map<Item, String>>? Sitems;
@@ -194,7 +196,248 @@ class _AddItemSellState extends State<AddItemSell> {
         ],
       ),
     );
+    Widget rateFields = Padding(
+      padding: const EdgeInsets.only(top: 30, bottom: 20),
+      child: Column(
+        children: [
+          Stack(
+            children: [
+              TypeAheadFormField(
+                textFieldConfiguration: TextFieldConfiguration(
+                  controller: _typeAheadController,
+                  decoration: InputDecoration(
+                    labelText: 'Select a game',
+                    border: OutlineInputBorder(),
+                  ),
+                  onSubmitted: (value) {
+                    if (value.isEmpty) {
+                      // If the field is empty, do nothing
+                      return;
+                    }
+                    final suggestions = itemsObjectList.where((option) => option
+                        .name
+                        .toLowerCase()
+                        .contains(value.toLowerCase()));
+                    if (suggestions.isNotEmpty) {
+                      // If there are suggestions, select the first one
+                      setState(() {
+                        _typeAheadController.text = suggestions.first.name;
+                        _isLoadingData = true;
+                        checkGame(suggestions.first.name);
+                        gameIconPath = gameIcon(_typeAheadController.text);
+                      });
+                    } else {
+                      // If there are no suggestions, clear the text field
+                      _typeAheadController.clear();
+                    }
+                    setState(() {
+                      gameIconPath = gameIcon(_typeAheadController.text);
+                    });
+                  },
+                ),
+                suggestionsCallback: (pattern) {
+                  return itemsObjectList.where((option) => option.name
+                      .toLowerCase()
+                      .contains(pattern.toLowerCase()));
+                },
+                itemBuilder: (context, suggestion) {
+                  return ListTile(
+                    title: Text(suggestion.name),
+                  );
+                },
+                onSuggestionSelected: (suggestion) {
+                  setState(() {
+                    _typeAheadController.text = suggestion.name;
+                    _isLoadingData = true;
+                    checkGame(suggestion.name);
+                    gameIconPath = gameIcon(_typeAheadController.text);
+                  });
+                },
+              ),
+              Visibility(
+                visible: _typeAheadController.text != '',
+                child: Positioned(
+                    right: 0,
+                    child: Container(
+                      height: 58,
+                      child: IconButton(
+                        onPressed: () => setState(() {
+                          _switchVisible = false;
+                          _typeAheadController.text = '';
+                          _cRate.forEach((controller) => controller.text = '');
+                        }),
+                        icon: Icon(Icons.close),
+                        color: Colors.grey,
+                      ),
+                    )),
+              )
+            ],
+          ),
+          GestureDetector(
+            onTap: () {
+              if (_typeAheadController.text == '') {
+                ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: const Text('Select a game first!')));
+              }
+            },
+            child: Stack(
+              children: [
+                Visibility(
+                  visible: true,
+                  child: Column(
+                    children: rowsList,
+                  ),
+                ),
+                if (_isLoadingData) ...[
+                  Padding(
+                    padding: const EdgeInsets.only(top: 15),
+                    child: Center(child: CircularProgressIndicator()),
+                  )
+                ]
+              ],
+            ),
+          ),
+          SizedBox(
+            height: 30,
+          ),
+          Stack(
+            children: [
+              Visibility(
+                visible: _typeAheadController.text != '',
+                child: ElevatedButton(
+                  onPressed: () async {
+                    _cRateValidation();
+                    //add item to provider and firestore
+                    //SellItemsProvider
+                    SellItemsProvider siProvider =
+                        Provider.of<SellItemsProvider>(context, listen: false);
+                    Item? item = getItemByName(_typeAheadController.text);
+                    if (siProvider.itemExist(item!)) {
+                      siProvider.updateItem(
+                          item, itemDataMap['info']['status']);
+                    } else {
+                      siProvider.addItem(item, 'enabled');
+                    }
 
+                    //Firestore
+                    if (_ratesFlag == true) {
+                      setState(() {
+                        _isLoading = true;
+                      });
+                      //rates
+                      Map<String, dynamic> ratesMap = {};
+                      for (var i = 0; i < _cRate.length / 2; i++) {
+                        if (_cRate[i].text.toString() != '') {
+                          if (_cRate[i + 6].text.toString() != '') {
+                            ratesMap['rate$i'] = {
+                              'php': '${_cRate[i].text.toString()}',
+                              'digGoods': '${_cRate[i + 6].text.toString()}',
+                            };
+                          }
+                        }
+                      }
+                      UserProvider userProvider =
+                          Provider.of<UserProvider>(context, listen: false);
+                      //add the game to sellers collection with status as enabled
+                      await FirestoreService().create(
+                          collection: 'sellers',
+                          documentId: userProvider.user!.uid,
+                          data: {
+                            'games': {
+                              _typeAheadController.text:
+                                  isEnabled! ? 'enabled' : 'disabled'
+                            }
+                          });
+                      //add the seller to game document as a collection
+                      //mop
+                      Map<String, dynamic> mopMap = {};
+                      for (int index = 0;
+                          index <
+                              Provider.of<PaymentProvider>(context,
+                                      listen: false)
+                                  .payments
+                                  .length;
+                          index++) {
+                        var item =
+                            Provider.of<PaymentProvider>(context, listen: false)
+                                .payments[index];
+                        if (item.isEnabled == true) {
+                          mopMap['mop$index'] = item.paymentname;
+                        }
+                      }
+                      ;
+                      final Map<String, dynamic> mapData = {
+                        userProvider.user!.name: {
+                          'mop': mopMap,
+                          'rates': ratesMap,
+                          'info': {
+                            'status': forButton == 'ADD'
+                                ? 'enabled'
+                                : isEnabled!
+                                    ? 'enabled'
+                                    : 'disabled',
+                            'name': userProvider.user!.name,
+                            'image': userProvider.user!.image_url
+                          }
+                        }
+                      };
+                      await FirestoreService().create(
+                        collection: 'seller_games_data',
+                        documentId: _typeAheadController.text,
+                        data: mapData,
+                      );
+                      final Map<String, dynamic> mapData2 = {
+                        'mop': mopMap,
+                        'rates': ratesMap,
+                        'info': {
+                          'status': forButton == 'ADD'
+                              ? 'enabled'
+                              : isEnabled!
+                                  ? 'enabled'
+                                  : 'disabled',
+                          'uid': userProvider.user!.uid,
+                          'name': userProvider.user!.name,
+                          'image': userProvider.user!.image_url
+                        }
+                      };
+                      await FirestoreService().create(
+                        collection: 'sellers',
+                        documentId: userProvider.user!.uid,
+                        data: mapData2,
+                        subcollection: 'games',
+                        subdocumentId: _typeAheadController.text,
+                        merge: false,
+                      );
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: const Text('Success')));
+                      setState(() {
+                        _isLoading = false;
+                      });
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    maximumSize:
+                        Size((MediaQuery.of(context).size.width / 2) - 75, 40),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                        side: const BorderSide(color: Colors.black)),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+                    child: Center(
+                      child: Text(
+                        forButton,
+                        style: TextStyle(fontSize: 20),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
     return Scaffold(
         appBar: AppBar(
           leading: IconButton(
@@ -253,279 +496,7 @@ class _AddItemSellState extends State<AddItemSell> {
                       child: getImage(context),
                     ),
                     const Divider(),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 30, bottom: 20),
-                      child: Column(
-                        children: [
-                          Stack(
-                            children: [
-                              TypeAheadFormField(
-                                textFieldConfiguration: TextFieldConfiguration(
-                                  controller: _typeAheadController,
-                                  decoration: InputDecoration(
-                                    labelText: 'Select a game',
-                                    border: OutlineInputBorder(),
-                                  ),
-                                  onSubmitted: (value) {
-                                    //_lostFocus = true;
-                                    if (value.isEmpty) {
-                                      // If the field is empty, do nothing
-                                      return;
-                                    }
-                                    final suggestions = itemsObjectList.where(
-                                        (option) => option.name
-                                            .toLowerCase()
-                                            .contains(value.toLowerCase()));
-                                    if (suggestions.isNotEmpty) {
-                                      // If there are suggestions, select the first one
-                                      setState(() {
-                                        _typeAheadController.text =
-                                            suggestions.first.name;
-                                        _isLoadingData = true;
-                                        checkGame(suggestions.first.name);
-                                        gameIconPath =
-                                            gameIcon(_typeAheadController.text);
-                                      });
-                                    } else {
-                                      // If there are no suggestions, clear the text field
-                                      _typeAheadController.clear();
-                                    }
-                                    setState(() {
-                                      gameIconPath =
-                                          gameIcon(_typeAheadController.text);
-                                    });
-                                  },
-                                ),
-                                suggestionsCallback: (pattern) {
-                                  return itemsObjectList.where((option) =>
-                                      option.name
-                                          .toLowerCase()
-                                          .contains(pattern.toLowerCase()));
-                                },
-                                itemBuilder: (context, suggestion) {
-                                  return ListTile(
-                                    title: Text(suggestion.name),
-                                  );
-                                },
-                                onSuggestionSelected: (suggestion) {
-                                  setState(() {
-                                    _typeAheadController.text = suggestion.name;
-                                    _isLoadingData = true;
-                                    checkGame(suggestion.name);
-                                    gameIconPath =
-                                        gameIcon(_typeAheadController.text);
-                                  });
-                                },
-                              ),
-                              Visibility(
-                                visible: _typeAheadController.text != '',
-                                child: Positioned(
-                                    right: 0,
-                                    child: Container(
-                                      height: 58,
-                                      child: IconButton(
-                                        onPressed: () => setState(() {
-                                          _switchVisible = false;
-                                          _typeAheadController.text = '';
-                                          _cRate.forEach((controller) =>
-                                              controller.text = '');
-                                        }),
-                                        icon: Icon(Icons.close),
-                                        color: Colors.grey,
-                                      ),
-                                    )),
-                              )
-                            ],
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              if (_typeAheadController.text == '') {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                        content: const Text(
-                                            'Select a game first!')));
-                              }
-                            },
-                            child: Stack(
-                              children: [
-                                Visibility(
-                                  visible: true,
-                                  child: Column(
-                                    children: rowsList,
-                                  ),
-                                ),
-                                if (_isLoadingData) ...[
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 15),
-                                    child: Center(
-                                        child: CircularProgressIndicator()),
-                                  )
-                                ]
-                              ],
-                            ),
-                          ),
-                          SizedBox(
-                            height: 30,
-                          ),
-                          Stack(
-                            children: [
-                              Visibility(
-                                visible: _typeAheadController.text != '',
-                                child: ElevatedButton(
-                                  onPressed: () async {
-                                    _cRateValidation();
-                                    //add item to provider and firestore
-                                    //SellItemsProvider
-                                    SellItemsProvider siProvider =
-                                        Provider.of<SellItemsProvider>(context,
-                                            listen: false);
-                                    Item? item = getItemByName(
-                                        _typeAheadController.text);
-                                    if (siProvider.itemExist(item!)) {
-                                      siProvider.updateItem(
-                                          item, itemDataMap['info']['status']);
-                                    } else {
-                                      siProvider.addItem(item, 'enabled');
-                                    }
-
-                                    //Firestore
-                                    if (_ratesFlag == true) {
-                                      setState(() {
-                                        _isLoading = true;
-                                      });
-                                      //rates
-                                      Map<String, dynamic> ratesMap = {};
-                                      for (var i = 0;
-                                          i < _cRate.length / 2;
-                                          i++) {
-                                        if (_cRate[i].text.toString() != '') {
-                                          if (_cRate[i + 6].text.toString() !=
-                                              '') {
-                                            ratesMap['rate$i'] = {
-                                              'php':
-                                                  '${_cRate[i].text.toString()}',
-                                              'digGoods':
-                                                  '${_cRate[i + 6].text.toString()}',
-                                            };
-                                          }
-                                        }
-                                      }
-                                      UserProvider userProvider =
-                                          Provider.of<UserProvider>(context,
-                                              listen: false);
-                                      //add the game to sellers collection with status as enabled
-                                      await FirestoreService().create(
-                                          collection: 'sellers',
-                                          documentId: userProvider.user!.uid,
-                                          data: {
-                                            'games': {
-                                              _typeAheadController.text:
-                                                  isEnabled!
-                                                      ? 'enabled'
-                                                      : 'disabled'
-                                            }
-                                          });
-                                      //add the seller to game document as a collection
-                                      //mop
-                                      Map<String, dynamic> mopMap = {};
-                                      for (int index = 0;
-                                          index <
-                                              Provider.of<PaymentProvider>(
-                                                      context,
-                                                      listen: false)
-                                                  .payments
-                                                  .length;
-                                          index++) {
-                                        var item = Provider.of<PaymentProvider>(
-                                                context,
-                                                listen: false)
-                                            .payments[index];
-                                        if (item.isEnabled == true) {
-                                          mopMap['mop$index'] =
-                                              item.paymentname;
-                                        }
-                                      }
-                                      ;
-                                      final Map<String, dynamic> mapData = {
-                                        userProvider.user!.name: {
-                                          'mop': mopMap,
-                                          'rates': ratesMap,
-                                          'info': {
-                                            'status': forButton == 'ADD'
-                                                ? 'enabled'
-                                                : isEnabled!
-                                                    ? 'enabled'
-                                                    : 'disabled',
-                                            'name': userProvider.user!.name,
-                                            'image': userProvider.user!.image_url
-                                          }
-                                        }
-                                      };
-                                      await FirestoreService().create(
-                                        collection: 'seller_games_data',
-                                        documentId: _typeAheadController.text,
-                                        data: mapData,
-                                      );
-                                      final Map<String, dynamic> mapData2 = {
-                                        'mop': mopMap,
-                                        'rates': ratesMap,
-                                        'info': {
-                                          'status': forButton == 'ADD'
-                                              ? 'enabled'
-                                              : isEnabled!
-                                                  ? 'enabled'
-                                                  : 'disabled',
-                                          'uid': userProvider.user!.uid,
-                                          'name': userProvider.user!.name,
-                                          'image': userProvider.user!.image_url
-                                        }
-                                      };
-                                      await FirestoreService().create(
-                                        collection: 'sellers',
-                                        documentId: userProvider.user!.uid,
-                                        data: mapData2,
-                                        subcollection:
-                                            'games',
-                                        subdocumentId:
-                                            _typeAheadController.text,
-                                        merge: false,
-                                      );
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(SnackBar(
-                                              content: const Text('Success')));
-                                      setState(() {
-                                        _isLoading = false;
-                                      });
-                                    }
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    maximumSize: Size(
-                                        (MediaQuery.of(context).size.width /
-                                                2) -
-                                            75,
-                                        40),
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(30),
-                                        side: const BorderSide(
-                                            color: Colors.black)),
-                                  ),
-                                  child: Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(0, 10, 0, 10),
-                                    child: Center(
-                                      child: Text(
-                                        forButton,
-                                        style: TextStyle(fontSize: 20),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    )
+                    rateFields,
                   ],
                 ),
               ));

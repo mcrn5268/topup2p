@@ -8,6 +8,7 @@
 // }
 import 'dart:math';
 
+//generate random ID for conversationID
 String generateID() {
   final random = Random();
   const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
@@ -15,6 +16,7 @@ String generateID() {
       10, (_) => chars.codeUnitAt(random.nextInt(chars.length))));
 }
 
+//map to list for shops that are enabled
 List<Map> mapToList(Map<String, dynamic> map) {
   return map.entries
       .where((entry) => entry.value['info']['status'] == 'enabled')

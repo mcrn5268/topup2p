@@ -4,8 +4,8 @@ import 'package:topup2p/widgets/appbar/allwidgets.dart';
 import 'package:topup2p/widgets/appbar/signoutbutton.dart';
 
 class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
-  const AppBarWidget(this.home, this.search, this.isloggedin,
-      {this.fromProfile, this.fromGameSellScreen, super.key});
+  const AppBarWidget({required this.home, required this.search, required this.isloggedin,
+      this.fromProfile, this.fromGameSellScreen, super.key});
   final bool home;
   final bool search;
   final bool isloggedin;

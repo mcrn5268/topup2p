@@ -1,15 +1,22 @@
 import 'dart:ui';
 import 'package:topup2p/models/item_model.dart';
 
+//for size of device
 var pixelRatio = window.devicePixelRatio;
 var logicalScreenSize = window.physicalSize / pixelRatio;
 var logicalWidth = logicalScreenSize.width;
 var logicalHeight = logicalScreenSize.height;
+
+//favorited icons
 final Map<bool, String> icon = {
   true: 'assets/icons/bookmark-icon-yellow.png',
   false: 'assets/icons/bookmark-icon-white.png'
 };
+
+//items objects list
 List<Item> itemsObjectList = [];
+
+//constant items list
 List<Map<String, dynamic>> productItemsMap = [
   {
     'name': 'Mobile Legends',

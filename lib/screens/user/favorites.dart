@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
 import 'package:topup2p/providers/favorites_provider.dart';
-import 'package:topup2p/screens/user/shop.dart';
 import 'package:topup2p/screens/user/user_home.dart';
 import 'package:topup2p/utilities/globals.dart';
 import 'package:topup2p/widgets/favorite_icon.dart';
 import 'package:topup2p/widgets/favorite_placeholder.dart';
 
+//todo
 bool RVisible = false;
 bool LVisible = false;
 
@@ -83,15 +83,14 @@ class _FavoritesListState extends State<FavoritesList>
                           child: SizedBox(
                             width: 114.5,
                             child: Card(
-                              //key: ValueKey(widget.name),
                               elevation: 0,
                               color: Colors.transparent,
                               child: Stack(children: [
                                 GestureDetector(
                                   onTap: () {
-                                    GameItemScreenNavigator(
+                                    GameItemScreenNavigator(name:
                                         favProvider.favorites[index].name,
-                                        true);
+                                       flag: true);
                                   },
                                   child: Column(
                                     children: [
@@ -108,7 +107,7 @@ class _FavoritesListState extends State<FavoritesList>
                                                 spreadRadius: 2,
                                                 blurRadius: 5,
                                                 offset: Offset(0,
-                                                    2), // changes position of shadow
+                                                    2), 
                                               ),
                                             ],
                                           ),
@@ -140,8 +139,8 @@ class _FavoritesListState extends State<FavoritesList>
                                     ],
                                   ),
                                 ),
-                                FavoritesIcon(
-                                    favProvider.favorites[index].name, 20)
+                                FavoritesIcon(itemName:
+                                    favProvider.favorites[index].name,size: 20)
                               ]),
                             ),
                           ),

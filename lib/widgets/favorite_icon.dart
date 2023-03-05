@@ -6,14 +6,13 @@ import 'package:topup2p/models/item_model.dart';
 import 'package:topup2p/providers/favorites_provider.dart';
 import 'package:topup2p/providers/user_provider.dart';
 import 'package:topup2p/screens/user/favorites.dart';
-import 'package:topup2p/screens/user/user_main.dart';
 import 'package:topup2p/utilities/globals.dart';
 import 'package:topup2p/utilities/models_utils.dart';
 
 class FavoritesIcon extends StatefulWidget {
   final String itemName;
   final double size;
-  const FavoritesIcon(this.itemName, this.size, {super.key});
+  const FavoritesIcon({required this.itemName, required this.size, super.key});
 
   @override
   State<FavoritesIcon> createState() => _FavoritesIconState();

@@ -38,7 +38,6 @@ class _GamesListState extends State<GamesList> {
     gameContext = context;
     return Column(
       children: [
-        //change to slivergrid
         GridView.count(
           physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
@@ -63,7 +62,7 @@ class _GamesListState extends State<GamesList> {
                         child: Stack(children: [
                           GestureDetector(
                             onTap: () {
-                              GameItemScreenNavigator(item.name, true);
+                              GameItemScreenNavigator(name: item.name, flag: true);
                             },
                             child: Column(
                               children: [
@@ -78,7 +77,7 @@ class _GamesListState extends State<GamesList> {
                                           spreadRadius: 2,
                                           blurRadius: 5,
                                           offset: Offset(0,
-                                              2), // changes position of shadow
+                                              2),
                                         ),
                                       ],
                                     ),
@@ -91,7 +90,6 @@ class _GamesListState extends State<GamesList> {
                                 Expanded(
                                   child: Container(
                                     width: double.infinity,
-                                    //color: Colors.grey,
                                     child: Column(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
@@ -107,7 +105,7 @@ class _GamesListState extends State<GamesList> {
                               ],
                             ),
                           ),
-                          FavoritesIcon(item.name, 35)
+                          FavoritesIcon(itemName: item.name,size: 35)
                         ]),
                       ),
                     ),
@@ -132,10 +130,10 @@ class _GamesListState extends State<GamesList> {
   }
 }
 
-//to fix - purpose ontap for main, favorites and search game item
+//purpose ontap for main, favorites and search game item
 //why? search item won't work well bec of pushreplacement
 
-Future<void> GameItemScreenNavigator(String name, bool flag) async {
+Future<void> GameItemScreenNavigator({required String name, required bool flag}) async {
   FavoritesProvider favProvider =
       Provider.of<FavoritesProvider>(gameContext!, listen: false);
   if (flag == true) {
@@ -145,7 +143,7 @@ Future<void> GameItemScreenNavigator(String name, bool flag) async {
         pageBuilder: (_, __, ___) =>
             ChangeNotifierProvider<FavoritesProvider>.value(
           value: FavoritesProvider(),
-          child: GameSellScreen(name, favProvider.favorites),
+          child: GameSellScreen(gameName: name, favorites: favProvider.favorites),
         ),
         transitionsBuilder: (_, a, __, c) =>
             FadeTransition(opacity: a, child: c),
@@ -163,7 +161,7 @@ Future<void> GameItemScreenNavigator(String name, bool flag) async {
         pageBuilder: (_, __, ___) =>
             ChangeNotifierProvider<FavoritesProvider>.value(
           value: FavoritesProvider(),
-          child: GameSellScreen(name, favProvider.favorites),
+          child: GameSellScreen(gameName: name, favorites: favProvider.favorites),
         ),
         transitionsBuilder: (_, a, __, c) =>
             FadeTransition(opacity: a, child: c),

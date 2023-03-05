@@ -12,6 +12,7 @@ import 'package:topup2p/utilities/profile_image.dart';
 import 'package:topup2p/widgets/appbar/messagebutton.dart';
 import 'package:topup2p/widgets/appbar/signoutbutton.dart';
 
+//this is shared screen for both user type normal and seller
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
@@ -19,6 +20,7 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     PaymentProvider? paymentProvider;
     UserProvider userProvider = Provider.of<UserProvider>(context);
+    //if user type seller add PaymentProvider
     if (Provider.of<UserProvider>(context, listen: false).user!.type ==
         'seller') {
       try {
@@ -27,226 +29,230 @@ class ProfileScreen extends StatelessWidget {
         print('Probably just transitioned from user to seller | $e');
       }
     }
+    Widget profileHead = Stack(
+      alignment: Alignment.center,
+      children: [
+        CustomPaint(
+          child: Container(
+            width: MediaQuery.of(context).size.width,
+            height: 350,
+          ),
+          painter: HeaderCurvedContainer(),
+        ),
+        Positioned(
+          top: 0,
+          child: Padding(
+            padding: const EdgeInsets.only(right: 8.0, top: 10),
+            child: Container(
+              width: MediaQuery.of(context).size.width,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  //if user type is normal show back button
+                  if (userProvider.user!.type == 'normal') ...[
+                    Expanded(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          IconButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              icon: Icon(Icons.arrow_back_ios_outlined,
+                                  color: Colors.white)),
+                        ],
+                      ),
+                    ),
+                    const MessageButton(fromProfile: true),
+                  ],
+                  const SignoutButton(),
+                ],
+              ),
+            ),
+          ),
+        ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Text(
+                userProvider.user!.name,
+                style: TextStyle(
+                  fontSize: 35.0,
+                  letterSpacing: 1.5,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+            CircleAvatar(
+                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                radius: 80,
+                child: getImage(context)),
+          ],
+        ),
+      ],
+    );
+    Widget profileBody = Padding(
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+      child: Column(
+        children: [
+          InkWell(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Icon(Icons.edit, color: Colors.grey),
+                Text('Edit Profile')
+              ],
+            ),
+            onTap: () {
+              Navigator.push(
+                context,
+                PageRouteBuilder(
+                  pageBuilder: (_, __, ___) => MultiProvider(
+                    providers: [
+                      ChangeNotifierProvider<SellItemsProvider>.value(
+                        value: SellItemsProvider(),
+                      ),
+                      ChangeNotifierProvider<PaymentProvider>.value(
+                        value: PaymentProvider(),
+                      ),
+                    ],
+                    child: const EditProfileScreen(),
+                  ),
+                  transitionsBuilder: (_, a, __, c) =>
+                      FadeTransition(opacity: a, child: c),
+                ),
+              );
+            },
+          ),
+          //different icon for different user type
+          ListTile(
+            leading: Icon(userProvider.user!.type == 'normal'
+                ? Icons.person
+                : Icons.storefront),
+            title: Text(userProvider.user!.name),
+          ),
+          const Divider(),
+          //todo
+          ListTile(
+            leading: Icon(Icons.phone_android),
+            title: Text('+639 999 9999'),
+          ),
+          const Divider(),
+          ListTile(
+            leading: Icon(Icons.email),
+            title: Text(userProvider.user!.email),
+          ),
+          const Divider(),
+          //if user type seller show Wallets list tile
+          if (userProvider.user!.type == 'seller') ...[
+            InkWell(
+                child: ListTile(
+                  leading: Icon(Icons.wallet),
+                  title: const Text("Wallets"),
+                  trailing: Icon(Icons.arrow_forward_ios_outlined),
+                ),
+                onTap: () async {
+                  final paymentsList = await Navigator.push(
+                    context,
+                    PageRouteBuilder(
+                      pageBuilder: (_, __, ___) =>
+                          ChangeNotifierProvider<PaymentProvider>.value(
+                        value: PaymentProvider(),
+                        child: SellerWalletsScreen(
+                            payments: paymentProvider!.payments),
+                      ),
+                      transitionsBuilder: (_, a, __, c) =>
+                          FadeTransition(opacity: a, child: c),
+                    ),
+                  );
+                  //after navigator.pop check if payment has been added
+                  //if yes then update both provider and firestore
+                  if (paymentsList != null) {
+                    //add to provider
+                    paymentProvider!.addAllPayments(paymentsList);
+                    //add to firestore
+                    Map<String, dynamic> forSellersMap = {};
+
+                    for (int index = 0;
+                        index < paymentProvider.payments.length;
+                        index++) {
+                      Map<String, dynamic> paymentMap = {
+                        'account_name':
+                            paymentProvider.payments[index].accountname,
+                        'account_number':
+                            paymentProvider.payments[index].accountnumber,
+                        'status': paymentProvider.payments[index].isEnabled
+                            ? 'enabled'
+                            : 'disabled'
+                      };
+
+                      String paymentName =
+                          paymentProvider.payments[index].paymentname;
+                      forSellersMap['MoP'] ??=
+                          {}; // Initialize 'MoP' map if it doesn't exist
+                      forSellersMap['MoP'][paymentName] ??=
+                          {}; // Initialize payment map if it doesn't exist
+                      forSellersMap['MoP'][paymentName]
+                          .addAll(paymentMap); // Add payment map to 'MoP'
+                    }
+
+                    FirestoreService().create(
+                        collection: 'sellers',
+                        documentId: userProvider.user!.uid,
+                        data: forSellersMap);
+                  }
+                }),
+            const Divider(),
+          ],
+        ],
+      ),
+    );
+    Widget wantToSell = Padding(
+      padding: const EdgeInsets.fromLTRB(0, 50, 0, 30),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          InkWell(
+            child: RichText(
+              textScaleFactor: MediaQuery.of(context).textScaleFactor,
+              textAlign: TextAlign.center,
+              text: TextSpan(
+                style: const TextStyle(fontSize: 15, color: Colors.black),
+                children: const [
+                  TextSpan(
+                    text: 'Want to sell?',
+                    style: TextStyle(decoration: TextDecoration.underline),
+                  ),
+                ],
+              ),
+            ),
+            onTap: () {
+              Navigator.push(
+                context,
+                PageRouteBuilder(
+                  pageBuilder: (_, __, ___) =>
+                      ChangeNotifierProvider<FavoritesProvider>.value(
+                    value: FavoritesProvider(),
+                    child: const SellerRegisterScreen(),
+                  ),
+                  transitionsBuilder: (_, a, __, c) =>
+                      FadeTransition(opacity: a, child: c),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    );
     return SafeArea(
       child: Scaffold(
         body: ListView(children: [
-          Stack(
-            alignment: Alignment.center,
-            children: [
-              CustomPaint(
-                child: Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: 350,
-                ),
-                painter: HeaderCurvedContainer(),
-              ),
-              Positioned(
-                top: 0,
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 8.0, top: 10),
-                  child: Container(
-                    width: MediaQuery.of(context).size.width,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        if (userProvider.user!.type == 'normal') ...[
-                          Expanded(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                IconButton(
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    },
-                                    icon: Icon(Icons.arrow_back_ios_outlined,
-                                        color: Colors.white)),
-                              ],
-                            ),
-                          ),
-                          const MessageButton(fromProfile: true),
-                        ],
-                        const SignoutButton(),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: Text(
-                      userProvider.user!.name,
-                      style: TextStyle(
-                        fontSize: 35.0,
-                        letterSpacing: 1.5,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                  CircleAvatar(
-                      backgroundColor:
-                          Theme.of(context).scaffoldBackgroundColor,
-                      radius: 80,
-                      child: getImage(context)),
-                ],
-              ),
-            ],
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-            child: Column(
-              children: [
-                InkWell(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Icon(Icons.edit, color: Colors.grey),
-                      Text('Edit Profile')
-                    ],
-                  ),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      PageRouteBuilder(
-                        pageBuilder: (_, __, ___) => MultiProvider(
-                          providers: [
-                            ChangeNotifierProvider<SellItemsProvider>.value(
-                              value: SellItemsProvider(),
-                            ),
-                            ChangeNotifierProvider<PaymentProvider>.value(
-                              value: PaymentProvider(),
-                            ),
-                          ],
-                          child: const EditProfileScreen(),
-                        ),
-                        transitionsBuilder: (_, a, __, c) =>
-                            FadeTransition(opacity: a, child: c),
-                      ),
-                    );
-                  },
-                ),
-                ListTile(
-                  leading: Icon(userProvider.user!.type == 'normal'
-                      ? Icons.person
-                      : Icons.storefront),
-                  title: Text(userProvider.user!.name),
-                ),
-                const Divider(),
-                ListTile(
-                  leading: Icon(Icons.phone_android),
-                  title: Text('+639 999 9999'),
-                ),
-                const Divider(),
-                ListTile(
-                  leading: Icon(Icons.email),
-                  title: Text(userProvider.user!.email),
-                ),
-                const Divider(),
-                if (userProvider.user!.type == 'seller') ...[
-                  InkWell(
-                      child: ListTile(
-                        leading: Icon(Icons.wallet),
-                        title: const Text("Wallets"),
-                        trailing: Icon(Icons.arrow_forward_ios_outlined),
-                      ),
-                      onTap: () async {
-                        final paymentsList = await Navigator.push(
-                          context,
-                          PageRouteBuilder(
-                            pageBuilder: (_, __, ___) =>
-                                ChangeNotifierProvider<PaymentProvider>.value(
-                              value: PaymentProvider(),
-                              child: SellerWalletsScreen(
-                                  paymentProvider!.payments),
-                            ),
-                            transitionsBuilder: (_, a, __, c) =>
-                                FadeTransition(opacity: a, child: c),
-                          ),
-                        );
-                        if (paymentsList != null) {
-                          //add to provider
-                          paymentProvider!.addAllPayments(paymentsList);
-                          //add to firestore
-                          Map<String, dynamic> forSellersMap = {};
-
-                          for (int index = 0;
-                              index < paymentProvider.payments.length;
-                              index++) {
-                            Map<String, dynamic> paymentMap = {
-                              'account_name':
-                                  paymentProvider.payments[index].accountname,
-                              'account_number':
-                                  paymentProvider.payments[index].accountnumber,
-                              'status':
-                                  paymentProvider.payments[index].isEnabled
-                                      ? 'enabled'
-                                      : 'disabled'
-                            };
-
-                            String paymentName =
-                                paymentProvider.payments[index].paymentname;
-                            forSellersMap['MoP'] ??=
-                                {}; // Initialize 'MoP' map if it doesn't exist
-                            forSellersMap['MoP'][paymentName] ??=
-                                {}; // Initialize payment map if it doesn't exist
-                            forSellersMap['MoP'][paymentName]
-                                .addAll(paymentMap); // Add payment map to 'MoP'
-                          }
-
-                          FirestoreService().create(
-                              collection: 'sellers',
-                              documentId: userProvider.user!.uid,
-                              data: forSellersMap);
-                        }
-                      }),
-                  const Divider(),
-                ],
-              ],
-            ),
-          ),
-          if (userProvider.user!.type == 'normal') ...[
-            Padding(
-              padding: const EdgeInsets.fromLTRB(0, 50, 0, 30),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  InkWell(
-                    child: RichText(
-                      textScaleFactor: MediaQuery.of(context).textScaleFactor,
-                      textAlign: TextAlign.center,
-                      text: TextSpan(
-                        style:
-                            const TextStyle(fontSize: 15, color: Colors.black),
-                        children: const [
-                          TextSpan(
-                            text: 'Want to sell?',
-                            style:
-                                TextStyle(decoration: TextDecoration.underline),
-                          ),
-                        ],
-                      ),
-                    ),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        PageRouteBuilder(
-                          pageBuilder: (_, __, ___) =>
-                              ChangeNotifierProvider<FavoritesProvider>.value(
-                            value: FavoritesProvider(),
-                            child: const SellerRegisterScreen(),
-                          ),
-                          transitionsBuilder: (_, a, __, c) =>
-                              FadeTransition(opacity: a, child: c),
-                        ),
-                      );
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ]
+          profileHead,
+          profileBody,
+          //if user type normal show an option where they can be a seller
+          if (userProvider.user!.type == 'normal') ...[wantToSell]
         ]),
       ),
     );

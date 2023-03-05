@@ -47,12 +47,6 @@ class Topup2p extends StatelessWidget {
             toolbarHeight: 66,
           ),
           primarySwatch: Colors.blueGrey,
-          // pageTransitionsTheme: PageTransitionsTheme(
-          //   builders: {
-          //     TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
-          //     TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
-          //   },
-          // ),
         ),
         home: Consumer<UserProvider>(
           builder: (context, UserProvider, _) {
@@ -69,7 +63,6 @@ class Topup2p extends StatelessWidget {
                   child: UserMainScreen(),
                 );
               } else if (UserProvider.user!.type == 'seller') {
-                //toadd
                 return MultiProvider(
                   providers: [
                     ChangeNotifierProvider(create: (_) => SellItemsProvider()),

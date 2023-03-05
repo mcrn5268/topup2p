@@ -1,7 +1,5 @@
 import 'dart:async';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:topup2p/providers/user_provider.dart';
@@ -73,8 +71,8 @@ class FirestoreService {
   }
 
   Future<void> update(
-      String collection, String documentId, Map<String, dynamic> data,
-      {String? subcollection, String? subdocumentId}) async {
+     { required String collection, required String documentId, required Map<String, dynamic> data,
+      String? subcollection, String? subdocumentId}) async {
     if (subcollection == null || subdocumentId == null) {
       await _db.collection(collection).doc(documentId).update(data);
     } else {
@@ -87,8 +85,8 @@ class FirestoreService {
     }
   }
 
-  Future<void> delete(String collection, String documentId,
-      {String? subcollection, String? subdocumentId}) async {
+  Future<void> delete({required String collection, required String documentId,
+      String? subcollection, String? subdocumentId}) async {
     if (subcollection == null && subdocumentId == null) {
       await _db.collection(collection).doc(documentId).delete();
     } else {
@@ -123,12 +121,12 @@ class FirestoreService {
     }
   }
 
-  Future<void> updateSubcollectionDocumentField(
-    String collectionName,
-    String subcollectionName,
-    String documentId,
-    String fieldName,
-    dynamic fieldValue,
+  Future<void> updateSubcollectionDocumentField({
+    required String collectionName,
+    required String subcollectionName,
+    required String documentId,
+    required String fieldName,
+    dynamic fieldValue,}
   ) async {
     final collectionRef = _db.collection(collectionName);
 
@@ -150,7 +148,7 @@ class FirestoreService {
     }
   }
 
-  Stream<DocumentSnapshot?> getSeenStream(String uid) {
+  Stream<DocumentSnapshot?> getSeenStream({required String uid}) {
     return FirebaseFirestore.instance
         .collection('messages')
         .doc('users_conversations')

@@ -132,7 +132,7 @@ class _SellerMainState extends State<SellerMain> {
                     right: MediaQuery.of(context).size.width / 2 - 15,
                     bottom: 35,
                     child: StreamBuilder(
-                        stream: FirestoreService().getSeenStream(
+                        stream: FirestoreService().getSeenStream(uid:
                             Provider.of<UserProvider>(context, listen: false)
                                 .user!
                                 .uid),

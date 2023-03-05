@@ -5,7 +5,7 @@ import 'package:topup2p/models/user_model.dart';
 
 //DOWNLOAD IMAGE FROM DOWNLOAD URL GIVEN FROM FIRESTORE STORAGE THEN STORE LOCALLY
 
-Future<String> ImagetoAssets(String url, String uid) async {
+Future<String> ImagetoAssets({required String url, required String uid}) async {
   final response = await http.get(Uri.parse(url));
   final documentDirectory = await getApplicationDocumentsDirectory();
   final filePath = '${documentDirectory.path}/assets/images/$uid';

@@ -6,7 +6,7 @@ import 'package:topup2p/providers/payment_provider.dart';
 import 'package:topup2p/screens/seller/add-update_wallet.dart';
 
 class SellerWalletsScreen extends StatefulWidget {
-  const SellerWalletsScreen(this.payments, {super.key});
+  const SellerWalletsScreen({required this.payments, super.key});
   final List<Payment> payments;
   @override
   State<SellerWalletsScreen> createState() => _SellerWalletsScreenState();

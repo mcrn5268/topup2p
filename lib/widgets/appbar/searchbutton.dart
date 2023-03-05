@@ -76,7 +76,7 @@ class MySearchDelegate extends SearchDelegate {
               child: ListTile(
                   title: Text(title),
                   onTap: () {
-                    GameItemScreenNavigator(title, false);
+                    GameItemScreenNavigator(name: title,flag: false);
                   }),
             ),
           ),

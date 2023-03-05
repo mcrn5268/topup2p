@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 import 'package:topup2p/cloud/firestore.dart';
 import 'package:topup2p/models/user_model.dart';
 import 'package:topup2p/providers/user_provider.dart';
-import 'package:topup2p/screens/user/user_main.dart';
 import 'package:topup2p/widgets/custom_divider.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -46,7 +45,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
         });
       }
     });
-
     _Fname.text = 'John';
     _Lname.text = 'Smith';
     _email.text = 'johnsmith2@johnsmith.com';
@@ -126,7 +124,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
     Widget registerSection = Padding(
       padding: const EdgeInsets.fromLTRB(50, 0, 50, 0),
       child: Form(
-        //autovalidateMode: AutovalidateMode.always,
         key: _form,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -227,6 +224,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       : ElevatedButton(
                           onPressed: () {
                             if (_form.currentState!.validate()) {
+                            //input are valid
                               _registerUser();
                             }
                           },

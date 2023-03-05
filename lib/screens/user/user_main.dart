@@ -47,7 +47,10 @@ class _UserMainScreenState extends State<UserMainScreen> {
               print("snapshot is empty users_game_data - favorited");
             }
             return Scaffold(
-                appBar: AppBarWidget(true, true, userProvider.user != null),
+                appBar: AppBarWidget(
+                    home: true,
+                    search: true,
+                    isloggedin: userProvider.user != null),
                 body: ListView(
                   addAutomaticKeepAlives: true,
                   shrinkWrap: false,

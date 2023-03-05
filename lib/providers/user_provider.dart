@@ -20,7 +20,7 @@ class UserProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateUser({String? name, String? type, String? image}) {
+  void updateUser({String? name, String? type, String? image, String? image_url}) {
     if (_user != null) {
       _user = UserModel(
           uid: _user!.uid,
@@ -28,7 +28,7 @@ class UserProvider extends ChangeNotifier {
           name: name ?? _user!.name,
           type: type ?? _user!.type,
           image: image ?? _user!.image,
-          image_url: image ?? _user!.image_url);
+          image_url: image_url ?? _user!.image_url);
       notifyListeners();
     }
   }

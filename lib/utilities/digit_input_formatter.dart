@@ -1,5 +1,7 @@
 import 'package:flutter/services.dart';
 
+
+//for account number digit input limiter
 class DigitInputFormatter extends TextInputFormatter {
   int _maxLength;
 

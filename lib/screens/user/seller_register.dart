@@ -1,17 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:topup2p/cloud/download-image.dart';
 import 'package:topup2p/cloud/firestore.dart';
-import 'package:topup2p/main.dart';
 import 'package:topup2p/providers/favorites_provider.dart';
 import 'dart:io';
 import 'package:restart_app/restart_app.dart';
 import 'package:topup2p/providers/user_provider.dart';
 import 'package:topup2p/utilities/image_file_utils.dart';
-import 'package:topup2p/utilities/models_utils.dart';
 import 'package:topup2p/widgets/loading_screen.dart';
 
 class SellerRegisterScreen extends StatefulWidget {
@@ -60,7 +57,7 @@ class _SellerRegisterScreenState extends State<SellerRegisterScreen> {
   Widget build(BuildContext context) {
     UserProvider userProvider = Provider.of<UserProvider>(context);
     bool _flag = MediaQuery.of(context).orientation == Orientation.portrait;
-    Widget registerSection = Padding(
+    Widget registerName = Padding(
       padding: const EdgeInsets.fromLTRB(50, 0, 50, 0),
       child: Form(
         //autovalidateMode: AutovalidateMode.always,
@@ -96,7 +93,7 @@ class _SellerRegisterScreenState extends State<SellerRegisterScreen> {
                     String assetsPath = 'assets/images/store-placeholder.png';
                     if (urlDownload != null) {
                       assetsPath = await ImagetoAssets(
-                          urlDownload!, userProvider.user!.uid);
+                          url: urlDownload!, uid: userProvider.user!.uid);
                     }
                     final updateData = <String, dynamic>{
                       "name": _Sname.text,
@@ -105,10 +102,13 @@ class _SellerRegisterScreenState extends State<SellerRegisterScreen> {
                       "image_url": urlDownload ?? 'placeholder'
                     };
                     //update users info to sellers info (ex: name to shop name)
-                    FirestoreService()
-                        .update('users', userProvider.user!.uid, updateData);
-                    FirestoreService()
-                        .delete('user_games_data', userProvider.user!.uid);
+                    FirestoreService().update(
+                        collection: 'users',
+                        documentId: userProvider.user!.uid,
+                        data: updateData);
+                    FirestoreService().delete(
+                        collection: 'user_games_data',
+                        documentId: userProvider.user!.uid);
                     Provider.of<FavoritesProvider>(context, listen: false)
                         .clearFavorites();
                     FirestoreService().create(
@@ -175,6 +175,64 @@ class _SellerRegisterScreenState extends State<SellerRegisterScreen> {
         ),
       ],
     );
+    Widget registerImage = Padding(
+      padding: const EdgeInsets.all(15),
+      child: InkWell(
+        child: Stack(
+          children: [
+            Container(
+              height: _flag
+                  ? MediaQuery.of(context).size.width
+                  : MediaQuery.of(context).size.width / 2,
+              width: _flag
+                  ? MediaQuery.of(context).size.height
+                  : MediaQuery.of(context).size.height / 2,
+              child: ClipPath(
+                clipper: const ShapeBorderClipper(shape: CircleBorder()),
+                clipBehavior: Clip.hardEdge,
+                child: (pickedFile != null)
+                    ? Image.file(
+                        File(pickedFile!.path!),
+                        fit: BoxFit.cover,
+                      )
+                    : Image.asset(
+                        'assets/images/upload-image.png',
+                        fit: BoxFit.cover,
+                      ),
+              ),
+            ),
+            //upload icon
+            Positioned(
+              right: _flag ? 0 : 85,
+              bottom: _flag ? 20 : 0,
+              child: Container(
+                decoration: new BoxDecoration(
+                  color: Colors.blueGrey,
+                  shape: BoxShape.circle,
+                ),
+                height: _flag
+                    ? MediaQuery.of(context).size.width / 7
+                    : MediaQuery.of(context).size.width / 9,
+                width: _flag
+                    ? MediaQuery.of(context).size.height / 7
+                    : MediaQuery.of(context).size.height / 9,
+                child: ClipPath(
+                    clipper: const ShapeBorderClipper(shape: CircleBorder()),
+                    clipBehavior: Clip.hardEdge,
+                    child: Icon(
+                      Icons.upload,
+                      color: Colors.white,
+                    )),
+              ),
+            ),
+          ],
+        ),
+        onTap: () async {
+          pickedFile = await selectImageFile();
+          setState(() {});
+        },
+      ),
+    );
     return Scaffold(
       body: _isLoading
           ? Center(
@@ -187,67 +245,8 @@ class _SellerRegisterScreenState extends State<SellerRegisterScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       backButton,
-                      Padding(
-                        padding: const EdgeInsets.all(15),
-                        child: InkWell(
-                          child: Stack(
-                            children: [
-                              Container(
-                                height: _flag
-                                    ? MediaQuery.of(context).size.width
-                                    : MediaQuery.of(context).size.width / 2,
-                                width: _flag
-                                    ? MediaQuery.of(context).size.height
-                                    : MediaQuery.of(context).size.height / 2,
-                                child: ClipPath(
-                                  clipper: const ShapeBorderClipper(
-                                      shape: CircleBorder()),
-                                  clipBehavior: Clip.hardEdge,
-                                  child: (pickedFile != null)
-                                      ? Image.file(
-                                          File(pickedFile!.path!),
-                                          fit: BoxFit.cover,
-                                        )
-                                      : Image.asset(
-                                          'assets/images/upload-image.png',
-                                          fit: BoxFit.cover,
-                                        ),
-                                ),
-                              ),
-                              //upload icon
-                              Positioned(
-                                right: _flag ? 0 : 85,
-                                bottom: _flag ? 20 : 0,
-                                child: Container(
-                                  decoration: new BoxDecoration(
-                                    color: Colors.blueGrey,
-                                    shape: BoxShape.circle,
-                                  ),
-                                  height: _flag
-                                      ? MediaQuery.of(context).size.width / 7
-                                      : MediaQuery.of(context).size.width / 9,
-                                  width: _flag
-                                      ? MediaQuery.of(context).size.height / 7
-                                      : MediaQuery.of(context).size.height / 9,
-                                  child: ClipPath(
-                                      clipper: const ShapeBorderClipper(
-                                          shape: CircleBorder()),
-                                      clipBehavior: Clip.hardEdge,
-                                      child: Icon(
-                                        Icons.upload,
-                                        color: Colors.white,
-                                      )),
-                                ),
-                              ),
-                            ],
-                          ),
-                          onTap: () async {
-                            pickedFile = await selectImageFile();
-                            setState(() {});
-                          },
-                        ),
-                      ),
-                      registerSection,
+                      registerImage,
+                      registerName,
                     ],
                   ),
                 ),

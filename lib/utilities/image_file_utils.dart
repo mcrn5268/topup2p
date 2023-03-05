@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
+//select an image file to be used as display photo
 Future selectImageFile() async {
   try {
     final result = await FilePicker.platform.pickFiles();
@@ -12,6 +13,7 @@ Future selectImageFile() async {
   }
 }
 
+//upload image file to firestore storage
 Future uploadImageFile(PlatformFile pickedFile, String uid) async {
   UploadTask? uploadTask;
   final path = 'assets/images/$uid/${pickedFile.name}';
@@ -27,6 +29,7 @@ Future uploadImageFile(PlatformFile pickedFile, String uid) async {
   return urlDownload;
 }
 
+//for games that has specific type of digital goods
 String gameIcon(String name) {
   late String path;
   if (name == 'Mobile Legends') {
