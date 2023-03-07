@@ -13,9 +13,14 @@ class PaymentProvider with ChangeNotifier {
     }
   }
 
-  void addAllPayments(List<Payment> payments) {
+  void clearPayments() {
     _payments.clear();
+      notifyListeners();
+  }
+
+  void addAllPayments(List<Payment> payments) {
     _payments.addAll(payments);
+      notifyListeners();
   }
 
   void updatePayment(Payment payment,

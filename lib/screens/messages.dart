@@ -44,6 +44,8 @@ class _MessagesScreenState extends State<MessagesScreen> {
                           'assets/images/person-placeholder.png'
                   ? true
                   : false;
+///data/user/0/com.example.topup2p/app_flutter/assets/images/JSSdS4pZgPPSGxi3xOvbcA4hu1w1/FB_IMG_1672753761418.jpg
+//https://firebasestorage.googleapis.com/v0/b/topup2p.appspot.com/o/assets%2Fimages%2FJSSdS4pZgPPSGxi3xOvbcA4hu1w1%2FFB_IMG_1672753761418.jpg?alt=media&token=92bdaea9-9909-430b-8ba0-b90f3dfd47ba
 
               //for formatting for who sent the last message
               //if it's the current user, then add 'You: ' before the message

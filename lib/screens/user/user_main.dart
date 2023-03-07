@@ -41,7 +41,7 @@ class _UserMainScreenState extends State<UserMainScreen> {
                 var favoritedItem = getItemByName(entry.key);
                 // Add Item to favorited items list
                 Provider.of<FavoritesProvider>(context, listen: false)
-                    .toggleFavorite(favoritedItem!, false);
+                    .toggleFavorite(favoritedItem!,notify: false);
               }
             } else {
               print("snapshot is empty users_game_data - favorited");

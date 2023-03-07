@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:topup2p/cloud/firestore.dart';
+import 'package:topup2p/models/item_model.dart';
 import 'package:topup2p/providers/favorites_provider.dart';
 import 'package:topup2p/providers/payment_provider.dart';
 import 'package:topup2p/providers/sell_items_provder.dart';
@@ -14,11 +15,12 @@ import 'package:topup2p/widgets/appbar/signoutbutton.dart';
 
 //this is shared screen for both user type normal and seller
 class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key});
-
+  const ProfileScreen({this.favorites, super.key});
+  final List<Item>? favorites;
   @override
   Widget build(BuildContext context) {
     PaymentProvider? paymentProvider;
+    FavoritesProvider? favProvider;
     UserProvider userProvider = Provider.of<UserProvider>(context);
     //if user type seller add PaymentProvider
     if (Provider.of<UserProvider>(context, listen: false).user!.type ==
@@ -28,6 +30,12 @@ class ProfileScreen extends StatelessWidget {
       } catch (e) {
         print('Probably just transitioned from user to seller | $e');
       }
+    }
+
+    if (favorites != null) {
+      favProvider = Provider.of<FavoritesProvider>(context);
+      favProvider.clearFavorites(notify: false);
+      favProvider.addItems(favorites!, notify: false);
     }
     Widget profileHead = Stack(
       alignment: Alignment.center,
@@ -56,7 +64,7 @@ class ProfileScreen extends StatelessWidget {
                         children: [
                           IconButton(
                               onPressed: () {
-                                Navigator.pop(context);
+                                Navigator.pop(context, favProvider!.favorites);
                               },
                               icon: Icon(Icons.arrow_back_ios_outlined,
                                   color: Colors.white)),
@@ -105,25 +113,50 @@ class ProfileScreen extends StatelessWidget {
                 Text('Edit Profile')
               ],
             ),
-            onTap: () {
-              Navigator.push(
-                context,
-                PageRouteBuilder(
-                  pageBuilder: (_, __, ___) => MultiProvider(
-                    providers: [
-                      ChangeNotifierProvider<SellItemsProvider>.value(
-                        value: SellItemsProvider(),
-                      ),
-                      ChangeNotifierProvider<PaymentProvider>.value(
-                        value: PaymentProvider(),
-                      ),
-                    ],
-                    child: const EditProfileScreen(),
+            onTap: () async {
+              if (userProvider.user!.type == 'seller') {
+                Navigator.push(
+                  context,
+                  PageRouteBuilder(
+                    pageBuilder: (_, __, ___) => MultiProvider(
+                      providers: [
+                        ChangeNotifierProvider<SellItemsProvider>.value(
+                          value: SellItemsProvider(),
+                        ),
+                        ChangeNotifierProvider<PaymentProvider>.value(
+                          value: PaymentProvider(),
+                        ),
+                      ],
+                      child: const EditProfileScreen(),
+                    ),
+                    transitionsBuilder: (_, a, __, c) =>
+                        FadeTransition(opacity: a, child: c),
                   ),
-                  transitionsBuilder: (_, a, __, c) =>
-                      FadeTransition(opacity: a, child: c),
-                ),
-              );
+                );
+              } else if (userProvider.user!.type == 'normal') {
+                print(
+                    'edit profile button ${Provider.of<FavoritesProvider>(context, listen: false).favorites.length}');
+                final favs = await Navigator.push(
+                  context,
+                  PageRouteBuilder(
+                    pageBuilder: (_, __, ___) => MultiProvider(
+                      providers: [
+                        ChangeNotifierProvider<FavoritesProvider>.value(
+                          value: FavoritesProvider(),
+                        ),
+                      ],
+                      child:
+                          EditProfileScreen(favorites: favProvider!.favorites),
+                    ),
+                    transitionsBuilder: (_, a, __, c) =>
+                        FadeTransition(opacity: a, child: c),
+                  ),
+                );
+                if (favs.length != favProvider!.favorites.length) {
+                  favProvider.clearFavorites();
+                  favProvider.addItems(favs);
+                }
+              }
             },
           ),
           //different icon for different user type
@@ -171,7 +204,8 @@ class ProfileScreen extends StatelessWidget {
                   //if yes then update both provider and firestore
                   if (paymentsList != null) {
                     //add to provider
-                    paymentProvider!.addAllPayments(paymentsList);
+                    paymentProvider!.clearPayments();
+                    paymentProvider.addAllPayments(paymentsList);
                     //add to firestore
                     Map<String, dynamic> forSellersMap = {};
 
@@ -197,7 +231,7 @@ class ProfileScreen extends StatelessWidget {
                       forSellersMap['MoP'][paymentName]
                           .addAll(paymentMap); // Add payment map to 'MoP'
                     }
-
+                    //todo fix when wallet is updated, update all firestore documents
                     FirestoreService().create(
                         collection: 'sellers',
                         documentId: userProvider.user!.uid,

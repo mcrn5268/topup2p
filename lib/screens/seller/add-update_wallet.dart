@@ -40,6 +40,8 @@ class _AddUpdateWalletScreenState extends State<AddUpdateWalletScreen> {
     }
     if (widget.paymentList != null) {
       Provider.of<PaymentProvider>(context, listen: false)
+          .clearPayments();
+      Provider.of<PaymentProvider>(context, listen: false)
           .addAllPayments(widget.paymentList!);
     }
     limit = max(_controllernum.text.toString().length, 3);

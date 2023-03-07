@@ -3,6 +3,8 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:topup2p/cloud/firestore.dart';
+import 'package:topup2p/models/item_model.dart';
+import 'package:topup2p/providers/favorites_provider.dart';
 import 'package:topup2p/providers/user_provider.dart';
 import 'package:topup2p/utilities/image_file_utils.dart';
 import 'package:topup2p/utilities/profile_image.dart';
@@ -11,7 +13,8 @@ import '../../../../cloud/download-image.dart';
 import 'dart:io';
 
 class EditProfileScreen extends StatefulWidget {
-  const EditProfileScreen({super.key});
+  const EditProfileScreen({this.favorites, super.key});
+  final List<Item>? favorites;
 
   @override
   State<EditProfileScreen> createState() => _EditProfileScreenState();
@@ -26,6 +29,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   UploadTask? uploadTask;
   String? urlDownload;
   late UserProvider userProvider;
+  FavoritesProvider? favProvider;
 
   Future<void> _textValidator(String value) async {
     if (value.isEmpty) {
@@ -44,6 +48,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   void initState() {
     super.initState();
+    if (widget.favorites != null) {
+      favProvider = Provider.of<FavoritesProvider>(context, listen: false);
+      favProvider!.addItems(widget.favorites!, notify: false);
+    }
     userProvider = Provider.of<UserProvider>(context, listen: false);
     _Sname.text = userProvider.user!.name;
   }
@@ -107,6 +115,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               collection: 'users',
                               documentId: userProvider.user!.uid,
                               data: imageMap);
+                          print(
+                              'edit profile screen ${Provider.of<FavoritesProvider>(context, listen: false).favorites.length}');
                           userProvider.updateUser(image: imageMap['image']);
                           //if user is seller
                           if (userProvider.user!.type == 'seller') {
@@ -141,7 +151,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           if (forMessages != null) {
                             List<dynamic> documents = forMessages.docs;
                             for (var document in documents) {
-
                               FirestoreService().create(
                                   collection: 'messages',
                                   documentId: 'users',
@@ -221,7 +230,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           if (forMessages != null) {
                             List<dynamic> documents = forMessages.docs;
                             for (var document in documents) {
-
                               FirestoreService().create(
                                   collection: 'messages',
                                   documentId: 'users',
@@ -234,7 +242,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             }
                           }
                         }
-                        Navigator.pop(context);
+                        if (widget.favorites != null) {
+                          Navigator.pop(context, favProvider!.favorites);
+                        } else {
+                          Navigator.pop(context);
+                        }
 
                         setState(() {
                           _isLoading = false;
@@ -277,7 +289,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         ),
       ),
     );
-    //back to log in page
     Widget backButton = Column(
       children: [
         Row(

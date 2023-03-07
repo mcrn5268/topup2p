@@ -124,7 +124,6 @@ class _SellerMainScreenState extends State<SellerMainScreen> {
       if (siProvider.Sitems.isNotEmpty) {
         return ListView.builder(
           key: ValueKey('seller-home-page-listview'),
-          //todo check in release mode if still lagging
           controller: _scrollController,
           //physics: NeverScrollableScrollPhysics(),
           shrinkWrap: true,

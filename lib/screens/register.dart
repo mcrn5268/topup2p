@@ -80,7 +80,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         'type': 'normal',
         //todo
         'image': 'assets/images/person-placeholder.png',
-        'image_url': 'placeholder'
+        'image_url': 'assets/images/person-placeholder.png'
       };
       FirestoreService().create(
           collection: 'users',
@@ -94,9 +94,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
           name: '${_Fname.text} ${_Lname.text}',
           //phoneNumber: _phoneNumberController.text,
           type: 'normal',
-          //todo image
           image: 'assets/images/person-placeholder.png',
-          image_url: 'placeholder');
+          image_url: 'assets/images/person-placeholder.png');
       Provider.of<UserProvider>(context, listen: false).setUser(user);
     } catch (e) {
       // Display an error message

@@ -29,12 +29,12 @@ class UserProvider extends ChangeNotifier {
           type: type ?? _user!.type,
           image: image ?? _user!.image,
           image_url: image_url ?? _user!.image_url);
+      
       notifyListeners();
     }
   }
 
   Future<void> init() async {
-    print('init');
     await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform);
 

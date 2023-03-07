@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:provider/provider.dart';
@@ -45,6 +46,7 @@ class _ChatScreenState extends State<ChatScreen> {
   bool _isLoadingData = false;
   Map<String, dynamic> shopInfo = {};
   List<dynamic> enabledGames = [];
+  List<Map<String, dynamic>> payments = [];
   Item? selectedItem;
 
   @override
@@ -76,6 +78,20 @@ class _ChatScreenState extends State<ChatScreen> {
       _typeAheadController.text = widget.gameName!;
       selectedItem = getItemByName(_typeAheadController.text);
     }
+    FirestoreService()
+        .read(collection: 'sellers', documentId: widget.userId)
+        .then((value) => {
+              setState(() {
+                for (var key in value['MoP'].keys) {
+                  var account = value['MoP'][key];
+                  if (account['status'] == 'enabled') {
+                    var enabledAccount = {'name': key};
+                    enabledAccount.addAll(account);
+                    payments.add(enabledAccount);
+                  }
+                }
+              })
+            });
 
     forconvId = FirestoreService().conversationId(widget.convId);
     _scrollController.addListener(() {
@@ -173,6 +189,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                 child: TypeAheadFormField(
                                   textFieldConfiguration:
                                       TextFieldConfiguration(
+                                    textAlign: TextAlign.center,
                                     controller: _typeAheadController,
                                     decoration: InputDecoration(
                                       hintText: 'Select a game',
@@ -193,6 +210,8 @@ class _ChatScreenState extends State<ChatScreen> {
                                       if (suggestions.isNotEmpty) {
                                         // If there are suggestions, select the first one
                                         setState(() {
+                                          selectedItem =
+                                              getItemByName(suggestions.first);
                                           _typeAheadController.text =
                                               suggestions.first;
                                           _isLoadingData = true;
@@ -200,8 +219,6 @@ class _ChatScreenState extends State<ChatScreen> {
                                         shopInfo = await readGameData(
                                             suggestions.first);
                                         setState(() {
-                                          selectedItem =
-                                              getItemByName(suggestions.first);
                                           _isLoadingData = false;
                                         });
                                       } else {
@@ -220,92 +237,102 @@ class _ChatScreenState extends State<ChatScreen> {
                                   },
                                   onSuggestionSelected: (suggestion) async {
                                     setState(() {
+                                      selectedItem = getItemByName(suggestion);
                                       _typeAheadController.text = suggestion;
                                       _isLoadingData = true;
                                     });
                                     shopInfo = await readGameData(suggestion);
                                     setState(() {
-                                      selectedItem = getItemByName(suggestion);
                                       _isLoadingData = false;
                                     });
                                   },
                                 ),
                               ),
                             ),
-                            Expanded(
-                              child: _isLoadingData
-                                  ? CircularProgressIndicator()
-                                  : Row(
-                                      children: [
-                                        for (var i = 1;
-                                            i <=
-                                                ((shopInfo['rates'].length) / 3)
-                                                    .ceil();
-                                            i++) ...[
-                                          Expanded(
-                                            child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                for (var j = (i == 1)
-                                                        ? 0
-                                                        : (i == 2)
-                                                            ? 3
-                                                            : 6;
-                                                    j < i * 3 &&
-                                                        j <
-                                                            shopInfo['rates']
-                                                                .length;
-                                                    j++) ...[
-                                                  Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .center,
-                                                    children: [
-                                                      Text(
-                                                        "₱ ${shopInfo['rates']['rate${j}']['php']} : ${shopInfo['rates']['rate${j}']['digGoods']} ",
-                                                        style: TextStyle(
-                                                            color:
-                                                                Colors.white),
-                                                      ),
-                                                      Image.asset(
-                                                        gameIcon(
-                                                            _typeAheadController
-                                                                .text),
-                                                        width: 10,
-                                                        height: 10,
-                                                      )
-                                                    ],
-                                                  )
-                                                ]
-                                              ],
+                            if (_typeAheadController.text != '') ...[
+                              Expanded(
+                                child: _isLoadingData
+                                    ? CircularProgressIndicator()
+                                    : Row(
+                                        children: [
+                                          for (var i = 1;
+                                              i <=
+                                                  ((shopInfo['rates'].length) /
+                                                          3)
+                                                      .ceil();
+                                              i++) ...[
+                                            Expanded(
+                                              child: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  for (var j = (i == 1)
+                                                          ? 0
+                                                          : (i == 2)
+                                                              ? 3
+                                                              : 6;
+                                                      j < i * 3 &&
+                                                          j <
+                                                              shopInfo['rates']
+                                                                  .length;
+                                                      j++) ...[
+                                                    Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
+                                                      children: [
+                                                        Text(
+                                                          "₱ ${shopInfo['rates']['rate${j}']['php']} : ${shopInfo['rates']['rate${j}']['digGoods']} ",
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.white),
+                                                        ),
+                                                        Image.asset(
+                                                          gameIcon(
+                                                              _typeAheadController
+                                                                  .text),
+                                                          width: 10,
+                                                          height: 10,
+                                                        )
+                                                      ],
+                                                    )
+                                                  ]
+                                                ],
+                                              ),
                                             ),
-                                          ),
+                                          ],
                                         ],
-                                      ],
+                                      ),
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        bottom: 10, top: 10),
+                                    child: InkWell(
+                                      child:
+                                          Icon(Icons.copy, color: Colors.white),
+                                      onTap: () {
+                                        String text = List.generate(
+                                            shopInfo['rates'].length, (i) {
+                                          var rate =
+                                              shopInfo['rates']['rate$i'];
+                                          return '₱ ${rate['php']} : ${rate['digGoods']} | ';
+                                        }).join('\n');
+                                        Clipboard.setData(
+                                            ClipboardData(text: text));
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(SnackBar(
+                                          content: const Text('Copiied'),
+                                          duration: Duration(milliseconds: 500),
+                                        ));
+                                      },
                                     ),
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                      bottom: 10, top: 10),
-                                  child: InkWell(
-                                    child:
-                                        Icon(Icons.copy, color: Colors.white),
-                                    onTap: () {
-                                      //todo
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(SnackBar(
-                                        content: const Text('Copiied'),
-                                        duration: Duration(milliseconds: 500),
-                                      ));
-                                    },
                                   ),
-                                ),
-                              ],
-                            )
+                                ],
+                              )
+                            ]
                           ],
                         ))
                   ],
@@ -338,6 +365,72 @@ class _ChatScreenState extends State<ChatScreen> {
                   blurRadius: 3,
                   offset: Offset(0, 2),
                 ),
+              ],
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                if (payments.isNotEmpty) ...[
+                  for (var index = 0; index < payments.length; index++) ...[
+                    Expanded(
+                        child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(10, 10, 10, 5),
+                          child: Container(
+                            height: 50,
+                            width: 50,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                image: DecorationImage(
+                                    fit: BoxFit.fitHeight,
+                                    image: AssetImage(
+                                        'assets/images/MoP/${payments[index]['name']}-large.png'))),
+                          ),
+                        ),
+                        Text(
+                          payments[index]['name'],
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        const Divider(
+                          color: Colors.white,
+                          height: 1,
+                          indent: 20,
+                          endIndent: 20,
+                        ),
+                        Text('${payments[index]['account_name']}',
+                            style: TextStyle(color: Colors.white)),
+                        Text('${payments[index]['account_number']}',
+                            style: TextStyle(color: Colors.white)),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 5),
+                          child: InkWell(
+                            child: Icon(Icons.copy, color: Colors.white),
+                            onTap: () {
+                              String text =
+                                  '${payments[index]['name']} : Account Name: ${payments[index]['account_name']} | Account Number: ${payments[index]['account_number']}';
+                              Clipboard.setData(ClipboardData(text: text));
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                content: const Text('Copiied'),
+                                duration: Duration(milliseconds: 500),
+                              ));
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                content: const Text('Copiied'),
+                                duration: Duration(milliseconds: 500),
+                              ));
+                            },
+                          ),
+                        ),
+                      ],
+                    ))
+                  ]
+                ] else ...[
+                  const Text('No Payments Information Available',
+                      style: TextStyle(color: Colors.white))
+                ]
               ],
             ),
           ),
@@ -521,7 +614,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                                         isSender: isSender,
                                                         color: Colors.blueGrey,
                                                         textStyle: TextStyle(
-                                                          fontSize: 20,
+                                                          fontSize: 16,
                                                           color: Colors.white,
                                                         ),
                                                       )

@@ -109,6 +109,7 @@ class _GameSellScreenState extends State<GameSellScreen> {
                     child: Container(
                         decoration: BoxDecoration(
                           color: Theme.of(context).scaffoldBackgroundColor,
+                          borderRadius: BorderRadius.circular(20),
                           boxShadow: [
                             BoxShadow(
                               color: Colors.grey.withOpacity(0.5),
@@ -122,8 +123,7 @@ class _GameSellScreenState extends State<GameSellScreen> {
                           children: [
                             Padding(
                               padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
-                              child: shop['info']['image'] ==
-                                      'placeholder'
+                              child: shop['info']['image'] == 'assets/images/store-placeholder.png'
                                   ? Container(
                                       width: 100,
                                       decoration: BoxDecoration(
@@ -140,8 +140,7 @@ class _GameSellScreenState extends State<GameSellScreen> {
                                           image: DecorationImage(
                                               fit: BoxFit.cover,
                                               image: NetworkImage(
-                                                  shop['info']
-                                                      ['image']))),
+                                                  shop['info']['image']))),
                                     ),
                             ),
                             Expanded(
@@ -180,9 +179,7 @@ class _GameSellScreenState extends State<GameSellScreen> {
                                       children: [
                                         for (var i = 1;
                                             i <=
-                                                ((shop['rates']
-                                                            .length) /
-                                                        3)
+                                                ((shop['rates'].length) / 3)
                                                     .ceil();
                                             i++) ...[
                                           Expanded(
@@ -197,8 +194,7 @@ class _GameSellScreenState extends State<GameSellScreen> {
                                                             : 6;
                                                     j < i * 3 &&
                                                         j <
-                                                            shop
-                                                                    ['rates']
+                                                            shop['rates']
                                                                 .length;
                                                     j++) ...[
                                                   Row(
@@ -231,10 +227,9 @@ class _GameSellScreenState extends State<GameSellScreen> {
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         children: [
-                                          for (var key in shop['mop']
-                                              .keys) ...[
+                                          for (var key in shop['mop'].keys) ...[
                                             Image.asset(
-                                                'assets/images/MoP/${shop['mop'][key]}.png',
+                                                'assets/images/MoP/${shop['mop'][key]['name']}.png',
                                                 width: 50)
                                           ]
                                         ],

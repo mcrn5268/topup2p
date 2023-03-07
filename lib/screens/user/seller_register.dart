@@ -99,7 +99,7 @@ class _SellerRegisterScreenState extends State<SellerRegisterScreen> {
                       "name": _Sname.text,
                       "type": "seller",
                       "image": assetsPath,
-                      "image_url": urlDownload ?? 'placeholder'
+                      "image_url": urlDownload ?? 'assets/images/store-placeholder.png'
                     };
                     //update users info to sellers info (ex: name to shop name)
                     FirestoreService().update(

@@ -17,6 +17,7 @@ class _SellerWalletsScreenState extends State<SellerWalletsScreen> {
   void initState() {
     super.initState();
     if (widget.payments.isNotEmpty) {
+      Provider.of<PaymentProvider>(context, listen: false).clearPayments();
       Provider.of<PaymentProvider>(context, listen: false)
           .addAllPayments(widget.payments);
     }
@@ -68,7 +69,7 @@ class _SellerWalletsScreenState extends State<SellerWalletsScreen> {
               color: Colors.black, // try a different color here
             ),
           ),
-      shape: Border(bottom: BorderSide(color: Colors.grey, width: 1)),
+          shape: Border(bottom: BorderSide(color: Colors.grey, width: 1)),
         ),
         body: Consumer<PaymentProvider>(builder: (context, paymentProvider, _) {
           return Stack(

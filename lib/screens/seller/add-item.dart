@@ -90,6 +90,8 @@ class _AddItemSellState extends State<AddItemSell> {
           .addItems(widget.Sitems!);
 
       Provider.of<PaymentProvider>(context, listen: false)
+          .clearPayments();
+      Provider.of<PaymentProvider>(context, listen: false)
           .addAllPayments(widget.payments);
     }
   }
@@ -326,13 +328,15 @@ class _AddItemSellState extends State<AddItemSell> {
                       });
                       //rates
                       Map<String, dynamic> ratesMap = {};
+                      int indexUsed = 0;
                       for (var i = 0; i < _cRate.length / 2; i++) {
                         if (_cRate[i].text.toString() != '') {
                           if (_cRate[i + 6].text.toString() != '') {
-                            ratesMap['rate$i'] = {
+                            ratesMap['rate$indexUsed'] = {
                               'php': '${_cRate[i].text.toString()}',
                               'digGoods': '${_cRate[i + 6].text.toString()}',
                             };
+                            indexUsed++;
                           }
                         }
                       }
@@ -361,33 +365,17 @@ class _AddItemSellState extends State<AddItemSell> {
                         var item =
                             Provider.of<PaymentProvider>(context, listen: false)
                                 .payments[index];
-                        if (item.isEnabled == true) {
-                          mopMap['mop$index'] = item.paymentname;
+                        if (item.isEnabled) {
+                          mopMap['mop$index'] = {
+                            'name': item.paymentname,
+                            'account_name': item.accountname,
+                            'account_number': item.accountnumber,
+                            'status': item.isEnabled ? 'enabled' : 'disbaled'
+                          };
                         }
                       }
                       ;
                       final Map<String, dynamic> mapData = {
-                        userProvider.user!.name: {
-                          'mop': mopMap,
-                          'rates': ratesMap,
-                          'info': {
-                            'status': forButton == 'ADD'
-                                ? 'enabled'
-                                : isEnabled!
-                                    ? 'enabled'
-                                    : 'disabled',
-                            'uid': userProvider.user!.uid,
-                            'name': userProvider.user!.name,
-                            'image': userProvider.user!.image_url
-                          }
-                        }
-                      };
-                      await FirestoreService().create(
-                        collection: 'seller_games_data',
-                        documentId: _typeAheadController.text,
-                        data: mapData,
-                      );
-                      final Map<String, dynamic> mapData2 = {
                         'mop': mopMap,
                         'rates': ratesMap,
                         'info': {
@@ -402,9 +390,16 @@ class _AddItemSellState extends State<AddItemSell> {
                         }
                       };
                       await FirestoreService().create(
+                        collection: 'seller_games_data',
+                        documentId: _typeAheadController.text,
+                        data: {userProvider.user!.name: mapData},
+                        merge: false,
+                      );
+
+                      await FirestoreService().create(
                         collection: 'sellers',
                         documentId: userProvider.user!.uid,
-                        data: mapData2,
+                        data: mapData,
                         subcollection: 'games',
                         subdocumentId: _typeAheadController.text,
                         merge: false,
@@ -471,14 +466,56 @@ class _AddItemSellState extends State<AddItemSell> {
                       inactiveColor: Colors.red,
                       value: isEnabled ?? false,
                       onToggle: (value) {
-                        //todo when switch is toggled and update button is not clicked
                         setState(() {
                           isEnabled = !isEnabled!;
-                          Provider.of<SellItemsProvider>(context, listen: false)
-                              .updateItem(
-                                  getItemByName(_typeAheadController.text)!,
-                                  isEnabled! ? 'enabled' : 'disabled');
                         });
+
+                        Provider.of<SellItemsProvider>(context, listen: false)
+                            .updateItem(
+                                getItemByName(_typeAheadController.text)!,
+                                isEnabled! ? 'enabled' : 'disabled');
+                        FirestoreService().create(
+                            collection: 'seller_games_data',
+                            documentId: _typeAheadController.text,
+                            data: {
+                              Provider.of<UserProvider>(context, listen: false)
+                                  .user!
+                                  .name: {
+                                'info': {
+                                  'status': isEnabled! ? 'enabled' : 'disabled'
+                                }
+                              }
+                            });
+                        //sellers fields
+                        FirestoreService().create(
+                            collection: 'sellers',
+                            documentId: Provider.of<UserProvider>(context,
+                                    listen: false)
+                                .user!
+                                .uid,
+                            data: {
+                              'games': {
+                                _typeAheadController.text:
+                                    isEnabled! ? 'enabled' : 'disabled'
+                              }
+                            });
+                        //sellers subcollection
+                        FirestoreService().create(
+                            collection: 'sellers',
+                            documentId: Provider.of<UserProvider>(context,
+                                    listen: false)
+                                .user!
+                                .uid,
+                            data: {
+                              'info': {
+                                'status': isEnabled! ? 'enabled' : 'disabled'
+                              }
+                            },
+                            subcollection: 'games',
+                            subdocumentId: _typeAheadController.text);
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            content:
+                                Text(isEnabled! ? 'Enabled' : 'Disbaled')));
                       },
                     ),
                   ),

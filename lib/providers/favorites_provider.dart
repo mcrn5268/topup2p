@@ -6,13 +6,13 @@ class FavoritesProvider with ChangeNotifier {
 
   List<Item> get favorites => _favorites;
 
-  void toggleFavorite(Item item, bool notify) {
+  void toggleFavorite(Item item, {bool notify = true}) {
     if (_favorites.contains(item)) {
       _favorites.remove(item);
     } else {
       _favorites.add(item);
     }
-    if (notify == true) {
+    if (notify) {
       notifyListeners();
     }
   }
@@ -25,12 +25,17 @@ class FavoritesProvider with ChangeNotifier {
     return _favorites.indexOf(item);
   }
 
-  void clearFavorites() {
+  void clearFavorites({bool notify = true}) {
     _favorites.clear();
-    notifyListeners();
+    if (notify) {
+      notifyListeners();
+    }
   }
 
-  void addItems(List<Item> items) {
+  void addItems(List<Item> items, {bool notify = true}) {
     _favorites.addAll(items);
+    if (notify) {
+      notifyListeners();
+    }
   }
 }

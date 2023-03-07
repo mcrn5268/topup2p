@@ -51,7 +51,7 @@ class _FavoritesIconState extends State<FavoritesIcon> {
                     documentId: userProvider.user!.uid,
                     data: {widget.itemName: FieldValue.serverTimestamp()});
               }
-              favProvider.toggleFavorite(itemObject, true);
+              favProvider.toggleFavorite(itemObject);
 
               if ((favProvider.favorites.length) * 114.5 > logicalWidth) {
                 RVisible = true;
