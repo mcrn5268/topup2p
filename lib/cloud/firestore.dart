@@ -1,8 +1,7 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:topup2p/providers/user_provider.dart';
+import 'package:flutter/foundation.dart';
+import 'package:topup2p/models/user_model.dart';
 import 'package:topup2p/utilities/other_utils.dart';
 
 class FirestoreService {
@@ -31,7 +30,9 @@ class FirestoreService {
             .doc(subdocumentId)
             .set(data, SetOptions(merge: merge));
       } catch (e) {
-        print('Error creating document with subcollection: $e');
+        if (kDebugMode) {
+          print('Error creating document with subcollection: $e');
+        }
         rethrow;
       }
     }
@@ -64,8 +65,10 @@ class FirestoreService {
         return querySnapshot;
       }
     } catch (e) {
-      print(
+      if (kDebugMode) {
+        print(
           'Something went wrong FirestoreService.read $collection $documentId $e');
+      }
       return null;
     }
   }
@@ -143,7 +146,9 @@ class FirestoreService {
           await subcollectionDocRef.update({fieldName: fieldValue});
         }
       } catch (e) {
-        print('Error: $e');
+        if (kDebugMode) {
+          print('Error: $e');
+        }
       }
     }
   }
@@ -187,13 +192,11 @@ class FirestoreService {
   }
 
   Future<String> conversationId(String? id) async {
-    print('id $id ddd');
     if (id == null) {
       late String returnId;
       bool flag = true;
       while (flag) {
         String generatedID = generateID();
-        print('generatedID1 $generatedID ');
         final CollectionReference mainCollectionRef =
             _db.collection('messages');
         final snapshottt = await mainCollectionRef
@@ -215,26 +218,24 @@ class FirestoreService {
 
   Future<void> sendMessage(
       {required String conversationId,
-      required BuildContext context,
       required String otherUserId,
       required String otherUserName,
       required String otherUserImage,
       required String type,
-      required String message}) async {
-    UserProvider userProvider =
-        Provider.of<UserProvider>(context, listen: false);
+      required String message,
+      required UserModel userModel}) async {
     var timeStamp = FieldValue.serverTimestamp();
     Map<String, dynamic> forUsers = {
       'other_user': {
-        'uid': userProvider.user!.uid,
-        'name': userProvider.user!.name,
-        'image': userProvider.user!.image_url
+        'uid': userModel.uid,
+        'name': userModel.name,
+        'image': userModel.image_url
       },
       'last_msg': {
         'msg': {'type': type, 'content': message},
         'isSeen': false,
         'timestamp': timeStamp,
-        'sender': userProvider.user!.uid
+        'sender': userModel.uid
       }
     };
     Map<String, dynamic> forUsers2 = {
@@ -246,13 +247,13 @@ class FirestoreService {
       'last_msg': {
         'msg': {'type': type, 'content': message},
         'timestamp': timeStamp,
-        'sender': userProvider.user!.uid
+        'sender': userModel.uid
       }
     };
     Map<String, dynamic> forConv = {
       'timestamp': timeStamp,
       'msg': {'type': type, 'content': message},
-      'sender': userProvider.user!.uid
+      'sender': userModel.uid
     };
     create(
         collection: 'messages',
@@ -265,7 +266,7 @@ class FirestoreService {
         collection: 'messages',
         documentId: 'users',
         data: forUsers2,
-        subcollection: userProvider.user!.uid,
+        subcollection: userModel.uid,
         subdocumentId: conversationId,
         merge: false);
     create(
@@ -279,14 +280,14 @@ class FirestoreService {
         documentId: 'users_conversations',
         data: {'conversationId': conversationId, 'isSeen': false},
         subcollection: otherUserId,
-        subdocumentId: userProvider.user!.uid,
+        subdocumentId: userModel.uid,
         merge: false);
     //the user
     create(
         collection: 'messages',
         documentId: 'users_conversations',
         data: {'conversationId': conversationId, 'isSeen': true},
-        subcollection: userProvider.user!.uid,
+        subcollection: userModel.uid,
         subdocumentId: otherUserId,
         merge: false);
   }

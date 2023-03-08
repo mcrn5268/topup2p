@@ -1,4 +1,4 @@
-// ignore_for_file: non_constant_identifier_names, use_build_context_synchronously
+// ignore_for_file: non_constant_identifier_names
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -46,7 +46,8 @@ class _MessagesScreenState extends State<MessagesScreen> {
                           'assets/images/person-placeholder.png'
                   ? true
                   : false;
-///data/user/0/com.example.topup2p/app_flutter/assets/images/JSSdS4pZgPPSGxi3xOvbcA4hu1w1/FB_IMG_1672753761418.jpg
+
+              ///data/user/0/com.example.topup2p/app_flutter/assets/images/JSSdS4pZgPPSGxi3xOvbcA4hu1w1/FB_IMG_1672753761418.jpg
 //https://firebasestorage.googleapis.com/v0/b/topup2p.appspot.com/o/assets%2Fimages%2FJSSdS4pZgPPSGxi3xOvbcA4hu1w1%2FFB_IMG_1672753761418.jpg?alt=media&token=92bdaea9-9909-430b-8ba0-b90f3dfd47ba
 
               //for formatting for who sent the last message
@@ -144,56 +145,60 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                     onTap: () async {
                                       //when the message is tapped, pass the conversation ID
                                       String? convId;
-                                      final Map<String, dynamic>? snapshot =
-                                          await FirestoreService().read(
+                                      await FirestoreService()
+                                          .read(
                                               collection: 'messages',
                                               documentId: 'users_conversations',
                                               subcollection:
                                                   userProvider.user!.uid,
-                                              subdocumentId: other_user['uid']);
-                                      if (snapshot != null) {
-                                        //if there are messages already
-                                        convId = snapshot['conversationId'];
-                                        if (last_msg['isSeen'] == false) {
-                                          //since user already tapped on the message tile
-                                          //update isSeen from false to true
-                                          FirestoreService().create(
-                                              collection: 'messages',
-                                              documentId: 'users',
-                                              data: {
-                                                'last_msg': {'isSeen': true}
-                                              },
-                                              subcollection:
-                                                  userProvider.user!.uid,
-                                              subdocumentId: convId);
-                                          FirestoreService().update(
-                                              collection: 'messages',
-                                              documentId: 'users_conversations',
-                                              data: {
-                                                'conversationId': convId,
-                                                'isSeen': true
-                                              },
-                                              subcollection:
-                                                  userProvider.user!.uid,
-                                              subdocumentId: other_user['uid']);
+                                              subdocumentId: other_user['uid'])
+                                          .then((value) {
+                                        if (value != null) {
+                                          //if there are messages already
+                                          convId = value['conversationId'];
+                                          if (last_msg['isSeen'] == false) {
+                                            //since user already tapped on the message tile
+                                            //update isSeen from false to true
+                                            FirestoreService().create(
+                                                collection: 'messages',
+                                                documentId: 'users',
+                                                data: {
+                                                  'last_msg': {'isSeen': true}
+                                                },
+                                                subcollection:
+                                                    userProvider.user!.uid,
+                                                subdocumentId: convId);
+                                            FirestoreService().update(
+                                                collection: 'messages',
+                                                documentId:
+                                                    'users_conversations',
+                                                data: {
+                                                  'conversationId': convId,
+                                                  'isSeen': true
+                                                },
+                                                subcollection:
+                                                    userProvider.user!.uid,
+                                                subdocumentId:
+                                                    other_user['uid']);
+                                          }
                                         }
-                                      }
 
-                                      Navigator.push(
-                                        context,
-                                        PageRouteBuilder(
-                                          pageBuilder: (_, __, ___) =>
-                                              ChatScreen(
-                                            convId: convId,
-                                            userId: other_user['uid'],
-                                            userImage: other_user['image'],
-                                            userName: other_user['name'],
+                                        Navigator.push(
+                                          context,
+                                          PageRouteBuilder(
+                                            pageBuilder: (_, __, ___) =>
+                                                ChatScreen(
+                                              convId: convId,
+                                              userId: other_user['uid'],
+                                              userImage: other_user['image'],
+                                              userName: other_user['name'],
+                                            ),
+                                            transitionsBuilder: (_, a, __, c) =>
+                                                FadeTransition(
+                                                    opacity: a, child: c),
                                           ),
-                                          transitionsBuilder: (_, a, __, c) =>
-                                              FadeTransition(
-                                                  opacity: a, child: c),
-                                        ),
-                                      );
+                                        );
+                                      });
                                     },
                                   ),
                                   //indicator that a message tile is isSeen = false
@@ -250,7 +255,8 @@ class _MessagesScreenState extends State<MessagesScreen> {
                     color: Colors.black,
                   ),
                 ),
-                shape: const Border(bottom: BorderSide(color: Colors.grey, width: 1)),
+                shape: const Border(
+                    bottom: BorderSide(color: Colors.grey, width: 1)),
               )
             : AppBar(
                 centerTitle: true,
@@ -260,8 +266,8 @@ class _MessagesScreenState extends State<MessagesScreen> {
                     color: Colors.black,
                   ),
                 ),
-                shape:
-                    const Border(bottom: BorderSide(color: Colors.grey, width: 1))),
+                shape: const Border(
+                    bottom: BorderSide(color: Colors.grey, width: 1))),
         body: messagesBody);
   }
 }

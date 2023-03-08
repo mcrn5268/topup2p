@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:topup2p/cloud/firestore.dart';
@@ -44,7 +45,9 @@ class _UserMainScreenState extends State<UserMainScreen> {
                     .toggleFavorite(favoritedItem!,notify: false);
               }
             } else {
-              print("snapshot is empty users_game_data - favorited");
+              if (kDebugMode) {
+                print("snapshot is empty users_game_data - favorited");
+              }
             }
             return Scaffold(
                 appBar: AppBarWidget(

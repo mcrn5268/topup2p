@@ -57,6 +57,8 @@ dependencies:
   flutter_staggered_animations: ^1.0.0
   chat_bubbles: ^1.4.0
   restart_app: ^1.1.2
+  intl: ^0.18.0
+  http: ^0.13.5
 
 dev_dependencies:
   flutter_test:
@@ -90,7 +92,11 @@ flutter:
   # the material Icons class.
   uses-material-design: true
   assets:
-    - assets/
+    - assets/gameslogos/
+    - assets/gameslogos-banner/
+    - assets/icons/
+    - assets/images/
+    - assets/images/MoP/
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg

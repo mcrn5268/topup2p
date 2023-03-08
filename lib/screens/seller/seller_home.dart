@@ -100,7 +100,6 @@ class _SellerMainScreenState extends State<SellerMainScreen> {
   void initState() {
     super.initState();
     _scrollController.addListener(() {
-      print('_scrollController.offset ${_scrollController.offset}');
       setState(() {
         _showScrollToTopButton = _scrollController.offset >= 200;
       });
@@ -152,7 +151,8 @@ class _SellerMainScreenState extends State<SellerMainScreen> {
                             color: Colors.grey.withOpacity(0.5),
                             spreadRadius: 2,
                             blurRadius: 5,
-                            offset: const Offset(0, 2), // changes position of shadow
+                            offset: const Offset(
+                                0, 2), // changes position of shadow
                           ),
                         ],
                       ),
@@ -174,8 +174,8 @@ class _SellerMainScreenState extends State<SellerMainScreen> {
                                   : const ColorFilter.mode(
                                       Colors.transparent, BlendMode.saturation),
                               child: CircleAvatar(
-                                backgroundImage: AssetImage(
-                                    getImage(item.name, 'image')),
+                                backgroundImage:
+                                    AssetImage(getImage(item.name, 'image')),
                               ),
                             ),
                           ),
@@ -188,12 +188,12 @@ class _SellerMainScreenState extends State<SellerMainScreen> {
                                   pageBuilder: (_, __, ___) => MultiProvider(
                                     providers: [
                                       ChangeNotifierProvider<
-                                          SellItemsProvider>.value(
-                                        value: SellItemsProvider(),
-                                      ),
-                                      ChangeNotifierProvider<
                                           PaymentProvider>.value(
                                         value: PaymentProvider(),
+                                      ),
+                                      ChangeNotifierProvider<
+                                          SellItemsProvider>.value(
+                                        value: SellItemsProvider(),
                                       ),
                                     ],
                                     child: AddItemSell(
@@ -266,11 +266,11 @@ class _SellerMainScreenState extends State<SellerMainScreen> {
               PageRouteBuilder(
                 pageBuilder: (_, __, ___) => MultiProvider(
                   providers: [
-                    ChangeNotifierProvider<SellItemsProvider>.value(
-                      value: SellItemsProvider(),
-                    ),
                     ChangeNotifierProvider<PaymentProvider>.value(
                       value: PaymentProvider(),
+                    ),
+                    ChangeNotifierProvider<SellItemsProvider>.value(
+                      value: SellItemsProvider(),
                     ),
                   ],
                   child: const SellerMain(index: 2),
@@ -287,11 +287,11 @@ class _SellerMainScreenState extends State<SellerMainScreen> {
               PageRouteBuilder(
                 pageBuilder: (_, __, ___) => MultiProvider(
                   providers: [
-                    ChangeNotifierProvider<SellItemsProvider>.value(
-                      value: SellItemsProvider(),
-                    ),
                     ChangeNotifierProvider<PaymentProvider>.value(
                       value: PaymentProvider(),
+                    ),
+                    ChangeNotifierProvider<SellItemsProvider>.value(
+                      value: SellItemsProvider(),
                     ),
                   ],
                   child: AddItemSell(
@@ -311,8 +311,7 @@ class _SellerMainScreenState extends State<SellerMainScreen> {
             }
           } else {
             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                content:
-                    Text('You must have at least 1 enabled wallet')));
+                content: Text('You must have at least 1 enabled wallet')));
 
             Navigator.pushReplacement(
               context,
@@ -337,7 +336,8 @@ class _SellerMainScreenState extends State<SellerMainScreen> {
               color: Colors.black,
             ),
           ),
-          shape: const Border(bottom: BorderSide(color: Colors.grey, width: 1))),
+          shape:
+              const Border(bottom: BorderSide(color: Colors.grey, width: 1))),
       body: PageStorage(
         key: const PageStorageKey('sellerHomePage'),
         bucket: _bucket,

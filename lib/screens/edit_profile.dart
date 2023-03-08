@@ -1,4 +1,4 @@
-// ignore_for_file: non_constant_identifier_names, use_build_context_synchronously
+// ignore_for_file: non_constant_identifier_names
 
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -89,6 +89,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               padding: const EdgeInsets.only(top: 15),
               child: ElevatedButton(
                 onPressed: () async {
+                  final navigator = Navigator.of(context);
+                  final scaffoldMsgr = ScaffoldMessenger.of(context);
                   if (_formKey.currentState!.validate()) {
                     // form is valid
                     if (pickedFile != null ||
@@ -110,7 +112,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   : 'assets/images/person-placeholder.png';
                           Map<String, dynamic> imageMap = {'image': assetsPath};
                           if (urlDownload != null) {
-                            imageMap['image'] = await ImagetoAssets(
+                            imageMap['image'] = await imageToAssets(
                                 url: urlDownload!, uid: userProvider.user!.uid);
                             imageMap['image_url'] = urlDownload;
                           }
@@ -118,8 +120,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               collection: 'users',
                               documentId: userProvider.user!.uid,
                               data: imageMap);
-                          print(
-                              'edit profile screen ${Provider.of<FavoritesProvider>(context, listen: false).favorites.length}');
                           userProvider.updateUser(image: imageMap['image']);
                           //if user is seller
                           if (userProvider.user!.type == 'seller') {
@@ -245,23 +245,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             }
                           }
                         }
-                        if (widget.favorites != null) {
-                          Navigator.pop(context, favProvider!.favorites);
-                        } else {
-                          Navigator.pop(context);
-                        }
+                        navigator.pop();
 
                         setState(() {
                           _isLoading = false;
                         });
-                        ScaffoldMessenger.of(context).showSnackBar(
+                        scaffoldMsgr.showSnackBar(
                             const SnackBar(content: Text('Profile Updated')));
                       } else {
                         setState(() {
                           _isLoading = false;
-                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                              content: Text(
-                                  'Shop name is already taken. Try again.')));
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text(
+                                      'Shop name is already taken. Try again.')));
                         });
                       }
                     } else {
@@ -356,8 +353,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               ? MediaQuery.of(context).size.height / 7
                               : MediaQuery.of(context).size.height / 9,
                           child: const ClipPath(
-                              clipper: ShapeBorderClipper(
-                                  shape: CircleBorder()),
+                              clipper:
+                                  ShapeBorderClipper(shape: CircleBorder()),
                               clipBehavior: Clip.hardEdge,
                               child: Icon(
                                 Icons.upload,
@@ -372,8 +369,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           top: flag ? 20 : 0,
                           child: InkWell(
                             child: const ClipPath(
-                                clipper: ShapeBorderClipper(
-                                    shape: CircleBorder()),
+                                clipper:
+                                    ShapeBorderClipper(shape: CircleBorder()),
                                 clipBehavior: Clip.hardEdge,
                                 child: Icon(
                                   Icons.close,

@@ -12,8 +12,6 @@ class ProfileButton extends StatelessWidget {
         Provider.of<FavoritesProvider>(context, listen: false);
     return ElevatedButton(
       onPressed: () async {
-        print(
-            'profile button ${Provider.of<FavoritesProvider>(context, listen: false).favorites.length}');
         final favs = await Navigator.push(
           context,
           PageRouteBuilder(
@@ -29,15 +27,10 @@ class ProfileButton extends StatelessWidget {
                 FadeTransition(opacity: a, child: c),
           ),
         );
-
-        print('check length11 ${favProvider.favorites.length}');
-        print('check length22 ${favs.length}');
         if (favs.length != favProvider.favorites.length) {
           favProvider.clearFavorites();
           favProvider.addItems(favs);
         }
-        print('check length33 ${favProvider.favorites.length}');
-        print('check length44 ${favs.length}');
       },
       child: Row(
         children: const <Widget>[Icon(Icons.person_outline_sharp)],

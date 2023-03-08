@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:topup2p/cloud/firestore.dart';
@@ -15,11 +16,13 @@ import 'package:topup2p/widgets/appbar/signoutbutton.dart';
 
 //this is shared screen for both user type normal and seller
 class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({this.favorites, super.key});
+  const ProfileScreen({this.siItems, this.favorites, super.key});
   final List<Item>? favorites;
+  final List<Map<Item, String>>? siItems;
   @override
   Widget build(BuildContext context) {
     PaymentProvider? paymentProvider;
+    SellItemsProvider? siProvider;
     FavoritesProvider? favProvider;
     UserProvider userProvider = Provider.of<UserProvider>(context);
     //if user type seller add PaymentProvider
@@ -27,8 +30,11 @@ class ProfileScreen extends StatelessWidget {
         'seller') {
       try {
         paymentProvider = Provider.of<PaymentProvider>(context, listen: false);
+        siProvider = Provider.of<SellItemsProvider>(context, listen: false);
       } catch (e) {
-        print('Probably just transitioned from user to seller | $e');
+        if (kDebugMode) {
+          print('Probably just transitioned from user to seller | $e');
+        }
       }
     }
 
@@ -36,6 +42,10 @@ class ProfileScreen extends StatelessWidget {
       favProvider = Provider.of<FavoritesProvider>(context);
       favProvider.clearFavorites(notify: false);
       favProvider.addItems(favorites!, notify: false);
+    }
+    if (siItems != null) {
+      siProvider!.clearItems(notify: false);
+      siProvider.addItems(siItems!, notify: false);
     }
     Widget profileHead = Stack(
       alignment: Alignment.center,
@@ -134,9 +144,7 @@ class ProfileScreen extends StatelessWidget {
                   ),
                 );
               } else if (userProvider.user!.type == 'normal') {
-                print(
-                    'edit profile button ${Provider.of<FavoritesProvider>(context, listen: false).favorites.length}');
-                final favs = await Navigator.push(
+                await Navigator.push(
                   context,
                   PageRouteBuilder(
                     pageBuilder: (_, __, ___) => MultiProvider(
@@ -152,10 +160,6 @@ class ProfileScreen extends StatelessWidget {
                         FadeTransition(opacity: a, child: c),
                   ),
                 );
-                if (favs.length != favProvider!.favorites.length) {
-                  favProvider.clearFavorites();
-                  favProvider.addItems(favs);
-                }
               }
             },
           ),
@@ -208,7 +212,7 @@ class ProfileScreen extends StatelessWidget {
                     paymentProvider.addAllPayments(paymentsList);
                     //add to firestore
                     Map<String, dynamic> forSellersMap = {};
-
+                    Map<String, dynamic> forGamesMap = {};
                     for (int index = 0;
                         index < paymentProvider.payments.length;
                         index++) {
@@ -224,18 +228,39 @@ class ProfileScreen extends StatelessWidget {
 
                       String paymentName =
                           paymentProvider.payments[index].paymentname;
+
                       forSellersMap['MoP'] ??=
                           {}; // Initialize 'MoP' map if it doesn't exist
                       forSellersMap['MoP'][paymentName] ??=
                           {}; // Initialize payment map if it doesn't exist
                       forSellersMap['MoP'][paymentName]
                           .addAll(paymentMap); // Add payment map to 'MoP'
+
+                      forGamesMap['mop$index'] = {
+                        'name': paymentName,
+                        ...paymentMap
+                      };
                     }
-                    //todo fix when wallet is updated, update all firestore documents
                     FirestoreService().create(
                         collection: 'sellers',
                         documentId: userProvider.user!.uid,
                         data: forSellersMap);
+                    for (var item in siProvider!.Sitems) {
+                      Item itemObject = item.keys.first;
+                      FirestoreService().create(
+                          collection: 'sellers',
+                          documentId: userProvider.user!.uid,
+                          data: {'mop': forGamesMap},
+                          subcollection: 'games',
+                          subdocumentId: itemObject.name);
+
+                      FirestoreService().create(
+                          collection: 'seller_games_data',
+                          documentId: itemObject.name,
+                          data: {
+                            userProvider.user!.name: {'mop': forGamesMap}
+                          });
+                    }
                   }
                 }),
             const Divider(),

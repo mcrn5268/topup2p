@@ -1,4 +1,4 @@
-// ignore_for_file: non_constant_identifier_names, use_build_context_synchronously
+// ignore_for_file: non_constant_identifier_names
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
@@ -57,6 +57,8 @@ class _SellerRegisterScreenState extends State<SellerRegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    FavoritesProvider favProvider =
+        Provider.of<FavoritesProvider>(context, listen: false);
     UserProvider userProvider = Provider.of<UserProvider>(context);
     bool flag = MediaQuery.of(context).orientation == Orientation.portrait;
     Widget registerName = Padding(
@@ -94,14 +96,15 @@ class _SellerRegisterScreenState extends State<SellerRegisterScreen> {
                     }
                     String assetsPath = 'assets/images/store-placeholder.png';
                     if (urlDownload != null) {
-                      assetsPath = await ImagetoAssets(
+                      assetsPath = await imageToAssets(
                           url: urlDownload!, uid: userProvider.user!.uid);
                     }
                     final updateData = <String, dynamic>{
                       "name": _Sname.text,
                       "type": "seller",
                       "image": assetsPath,
-                      "image_url": urlDownload ?? 'assets/images/store-placeholder.png'
+                      "image_url":
+                          urlDownload ?? 'assets/images/store-placeholder.png'
                     };
                     //update users info to sellers info (ex: name to shop name)
                     FirestoreService().update(
@@ -111,8 +114,7 @@ class _SellerRegisterScreenState extends State<SellerRegisterScreen> {
                     FirestoreService().delete(
                         collection: 'user_games_data',
                         documentId: userProvider.user!.uid);
-                    Provider.of<FavoritesProvider>(context, listen: false)
-                        .clearFavorites();
+                    favProvider.clearFavorites();
                     FirestoreService().create(
                         collection: 'sellers',
                         documentId: userProvider.user!.uid,

@@ -1,5 +1,3 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:topup2p/cloud/firestore.dart';
@@ -15,7 +13,8 @@ import 'package:topup2p/widgets/favorite_icon.dart';
 import 'package:topup2p/widgets/loading_screen.dart';
 
 class GameSellScreen extends StatefulWidget {
-  const GameSellScreen({required this.gameName, required this.favorites, super.key});
+  const GameSellScreen(
+      {required this.gameName, required this.favorites, super.key});
   final String gameName;
   final List<Item> favorites;
   @override
@@ -77,33 +76,36 @@ class _GameSellScreenState extends State<GameSellScreen> {
                 (shop) => GestureDetector(
                   onTap: () async {
                     String? convId;
-                    final Map<String, dynamic>? snapshot =
-                        await FirestoreService().read(
+
+                    await FirestoreService()
+                        .read(
                             collection: 'messages',
                             documentId: 'users_conversations',
                             subcollection: shop['info']['uid'],
                             subdocumentId: Provider.of<UserProvider>(context,
                                     listen: false)
                                 .user!
-                                .uid);
-                    if (snapshot != null) {
-                      convId = snapshot['conversationId'];
-                    }
-                    Navigator.push(
-                      context,
-                      PageRouteBuilder(
-                        pageBuilder: (_, __, ___) => ChatScreen(
-                          convId: convId,
-                          userId: shop['info']['uid'],
-                          userName: shop['info']['name'],
-                          userImage: shop['info']['image'],
-                          gameFromShop: shop,
-                          gameName: widget.gameName,
+                                .uid)
+                        .then((value) {
+                      if (value != null) {
+                        convId = value['conversationId'];
+                      }
+                      Navigator.push(
+                        context,
+                        PageRouteBuilder(
+                          pageBuilder: (_, __, ___) => ChatScreen(
+                            convId: convId,
+                            userId: shop['info']['uid'],
+                            userName: shop['info']['name'],
+                            userImage: shop['info']['image'],
+                            gameFromShop: shop,
+                            gameName: widget.gameName,
+                          ),
+                          transitionsBuilder: (_, a, __, c) =>
+                              FadeTransition(opacity: a, child: c),
                         ),
-                        transitionsBuilder: (_, a, __, c) =>
-                            FadeTransition(opacity: a, child: c),
-                      ),
-                    );
+                      );
+                    });
                   },
                   child: Padding(
                     padding: const EdgeInsets.all(15.0),
@@ -124,7 +126,8 @@ class _GameSellScreenState extends State<GameSellScreen> {
                           children: [
                             Padding(
                               padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
-                              child: shop['info']['image'] == 'assets/images/store-placeholder.png'
+                              child: shop['info']['image'] ==
+                                      'assets/images/store-placeholder.png'
                                   ? Container(
                                       width: 100,
                                       decoration: const BoxDecoration(

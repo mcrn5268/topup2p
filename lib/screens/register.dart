@@ -1,6 +1,7 @@
-// ignore_for_file: non_constant_identifier_names, use_build_context_synchronously
+// ignore_for_file: non_constant_identifier_names
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
@@ -18,14 +19,11 @@ class RegisterScreen extends StatefulWidget {
 class _RegisterScreenState extends State<RegisterScreen> {
   final GlobalKey<FormState> _form = GlobalKey<FormState>();
   final TextEditingController _Fname = TextEditingController();
-
   final TextEditingController _Lname = TextEditingController();
-
   final TextEditingController _email = TextEditingController();
-
   final TextEditingController _pass = TextEditingController();
-
   final TextEditingController _Cpass = TextEditingController();
+  late UserProvider userProvider;
   bool _obscureText = true;
   late FocusNode focusNode;
   bool _hasInputError = false;
@@ -34,6 +32,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   void initState() {
     super.initState();
+    userProvider = Provider.of<UserProvider>(context, listen: false);
     focusNode = FocusNode();
     focusNode.addListener(() {
       if (!focusNode.hasFocus) {
@@ -97,10 +96,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
           type: 'normal',
           image: 'assets/images/person-placeholder.png',
           image_url: 'assets/images/person-placeholder.png');
-      Provider.of<UserProvider>(context, listen: false).setUser(user);
+      userProvider.setUser(user);
     } catch (e) {
       // Display an error message
-      print('Error registering user: $e');
+      if (kDebugMode) {
+        print('Error registering user: $e');
+      }
     } finally {
       Navigator.pop(context);
       setState(() {
@@ -224,7 +225,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       : ElevatedButton(
                           onPressed: () {
                             if (_form.currentState!.validate()) {
-                            //input are valid
+                              //input are valid
                               _registerUser();
                             }
                           },

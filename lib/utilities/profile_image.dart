@@ -7,7 +7,6 @@ import 'package:topup2p/providers/user_provider.dart';
 
 Widget getImage(context) {
   UserProvider userProvider = Provider.of<UserProvider>(context);
-  print('userProvider.user!.image ${userProvider.user!.image}');
   if (userProvider.user!.image == 'assets/images/person-placeholder.png' ||
       userProvider.user!.image == 'assets/images/store-placeholder.png') {
     return CircleAvatar(
@@ -17,7 +16,7 @@ Widget getImage(context) {
     //if file doesn't exist in local files
     if (!file.existsSync()) {
       //image url to assets
-      ImagetoAssets(
+      imageToAssets(
               url: userProvider.user!.image_url, uid: userProvider.user!.uid)
           .then((path) {
         userProvider.updateUser(image: path);

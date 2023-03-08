@@ -1,4 +1,4 @@
-// ignore_for_file: file_names, non_constant_identifier_names, use_build_context_synchronously
+// ignore_for_file: file_names, non_constant_identifier_names
 
 import 'package:flutter/material.dart';
 import 'package:flutter_switch/flutter_switch.dart';
@@ -67,8 +67,8 @@ class _AddItemSellState extends State<AddItemSell> {
         }
       } else if (controller.text != '' && controller2.text != '') {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text(
-                'Rates must not be empty if you wish to add an item!')));
+            content:
+                Text('Rates must not be empty if you wish to add an item!')));
         _ratesFlag = false;
       }
       setState(() {});
@@ -92,15 +92,14 @@ class _AddItemSellState extends State<AddItemSell> {
           .addItems(widget.Sitems!);
 
       Provider.of<PaymentProvider>(context, listen: false)
-          .clearPayments();
+          .clearPayments(notify: false);
       Provider.of<PaymentProvider>(context, listen: false)
-          .addAllPayments(widget.payments);
+          .addAllPayments(widget.payments, notify: false);
     }
   }
 
   Future<void> checkGame(String gameName) async {
     //check game if it exists if yes then populate the input fields
-    //Map<String, dynamic>? result = await sellerGamesItems().loadItemsRates(gameName);
     final item = getItemByName(gameName);
     if (item != null) {
       bool isAlreadyPosted =
@@ -138,6 +137,8 @@ class _AddItemSellState extends State<AddItemSell> {
 
   @override
   Widget build(BuildContext context) {
+    PaymentProvider paymentProvider =
+        Provider.of<PaymentProvider>(context, listen: false);
     //input field list 12pcs
     List<Widget> rowsList = List.generate(
       (_cRate.length / 2).ceil(),
@@ -312,6 +313,7 @@ class _AddItemSellState extends State<AddItemSell> {
                 visible: _typeAheadController.text != '',
                 child: ElevatedButton(
                   onPressed: () async {
+                    final scaffoldMsgr = ScaffoldMessenger.of(context);
                     _cRateValidation();
                     //add item to provider and firestore
                     //SellItemsProvider
@@ -360,15 +362,9 @@ class _AddItemSellState extends State<AddItemSell> {
                       //mop
                       Map<String, dynamic> mopMap = {};
                       for (int index = 0;
-                          index <
-                              Provider.of<PaymentProvider>(context,
-                                      listen: false)
-                                  .payments
-                                  .length;
+                          index < paymentProvider.payments.length;
                           index++) {
-                        var item =
-                            Provider.of<PaymentProvider>(context, listen: false)
-                                .payments[index];
+                        var item = paymentProvider.payments[index];
                         if (item.isEnabled) {
                           mopMap['mop$index'] = {
                             'name': item.paymentname,
@@ -407,7 +403,7 @@ class _AddItemSellState extends State<AddItemSell> {
                         subdocumentId: _typeAheadController.text,
                         merge: false,
                       );
-                      ScaffoldMessenger.of(context).showSnackBar(
+                      scaffoldMsgr.showSnackBar(
                           const SnackBar(content: Text('Success')));
                       setState(() {
                         _isLoading = false;

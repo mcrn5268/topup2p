@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:topup2p/models/payment_model.dart';
 
 class PaymentProvider with ChangeNotifier {
@@ -13,14 +13,18 @@ class PaymentProvider with ChangeNotifier {
     }
   }
 
-  void clearPayments() {
+  void clearPayments({bool notify = true}) {
     _payments.clear();
+    if (notify) {
       notifyListeners();
+    }
   }
 
-  void addAllPayments(List<Payment> payments) {
+  void addAllPayments(List<Payment> payments, {bool notify = true}) {
     _payments.addAll(payments);
+    if (notify) {
       notifyListeners();
+    }
   }
 
   void updatePayment(Payment payment,
@@ -60,11 +64,13 @@ class PaymentProvider with ChangeNotifier {
 
   void printAllPayments() {
     for (Payment payment in _payments) {
-      print('Payment Name: ${payment.paymentname}');
-      print('Payment Image: ${payment.paymentimage}');
-      print('Account Name: ${payment.accountname}');
-      print('Account Number: ${payment.accountnumber}');
-      print('Is Enabled: ${payment.isEnabled}');
+      if (kDebugMode) {
+        print('Payment Name: ${payment.paymentname}');
+        print('Payment Image: ${payment.paymentimage}');
+        print('Account Name: ${payment.accountname}');
+        print('Account Number: ${payment.accountnumber}');
+        print('Is Enabled: ${payment.isEnabled}');
+      }
     }
   }
 }

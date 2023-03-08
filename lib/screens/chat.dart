@@ -1,9 +1,8 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'dart:async';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
@@ -12,6 +11,7 @@ import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:provider/provider.dart';
 import 'package:topup2p/cloud/firestore.dart';
 import 'package:topup2p/models/item_model.dart';
+import 'package:topup2p/models/user_model.dart';
 import 'package:topup2p/providers/user_provider.dart';
 import 'package:topup2p/utilities/image_file_utils.dart';
 import 'package:chat_bubbles/chat_bubbles.dart';
@@ -66,8 +66,6 @@ class _ChatScreenState extends State<ChatScreen> {
                       .toList();
                 })
               });
-
-      print('enabledGames $enabledGames');
     } else {
       //todo
       //use sell_items_provider
@@ -774,17 +772,18 @@ class _ChatScreenState extends State<ChatScreen> {
                 IconButton(
                   icon: const Icon(Icons.send),
                   onPressed: () async {
+                      UserModel userModel = Provider.of<UserProvider>(context, listen: false).user!;
                     if (pickedFile != null) {
                       String url =
                           await uploadImageFile(pickedFile!, conversationId!);
                       FirestoreService().sendMessage(
                           conversationId: conversationId!,
                           message: url,
-                          context: context,
                           otherUserId: widget.userId,
                           otherUserImage: widget.userImage,
                           otherUserName: widget.userName,
-                          type: 'image');
+                          type: 'image',
+                          userModel: userModel);
 
                       setState(() {
                         pickedFile = null;
@@ -795,11 +794,11 @@ class _ChatScreenState extends State<ChatScreen> {
                       FirestoreService().sendMessage(
                           conversationId: conversationId!,
                           message: _controller.text,
-                          context: context,
                           otherUserId: widget.userId,
                           otherUserImage: widget.userImage,
                           otherUserName: widget.userName,
-                          type: 'text');
+                          type: 'text',
+                          userModel: userModel);
                     }
 
                     _controller.clear();
@@ -810,7 +809,9 @@ class _ChatScreenState extends State<ChatScreen> {
                         curve: Curves.easeOut,
                       );
                     } catch (e) {
-                      print('scroll error $e');
+                      if (kDebugMode) {
+                        print('scroll error $e');
+                      }
                     }
                   },
                 )

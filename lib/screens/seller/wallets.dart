@@ -17,9 +17,9 @@ class _SellerWalletsScreenState extends State<SellerWalletsScreen> {
   void initState() {
     super.initState();
     if (widget.payments.isNotEmpty) {
-      Provider.of<PaymentProvider>(context, listen: false).clearPayments();
+      Provider.of<PaymentProvider>(context, listen: false).clearPayments(notify: false);
       Provider.of<PaymentProvider>(context, listen: false)
-          .addAllPayments(widget.payments);
+          .addAllPayments(widget.payments,notify: false);
     }
   }
 

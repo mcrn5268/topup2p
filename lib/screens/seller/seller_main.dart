@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:topup2p/cloud/firestore.dart';
@@ -24,21 +25,26 @@ class _SellerMainState extends State<SellerMain> {
   bool _isLoading = false;
   late int _currentIndex;
   final PageStorageBucket bucket = PageStorageBucket();
-  final List<Widget> _children = [
-    const SellerMainScreen(),
-    const MessagesScreen(),
-    ChangeNotifierProvider<SellItemsProvider>.value(
-      value: SellItemsProvider(),
-      child: const ProfileScreen(),
-    ),
-  ];
+  late final List<Widget> _children;
+  late PaymentProvider paymentProvider;
 
   @override
   void initState() {
     super.initState();
+    paymentProvider = Provider.of<PaymentProvider>(context, listen: false);
     _isLoading = true;
     readSellerFirestore();
     _currentIndex = widget.index ?? 0;
+    _children = [
+      const SellerMainScreen(),
+      const MessagesScreen(),
+      ChangeNotifierProvider<SellItemsProvider>.value(
+        value: SellItemsProvider(),
+        child: ProfileScreen(
+            siItems:
+                Provider.of<SellItemsProvider>(context, listen: false).Sitems),
+      ),
+    ];
   }
 
   Future<void> readSellerFirestore() async {
@@ -62,13 +68,14 @@ class _SellerMainState extends State<SellerMain> {
               isEnabled: paymentData['status'] == 'enabled',
               paymentimage: 'assets/images/MoP/${paymentName}Card.png',
             );
-            Provider.of<PaymentProvider>(context, listen: false)
-                .addPayment(payment);
+            paymentProvider.addPayment(payment);
           }
         }
       } catch (e) {
-        print(
-            'Something went wrong with reading seller MoP data from Firestore: $e');
+        if (kDebugMode) {
+          print(
+              'Something went wrong with reading seller MoP data from Firestore: $e');
+        }
       }
       //MoPs
       try {
@@ -84,8 +91,10 @@ class _SellerMainState extends State<SellerMain> {
           });
         }
       } catch (e) {
-        print(
-            'Something went wrong with reading seller games data from Firestore: $e');
+        if (kDebugMode) {
+          print(
+              'Something went wrong with reading seller games data from Firestore: $e');
+        }
       }
     }
     setState(() {
@@ -132,8 +141,9 @@ class _SellerMainState extends State<SellerMain> {
                     right: MediaQuery.of(context).size.width / 2 - 15,
                     bottom: 35,
                     child: StreamBuilder(
-                        stream: FirestoreService().getSeenStream(uid:
-                            Provider.of<UserProvider>(context, listen: false)
+                        stream: FirestoreService().getSeenStream(
+                            uid: Provider.of<UserProvider>(context,
+                                    listen: false)
                                 .user!
                                 .uid),
                         builder: (context, snapshot) {

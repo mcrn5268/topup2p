@@ -42,9 +42,9 @@ class _AddUpdateWalletScreenState extends State<AddUpdateWalletScreen> {
     }
     if (widget.paymentList != null) {
       Provider.of<PaymentProvider>(context, listen: false)
-          .clearPayments();
+          .clearPayments(notify: false);
       Provider.of<PaymentProvider>(context, listen: false)
-          .addAllPayments(widget.paymentList!);
+          .addAllPayments(widget.paymentList!, notify: false);
     }
     limit = max(_controllernum.text.toString().length, 3);
   }

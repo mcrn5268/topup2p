@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart'
     hide EmailAuthProvider, PhoneAuthProvider;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:topup2p/cloud/firebase_options.dart';
 import 'package:topup2p/cloud/firestore.dart';
 import 'package:topup2p/models/user_model.dart';
@@ -20,6 +20,7 @@ class UserProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  // ignore: non_constant_identifier_names
   void updateUser({String? name, String? type, String? image, String? image_url}) {
     if (_user != null) {
       _user = UserModel(
@@ -44,10 +45,14 @@ class UserProvider extends ChangeNotifier {
 
     FirebaseAuth.instance.authStateChanges().listen((user) async {
       if (user != null) {
-        print('User is signed in!');
+        if (kDebugMode) {
+          print('User is signed in!');
+        }
         signIn(user);
       } else {
-        print('User is currently signed out!');
+        if (kDebugMode) {
+          print('User is currently signed out!');
+        }
       }
       notifyListeners();
     });

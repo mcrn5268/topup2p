@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 
 //select an image file to be used as display photo
 Future selectImageFile() async {
@@ -9,7 +10,9 @@ Future selectImageFile() async {
     if (result == null) return;
     return result.files.first;
   } catch (e) {
-    print('error $e');
+    if (kDebugMode) {
+      print('error $e');
+    }
   }
 }
 
@@ -22,10 +25,13 @@ Future uploadImageFile(PlatformFile pickedFile, String uid) async {
   final ref = FirebaseStorage.instance.ref().child(path);
   uploadTask = ref.putFile(file);
 
+  // ignore: unused_local_variable
   final snapshot = await uploadTask.whenComplete(() {});
   String urlDownload = await ref.getDownloadURL();
 
-  print('Download Link: $urlDownload');
+  if (kDebugMode) {
+    print('Download Link: $urlDownload');
+  }
   return urlDownload;
 }
 

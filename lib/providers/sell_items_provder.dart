@@ -27,9 +27,11 @@ class SellItemsProvider with ChangeNotifier {
     }
   }
 
-  void clearItems() {
+  void clearItems({bool notify = true}) {
     _Sitems.clear();
-    notifyListeners();
+    if (notify) {
+      notifyListeners();
+    }
   }
 
   void addItems(List<Map<Item, String>> items, {bool notify = false}) {
