@@ -24,7 +24,8 @@ class ProfileScreen extends StatelessWidget {
     PaymentProvider? paymentProvider;
     SellItemsProvider? siProvider;
     FavoritesProvider? favProvider;
-    UserProvider userProvider = Provider.of<UserProvider>(context);
+    UserProvider userProvider =
+        Provider.of<UserProvider>(context, listen: false);
     //if user type seller add PaymentProvider
     if (userProvider.user != null) {
       if (userProvider.user!.type == 'seller') {
@@ -38,285 +39,287 @@ class ProfileScreen extends StatelessWidget {
           }
         }
       }
-    }
-
-    if (favorites != null) {
-      favProvider = Provider.of<FavoritesProvider>(context);
-      favProvider.clearFavorites(notify: false);
-      favProvider.addItems(favorites!, notify: false);
-    }
-    if (siItems != null) {
-      siProvider!.clearItems(notify: false);
-      siProvider.addItems(siItems!, notify: false);
-    }
-    Widget profileHead = Stack(
-      alignment: Alignment.center,
-      children: [
-        CustomPaint(
-          painter: HeaderCurvedContainer(),
-          child: SizedBox(
-            width: MediaQuery.of(context).size.width,
-            height: 350,
-          ),
-        ),
-        Positioned(
-          top: 0,
-          child: Padding(
-            padding: const EdgeInsets.only(right: 8.0, top: 10),
+      if (favorites != null) {
+        favProvider = Provider.of<FavoritesProvider>(context);
+        favProvider.clearFavorites(notify: false);
+        favProvider.addItems(favorites!, notify: false);
+      }
+      if (siItems != null) {
+        siProvider!.clearItems(notify: false);
+        siProvider.addItems(siItems!, notify: false);
+      }
+      Widget profileHead = Stack(
+        alignment: Alignment.center,
+        children: [
+          CustomPaint(
+            painter: HeaderCurvedContainer(),
             child: SizedBox(
               width: MediaQuery.of(context).size.width,
+              height: 350,
+            ),
+          ),
+          Positioned(
+            top: 0,
+            child: Padding(
+              padding: const EdgeInsets.only(right: 8.0, top: 10),
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    //if user type is normal show back button
+                    if (userProvider.user!.type == 'normal') ...[
+                      Expanded(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            IconButton(
+                                onPressed: () {
+                                  Navigator.pop(
+                                      context, favProvider!.favorites);
+                                },
+                                icon: const Icon(Icons.arrow_back_ios_outlined,
+                                    color: Colors.white)),
+                          ],
+                        ),
+                      ),
+                      const MessageButton(fromProfile: true),
+                    ],
+                    const SignoutButton(),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Text(
+                  userProvider.user!.name,
+                  style: const TextStyle(
+                    fontSize: 35.0,
+                    letterSpacing: 1.5,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+              CircleAvatar(
+                  backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                  radius: 80,
+                  child: getImage(context)),
+            ],
+          ),
+        ],
+      );
+      Widget profileBody = Padding(
+        padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+        child: Column(
+          children: [
+            InkWell(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  //if user type is normal show back button
-                  if (userProvider.user!.type == 'normal') ...[
-                    Expanded(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          IconButton(
-                              onPressed: () {
-                                Navigator.pop(context, favProvider!.favorites);
-                              },
-                              icon: const Icon(Icons.arrow_back_ios_outlined,
-                                  color: Colors.white)),
-                        ],
-                      ),
-                    ),
-                    const MessageButton(fromProfile: true),
-                  ],
-                  const SignoutButton(),
+                children: const [
+                  Icon(Icons.edit, color: Colors.grey),
+                  Text('Edit Profile')
                 ],
               ),
-            ),
-          ),
-        ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Text(
-                userProvider.user!.name,
-                style: const TextStyle(
-                  fontSize: 35.0,
-                  letterSpacing: 1.5,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-            CircleAvatar(
-                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-                radius: 80,
-                child: getImage(context)),
-          ],
-        ),
-      ],
-    );
-    Widget profileBody = Padding(
-      padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-      child: Column(
-        children: [
-          InkWell(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: const [
-                Icon(Icons.edit, color: Colors.grey),
-                Text('Edit Profile')
-              ],
-            ),
-            onTap: () async {
-              if (userProvider.user!.type == 'seller') {
-                Navigator.push(
-                  context,
-                  PageRouteBuilder(
-                    pageBuilder: (_, __, ___) => MultiProvider(
-                      providers: [
-                        ChangeNotifierProvider<SellItemsProvider>.value(
-                          value: SellItemsProvider(),
-                        ),
-                        ChangeNotifierProvider<PaymentProvider>.value(
-                          value: PaymentProvider(),
-                        ),
-                      ],
-                      child: const EditProfileScreen(),
-                    ),
-                    transitionsBuilder: (_, a, __, c) =>
-                        FadeTransition(opacity: a, child: c),
-                  ),
-                );
-              } else if (userProvider.user!.type == 'normal') {
-                await Navigator.push(
-                  context,
-                  PageRouteBuilder(
-                    pageBuilder: (_, __, ___) => MultiProvider(
-                      providers: [
-                        ChangeNotifierProvider<FavoritesProvider>.value(
-                          value: FavoritesProvider(),
-                        ),
-                      ],
-                      child:
-                          EditProfileScreen(favorites: favProvider!.favorites),
-                    ),
-                    transitionsBuilder: (_, a, __, c) =>
-                        FadeTransition(opacity: a, child: c),
-                  ),
-                );
-              }
-            },
-          ),
-          //different icon for different user type
-          ListTile(
-            leading: Icon(userProvider.user!.type == 'normal'
-                ? Icons.person
-                : Icons.storefront),
-            title: Text(userProvider.user!.name),
-          ),
-          const Divider(),
-          //todo
-          const ListTile(
-            leading: Icon(Icons.phone_android),
-            title: Text('+639 999 9999'),
-          ),
-          const Divider(),
-          ListTile(
-            leading: const Icon(Icons.email),
-            title: Text(userProvider.user!.email),
-          ),
-          const Divider(),
-          //if user type seller show Wallets list tile
-          if (userProvider.user!.type == 'seller') ...[
-            InkWell(
-                child: const ListTile(
-                  leading: Icon(Icons.wallet),
-                  title: Text("Wallets"),
-                  trailing: Icon(Icons.arrow_forward_ios_outlined),
-                ),
-                onTap: () async {
-                  final paymentsList = await Navigator.push(
+              onTap: () async {
+                if (userProvider.user!.type == 'seller') {
+                  Navigator.push(
                     context,
                     PageRouteBuilder(
-                      pageBuilder: (_, __, ___) =>
+                      pageBuilder: (_, __, ___) => MultiProvider(
+                        providers: [
+                          ChangeNotifierProvider<SellItemsProvider>.value(
+                            value: SellItemsProvider(),
+                          ),
                           ChangeNotifierProvider<PaymentProvider>.value(
-                        value: PaymentProvider(),
-                        child: SellerWalletsScreen(
-                            payments: paymentProvider!.payments),
+                            value: PaymentProvider(),
+                          ),
+                        ],
+                        child: const EditProfileScreen(),
                       ),
                       transitionsBuilder: (_, a, __, c) =>
                           FadeTransition(opacity: a, child: c),
                     ),
                   );
-                  //after navigator.pop check if payment has been added
-                  //if yes then update both provider and firestore
-                  if (paymentsList != null) {
-                    //add to provider
-                    paymentProvider!.clearPayments();
-                    paymentProvider.addAllPayments(paymentsList);
-                    //add to firestore
-                    Map<String, dynamic> forSellersMap = {};
-                    Map<String, dynamic> forGamesMap = {};
-                    for (int index = 0;
-                        index < paymentProvider.payments.length;
-                        index++) {
-                      Map<String, dynamic> paymentMap = {
-                        'account_name':
-                            paymentProvider.payments[index].accountname,
-                        'account_number':
-                            paymentProvider.payments[index].accountnumber,
-                        'status': paymentProvider.payments[index].isEnabled
-                            ? 'enabled'
-                            : 'disabled'
-                      };
+                } else if (userProvider.user!.type == 'normal') {
+                  await Navigator.push(
+                    context,
+                    PageRouteBuilder(
+                      pageBuilder: (_, __, ___) => MultiProvider(
+                        providers: [
+                          ChangeNotifierProvider<FavoritesProvider>.value(
+                            value: FavoritesProvider(),
+                          ),
+                        ],
+                        child: EditProfileScreen(
+                            favorites: favProvider!.favorites),
+                      ),
+                      transitionsBuilder: (_, a, __, c) =>
+                          FadeTransition(opacity: a, child: c),
+                    ),
+                  );
+                }
+              },
+            ),
+            //different icon for different user type
+            ListTile(
+              leading: Icon(userProvider.user!.type == 'normal'
+                  ? Icons.person
+                  : Icons.storefront),
+              title: Text(userProvider.user!.name),
+            ),
+            const Divider(),
+            //todo
+            const ListTile(
+              leading: Icon(Icons.phone_android),
+              title: Text('+639 999 9999'),
+            ),
+            const Divider(),
+            ListTile(
+              leading: const Icon(Icons.email),
+              title: Text(userProvider.user!.email),
+            ),
+            const Divider(),
+            //if user type seller show Wallets list tile
+            if (userProvider.user!.type == 'seller') ...[
+              InkWell(
+                  child: const ListTile(
+                    leading: Icon(Icons.wallet),
+                    title: Text("Wallets"),
+                    trailing: Icon(Icons.arrow_forward_ios_outlined),
+                  ),
+                  onTap: () async {
+                    final paymentsList = await Navigator.push(
+                      context,
+                      PageRouteBuilder(
+                        pageBuilder: (_, __, ___) =>
+                            ChangeNotifierProvider<PaymentProvider>.value(
+                          value: PaymentProvider(),
+                          child: SellerWalletsScreen(
+                              payments: paymentProvider!.payments),
+                        ),
+                        transitionsBuilder: (_, a, __, c) =>
+                            FadeTransition(opacity: a, child: c),
+                      ),
+                    );
+                    //after navigator.pop check if payment has been added
+                    //if yes then update both provider and firestore
+                    if (paymentsList != null) {
+                      //add to provider
+                      paymentProvider!.clearPayments();
+                      paymentProvider.addAllPayments(paymentsList);
+                      //add to firestore
+                      Map<String, dynamic> forSellersMap = {};
+                      Map<String, dynamic> forGamesMap = {};
+                      for (int index = 0;
+                          index < paymentProvider.payments.length;
+                          index++) {
+                        Map<String, dynamic> paymentMap = {
+                          'account_name':
+                              paymentProvider.payments[index].accountname,
+                          'account_number':
+                              paymentProvider.payments[index].accountnumber,
+                          'status': paymentProvider.payments[index].isEnabled
+                              ? 'enabled'
+                              : 'disabled'
+                        };
 
-                      String paymentName =
-                          paymentProvider.payments[index].paymentname;
+                        String paymentName =
+                            paymentProvider.payments[index].paymentname;
 
-                      forSellersMap['MoP'] ??=
-                          {}; // Initialize 'MoP' map if it doesn't exist
-                      forSellersMap['MoP'][paymentName] ??=
-                          {}; // Initialize payment map if it doesn't exist
-                      forSellersMap['MoP'][paymentName]
-                          .addAll(paymentMap); // Add payment map to 'MoP'
+                        forSellersMap['MoP'] ??=
+                            {}; // Initialize 'MoP' map if it doesn't exist
+                        forSellersMap['MoP'][paymentName] ??=
+                            {}; // Initialize payment map if it doesn't exist
+                        forSellersMap['MoP'][paymentName]
+                            .addAll(paymentMap); // Add payment map to 'MoP'
 
-                      forGamesMap['mop$index'] = {
-                        'name': paymentName,
-                        ...paymentMap
-                      };
-                    }
-                    FirestoreService().create(
-                        collection: 'sellers',
-                        documentId: userProvider.user!.uid,
-                        data: forSellersMap);
-                    for (var item in siProvider!.Sitems) {
-                      Item itemObject = item.keys.first;
+                        forGamesMap['mop$index'] = {
+                          'name': paymentName,
+                          ...paymentMap
+                        };
+                      }
                       FirestoreService().create(
                           collection: 'sellers',
                           documentId: userProvider.user!.uid,
-                          data: {'mop': forGamesMap},
-                          subcollection: 'games',
-                          subdocumentId: itemObject.name);
+                          data: forSellersMap);
+                      for (var item in siProvider!.Sitems) {
+                        Item itemObject = item.keys.first;
+                        FirestoreService().create(
+                            collection: 'sellers',
+                            documentId: userProvider.user!.uid,
+                            data: {'mop': forGamesMap},
+                            subcollection: 'games',
+                            subdocumentId: itemObject.name);
 
-                      FirestoreService().create(
-                          collection: 'seller_games_data',
-                          documentId: itemObject.name,
-                          data: {
-                            userProvider.user!.name: {'mop': forGamesMap}
-                          });
+                        FirestoreService().create(
+                            collection: 'seller_games_data',
+                            documentId: itemObject.name,
+                            data: {
+                              userProvider.user!.name: {'mop': forGamesMap}
+                            });
+                      }
                     }
-                  }
-                }),
-            const Divider(),
+                  }),
+              const Divider(),
+            ],
           ],
-        ],
-      ),
-    );
-    Widget wantToSell = Padding(
-      padding: const EdgeInsets.fromLTRB(0, 50, 0, 30),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          InkWell(
-            child: RichText(
-              textScaleFactor: MediaQuery.of(context).textScaleFactor,
-              textAlign: TextAlign.center,
-              text: const TextSpan(
-                style: TextStyle(fontSize: 15, color: Colors.black),
-                children: [
-                  TextSpan(
-                    text: 'Want to sell?',
-                    style: TextStyle(decoration: TextDecoration.underline),
-                  ),
-                ],
-              ),
-            ),
-            onTap: () {
-              Navigator.push(
-                context,
-                PageRouteBuilder(
-                  pageBuilder: (_, __, ___) =>
-                      ChangeNotifierProvider<FavoritesProvider>.value(
-                    value: FavoritesProvider(),
-                    child: const SellerRegisterScreen(),
-                  ),
-                  transitionsBuilder: (_, a, __, c) =>
-                      FadeTransition(opacity: a, child: c),
+        ),
+      );
+      Widget wantToSell = Padding(
+        padding: const EdgeInsets.fromLTRB(0, 50, 0, 30),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            InkWell(
+              child: RichText(
+                textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                textAlign: TextAlign.center,
+                text: const TextSpan(
+                  style: TextStyle(fontSize: 15, color: Colors.black),
+                  children: [
+                    TextSpan(
+                      text: 'Want to sell?',
+                      style: TextStyle(decoration: TextDecoration.underline),
+                    ),
+                  ],
                 ),
-              );
-            },
-          ),
-        ],
-      ),
-    );
-    return SafeArea(
-      child: Scaffold(
-        body: ListView(children: [
-          profileHead,
-          profileBody,
-          //if user type normal show an option where they can be a seller
-          if (userProvider.user!.type == 'normal') ...[wantToSell]
-        ]),
-      ),
-    );
+              ),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  PageRouteBuilder(
+                    pageBuilder: (_, __, ___) =>
+                        ChangeNotifierProvider<FavoritesProvider>.value(
+                      value: FavoritesProvider(),
+                      child: const SellerRegisterScreen(),
+                    ),
+                    transitionsBuilder: (_, a, __, c) =>
+                        FadeTransition(opacity: a, child: c),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+      );
+      return SafeArea(
+        child: Scaffold(
+          body: ListView(children: [
+            profileHead,
+            profileBody,
+            //if user type normal show an option where they can be a seller
+            if (userProvider.user!.type == 'normal') ...[wantToSell]
+          ]),
+        ),
+      );
+    } else {
+      return Container();
+    }
   }
 }
 

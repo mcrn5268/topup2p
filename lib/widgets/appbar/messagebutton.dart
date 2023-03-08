@@ -18,7 +18,7 @@ class MessageButton extends StatelessWidget {
               Navigator.push(
                 context,
                 PageRouteBuilder(
-                  pageBuilder: (_, __, ___) => const MessagesScreen(),
+                  pageBuilder: (_, __, ___) => MessagesScreen(),
                   transitionsBuilder: (_, a, __, c) =>
                       FadeTransition(opacity: a, child: c),
                 ),

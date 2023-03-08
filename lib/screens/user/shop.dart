@@ -33,7 +33,7 @@ class _GameSellScreenState extends State<GameSellScreen> {
             .read(collection: 'seller_games_data', documentId: widget.gameName),
         builder: ((context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
-            favProvider.addItems(widget.favorites);
+            favProvider.addItems(widget.favorites, notify: false);
             return Scaffold(
                 appBar: AppBarWidget(
                   home: false,
@@ -52,7 +52,15 @@ class _GameSellScreenState extends State<GameSellScreen> {
 
   //seller list/body
   Widget sellerBody(Map<String, dynamic> data) {
-    if (data.isNotEmpty) {
+    bool hasEnabledItem = false;
+    for (var status in data.values) {
+      if (status['info']['status'] == 'enabled') {
+        hasEnabledItem = true;
+        break;
+      }
+    }
+
+    if (hasEnabledItem) {
       var gameItem = getItemByName(widget.gameName);
       List<Map<dynamic, dynamic>> shopList = mapToList(data);
 

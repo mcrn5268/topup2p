@@ -11,7 +11,10 @@ import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:provider/provider.dart';
 import 'package:topup2p/cloud/firestore.dart';
 import 'package:topup2p/models/item_model.dart';
+import 'package:topup2p/models/payment_model.dart';
 import 'package:topup2p/models/user_model.dart';
+import 'package:topup2p/providers/payment_provider.dart';
+import 'package:topup2p/providers/sell_items_provder.dart';
 import 'package:topup2p/providers/user_provider.dart';
 import 'package:topup2p/utilities/image_file_utils.dart';
 import 'package:chat_bubbles/chat_bubbles.dart';
@@ -23,10 +26,14 @@ class ChatScreen extends StatefulWidget {
       {required this.userId,
       required this.userName,
       required this.userImage,
+      this.sItems,
+      this.payments,
       this.convId,
       this.gameFromShop,
       this.gameName,
       super.key});
+  final List<Map<Item, String>>? sItems;
+  final List<Payment>? payments;
   final String? convId;
   final String userId;
   final String userName;
@@ -49,6 +56,8 @@ class _ChatScreenState extends State<ChatScreen> {
   List<dynamic> enabledGames = [];
   List<Map<String, dynamic>> payments = [];
   Item? selectedItem;
+  SellItemsProvider? siItems;
+  PaymentProvider? paymentProvider;
 
   @override
   void initState() {
@@ -57,40 +66,62 @@ class _ChatScreenState extends State<ChatScreen> {
         'normal') {
       FirestoreService()
           .read(collection: 'sellers', documentId: widget.userId)
-          .then((value) => {
-                setState(() {
-                  enabledGames = value['games']
-                      .entries
-                      .where((entry) => entry.value == 'enabled')
-                      .map((entry) => entry.key)
-                      .toList();
-                })
-              });
-    } else {
-      //todo
-      //use sell_items_provider
-    }
-    if (widget.gameFromShop != null) {
-      for (var key in widget.gameFromShop!.keys) {
-        shopInfo[key.toString()] = widget.gameFromShop![key];
+          .then((value) {
+        setState(() {
+          enabledGames = value['games']
+              .entries
+              .where((entry) => entry.value == 'enabled')
+              .map((entry) => entry.key)
+              .toList();
+        });
+      });
+      if (widget.gameFromShop != null) {
+        for (var key in widget.gameFromShop!.keys) {
+          shopInfo[key.toString()] = widget.gameFromShop![key];
+        }
+        _typeAheadController.text = widget.gameName!;
+        selectedItem = getItemByName(_typeAheadController.text);
       }
-      _typeAheadController.text = widget.gameName!;
-      selectedItem = getItemByName(_typeAheadController.text);
+      FirestoreService()
+          .read(collection: 'sellers', documentId: widget.userId)
+          .then((value) {
+        setState(() {
+          for (var key in value['MoP'].keys) {
+            var account = value['MoP'][key];
+            if (account['status'] == 'enabled') {
+              var enabledAccount = {'name': key};
+              enabledAccount.addAll(account);
+              payments.add(enabledAccount);
+            }
+          }
+          print(payments);
+        });
+      });
+    } else {
+      //for _typeaheadtext
+      siItems = Provider.of<SellItemsProvider>(context, listen: false);
+      siItems!.addItems(widget.sItems!, notify: false);
+      for (var item in siItems!.Sitems) {
+        if (item.values.first == 'enabled') {
+          Item itemObject = item.keys.first;
+          enabledGames.add(itemObject.name);
+        }
+      }
+      //[{name: GCash, account_number: 09999999999, account_name: John Smith, status: enabled}]
+      //for payments collapsible
+      paymentProvider = Provider.of<PaymentProvider>(context, listen: false);
+      paymentProvider!.addAllPayments(widget.payments!, notify: false);
+      for (var payment in paymentProvider!.payments) {
+        print(payment);
+        if (payment.isEnabled) {
+          payments.add({
+            'name': payment.paymentname,
+            'account_number': payment.accountnumber,
+            'account_name': payment.accountname,
+          });
+        }
+      }
     }
-    FirestoreService()
-        .read(collection: 'sellers', documentId: widget.userId)
-        .then((value) => {
-              setState(() {
-                for (var key in value['MoP'].keys) {
-                  var account = value['MoP'][key];
-                  if (account['status'] == 'enabled') {
-                    var enabledAccount = {'name': key};
-                    enabledAccount.addAll(account);
-                    payments.add(enabledAccount);
-                  }
-                }
-              })
-            });
 
     forconvId = FirestoreService().conversationId(widget.convId);
     _scrollController.addListener(() {
@@ -108,9 +139,14 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Future<dynamic> readGameData(String name) async {
-    Map<String, dynamic> gameData = await FirestoreService()
-        .read(collection: 'seller_games_data', documentId: name);
-    return gameData[widget.userName];
+    Map<String, dynamic> gameData = await FirestoreService().read(
+        collection: 'sellers',
+        documentId: widget.sItems != null
+            ? Provider.of<UserProvider>(context, listen: false).user!.uid
+            : widget.userId,
+        subcollection: 'games',
+        subdocumentId: name);
+    return gameData;
   }
 
   @override
@@ -282,9 +318,10 @@ class _ChatScreenState extends State<ChatScreen> {
                                                       children: [
                                                         Text(
                                                           "₱ ${shopInfo['rates']['rate$j']['php']} : ${shopInfo['rates']['rate$j']['digGoods']} ",
-                                                          style: const TextStyle(
-                                                              color:
-                                                                  Colors.white),
+                                                          style:
+                                                              const TextStyle(
+                                                                  color: Colors
+                                                                      .white),
                                                         ),
                                                         Image.asset(
                                                           gameIcon(
@@ -310,8 +347,8 @@ class _ChatScreenState extends State<ChatScreen> {
                                     padding: const EdgeInsets.only(
                                         bottom: 10, top: 10),
                                     child: InkWell(
-                                      child:
-                                          const Icon(Icons.copy, color: Colors.white),
+                                      child: const Icon(Icons.copy,
+                                          color: Colors.white),
                                       onTap: () {
                                         String text = List.generate(
                                             shopInfo['rates'].length, (i) {
@@ -612,7 +649,8 @@ class _ChatScreenState extends State<ChatScreen> {
                                                         text: msg['content'],
                                                         isSender: isSender,
                                                         color: Colors.blueGrey,
-                                                        textStyle: const TextStyle(
+                                                        textStyle:
+                                                            const TextStyle(
                                                           fontSize: 16,
                                                           color: Colors.white,
                                                         ),
@@ -633,9 +671,10 @@ class _ChatScreenState extends State<ChatScreen> {
                                                                 _scrollController
                                                                     .position
                                                                     .maxScrollExtent,
-                                                                duration: const Duration(
-                                                                    milliseconds:
-                                                                        200),
+                                                                duration:
+                                                                    const Duration(
+                                                                        milliseconds:
+                                                                            200),
                                                                 curve: Curves
                                                                     .easeOut,
                                                               );
@@ -759,7 +798,8 @@ class _ChatScreenState extends State<ChatScreen> {
                   child: Container(
                       decoration: BoxDecoration(
                           color: Colors.blueGrey[50],
-                          borderRadius: const BorderRadius.all(Radius.circular(20))),
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(20))),
                       child: Padding(
                         padding: const EdgeInsets.only(
                             left: 15, right: 15, bottom: 5),
@@ -772,7 +812,8 @@ class _ChatScreenState extends State<ChatScreen> {
                 IconButton(
                   icon: const Icon(Icons.send),
                   onPressed: () async {
-                      UserModel userModel = Provider.of<UserProvider>(context, listen: false).user!;
+                    UserModel userModel =
+                        Provider.of<UserProvider>(context, listen: false).user!;
                     if (pickedFile != null) {
                       String url =
                           await uploadImageFile(pickedFile!, conversationId!);

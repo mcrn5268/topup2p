@@ -37,7 +37,19 @@ class _SellerMainState extends State<SellerMain> {
     _currentIndex = widget.index ?? 0;
     _children = [
       const SellerMainScreen(),
-      const MessagesScreen(),
+      MultiProvider(
+          providers: [
+            ChangeNotifierProvider<SellItemsProvider>.value(
+              value: SellItemsProvider(),
+            ),
+            ChangeNotifierProvider<PaymentProvider>.value(
+              value: PaymentProvider(),
+            ),
+          ],
+          child: MessagesScreen(
+              siItems: Provider.of<SellItemsProvider>(context, listen: false)
+                  .Sitems, payments: Provider.of<PaymentProvider>(context, listen: false)
+                  .payments)),
       ChangeNotifierProvider<SellItemsProvider>.value(
         value: SellItemsProvider(),
         child: ProfileScreen(

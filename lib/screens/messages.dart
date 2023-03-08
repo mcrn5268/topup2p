@@ -5,17 +5,39 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
 import 'package:topup2p/cloud/firestore.dart';
+import 'package:topup2p/models/item_model.dart';
+import 'package:topup2p/models/payment_model.dart';
+import 'package:topup2p/providers/payment_provider.dart';
+import 'package:topup2p/providers/sell_items_provder.dart';
 import 'package:topup2p/providers/user_provider.dart';
 import 'package:topup2p/screens/chat.dart';
 import 'package:intl/intl.dart';
 
 class MessagesScreen extends StatefulWidget {
-  const MessagesScreen({super.key});
+  const MessagesScreen({this.siItems, this.payments, super.key});
+  final List<Map<Item, String>>? siItems;
+  final List<Payment>? payments;
   @override
   State<MessagesScreen> createState() => _MessagesScreenState();
 }
 
 class _MessagesScreenState extends State<MessagesScreen> {
+  late SellItemsProvider siItems;
+  late PaymentProvider paymentProvider;
+  @override
+  void initState() {
+    super.initState();
+    if (widget.siItems != null) {
+      siItems = Provider.of<SellItemsProvider>(context, listen: false);
+      siItems.addItems(widget.siItems!);
+    }
+    if (widget.payments != null) {
+      paymentProvider = Provider.of<PaymentProvider>(context, listen: false);
+      paymentProvider.clearPayments(notify: false);
+      paymentProvider.addAllPayments(widget.payments!, notify: false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     UserProvider userProvider =
@@ -182,22 +204,58 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                                     other_user['uid']);
                                           }
                                         }
-
-                                        Navigator.push(
-                                          context,
-                                          PageRouteBuilder(
-                                            pageBuilder: (_, __, ___) =>
-                                                ChatScreen(
-                                              convId: convId,
-                                              userId: other_user['uid'],
-                                              userImage: other_user['image'],
-                                              userName: other_user['name'],
+                                        if (widget.siItems != null ||
+                                            widget.payments != null) {
+                                          Navigator.push(
+                                            context,
+                                            PageRouteBuilder(
+                                              pageBuilder: (_, __, ___) =>
+                                                  MultiProvider(
+                                                providers: [
+                                                  ChangeNotifierProvider<
+                                                      SellItemsProvider>.value(
+                                                    value: SellItemsProvider(),
+                                                  ),
+                                                  ChangeNotifierProvider<
+                                                      PaymentProvider>.value(
+                                                    value: PaymentProvider(),
+                                                  ),
+                                                ],
+                                                child: ChatScreen(
+                                                    convId: convId,
+                                                    userId: other_user['uid'],
+                                                    userImage:
+                                                        other_user['image'],
+                                                    userName:
+                                                        other_user['name'],
+                                                    sItems: siItems.Sitems,
+                                                    payments: paymentProvider
+                                                        .payments),
+                                              ),
+                                              transitionsBuilder:
+                                                  (_, a, __, c) =>
+                                                      FadeTransition(
+                                                          opacity: a, child: c),
                                             ),
-                                            transitionsBuilder: (_, a, __, c) =>
-                                                FadeTransition(
-                                                    opacity: a, child: c),
-                                          ),
-                                        );
+                                          );
+                                        } else {
+                                          Navigator.push(
+                                            context,
+                                            PageRouteBuilder(
+                                              pageBuilder: (_, __, ___) =>
+                                                  ChatScreen(
+                                                convId: convId,
+                                                userId: other_user['uid'],
+                                                userImage: other_user['image'],
+                                                userName: other_user['name'],
+                                              ),
+                                              transitionsBuilder:
+                                                  (_, a, __, c) =>
+                                                      FadeTransition(
+                                                          opacity: a, child: c),
+                                            ),
+                                          );
+                                        }
                                       });
                                     },
                                   ),

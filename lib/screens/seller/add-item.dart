@@ -391,8 +391,7 @@ class _AddItemSellState extends State<AddItemSell> {
                       await FirestoreService().create(
                         collection: 'seller_games_data',
                         documentId: _typeAheadController.text,
-                        data: {userProvider.user!.name: mapData},
-                        merge: false,
+                        data: {userProvider.user!.name: mapData}
                       );
 
                       await FirestoreService().create(
