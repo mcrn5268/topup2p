@@ -26,14 +26,16 @@ class ProfileScreen extends StatelessWidget {
     FavoritesProvider? favProvider;
     UserProvider userProvider = Provider.of<UserProvider>(context);
     //if user type seller add PaymentProvider
-    if (Provider.of<UserProvider>(context, listen: false).user!.type ==
-        'seller') {
-      try {
-        paymentProvider = Provider.of<PaymentProvider>(context, listen: false);
-        siProvider = Provider.of<SellItemsProvider>(context, listen: false);
-      } catch (e) {
-        if (kDebugMode) {
-          print('Probably just transitioned from user to seller | $e');
+    if (userProvider.user != null) {
+      if (userProvider.user!.type == 'seller') {
+        try {
+          paymentProvider =
+              Provider.of<PaymentProvider>(context, listen: false);
+          siProvider = Provider.of<SellItemsProvider>(context, listen: false);
+        } catch (e) {
+          if (kDebugMode) {
+            print('Probably just transitioned from user to seller | $e');
+          }
         }
       }
     }

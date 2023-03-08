@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:topup2p/cloud/download-image.dart';
 import 'package:topup2p/cloud/firestore.dart';
+import 'package:topup2p/main.dart';
 import 'package:topup2p/providers/favorites_provider.dart';
 import 'dart:io';
 import 'package:restart_app/restart_app.dart';
@@ -118,21 +119,19 @@ class _SellerRegisterScreenState extends State<SellerRegisterScreen> {
                     FirestoreService().create(
                         collection: 'sellers',
                         documentId: userProvider.user!.uid,
-                        data: {'name': _Sname.text});
+                        data: {'name': _Sname.text}).then((value) {
+                      Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(
+                              builder: (context) => const Topup2p()),
+                          (route) => false);
+                      userProvider.updateUser(
+                          name: _Sname.text, type: 'seller', image: assetsPath);
+                    });
                     setState(() {
                       _isLoading = false;
                     });
-                    // Navigator.pushReplacement(
-                    //   context,
-                    //   PageRouteBuilder(
-                    //     pageBuilder: (_, __, ___) => const Topup2p(),
-                    //     transitionsBuilder: (_, a, __, c) =>
-                    //         FadeTransition(opacity: a, child: c),
-                    //   ),
-                    // );
-                    // userProvider.updateUser(
-                    //     name: _Sname.text, type: 'seller', image: assetsPath);
-                    Restart.restartApp();
+                    //optional
+                    //Restart.restartApp();
                   }
                 },
                 style: ElevatedButton.styleFrom(

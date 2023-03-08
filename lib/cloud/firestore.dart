@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:topup2p/models/user_model.dart';
 import 'package:topup2p/utilities/other_utils.dart';
@@ -67,15 +68,18 @@ class FirestoreService {
     } catch (e) {
       if (kDebugMode) {
         print(
-          'Something went wrong FirestoreService.read $collection $documentId $e');
+            'Something went wrong FirestoreService.read $collection $documentId $e');
       }
       return null;
     }
   }
 
   Future<void> update(
-     { required String collection, required String documentId, required Map<String, dynamic> data,
-      String? subcollection, String? subdocumentId}) async {
+      {required String collection,
+      required String documentId,
+      required Map<String, dynamic> data,
+      String? subcollection,
+      String? subdocumentId}) async {
     if (subcollection == null || subdocumentId == null) {
       await _db.collection(collection).doc(documentId).update(data);
     } else {
@@ -88,8 +92,11 @@ class FirestoreService {
     }
   }
 
-  Future<void> delete({required String collection, required String documentId,
-      String? subcollection, String? subdocumentId}) async {
+  Future<void> delete(
+      {required String collection,
+      required String documentId,
+      String? subcollection,
+      String? subdocumentId}) async {
     if (subcollection == null && subdocumentId == null) {
       await _db.collection(collection).doc(documentId).delete();
     } else {
@@ -124,13 +131,14 @@ class FirestoreService {
     }
   }
 
+
   Future<void> updateSubcollectionDocumentField({
     required String collectionName,
     required String subcollectionName,
     required String documentId,
     required String fieldName,
-    dynamic fieldValue,}
-  ) async {
+    dynamic fieldValue,
+  }) async {
     final collectionRef = _db.collection(collectionName);
 
     final documents = await collectionRef.get();

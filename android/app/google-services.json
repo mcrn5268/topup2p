@@ -15,7 +15,15 @@
       },
       "oauth_client": [
         {
-          "client_id": "706195142533-n28fbh2h673mp0mvo89urci7p3s2hoh6.apps.googleusercontent.com",
+          "client_id": "706195142533-1rcph9oe63qgnpc1mpgsln85pp3agcc5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.topup2p",
+            "certificate_hash": "6c6e18a435c7c0e11eece60dc32e732286afbe55"
+          }
+        },
+        {
+          "client_id": "706195142533-404l980hl1qb130nmaat2p3mvlb92ur4.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
@@ -28,7 +36,7 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "706195142533-n28fbh2h673mp0mvo89urci7p3s2hoh6.apps.googleusercontent.com",
+              "client_id": "706195142533-404l980hl1qb130nmaat2p3mvlb92ur4.apps.googleusercontent.com",
               "client_type": 3
             },
             {

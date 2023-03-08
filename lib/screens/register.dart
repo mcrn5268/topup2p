@@ -9,6 +9,7 @@ import 'package:topup2p/cloud/firestore.dart';
 import 'package:topup2p/models/user_model.dart';
 import 'package:topup2p/providers/user_provider.dart';
 import 'package:topup2p/widgets/custom_divider.dart';
+import 'package:topup2p/widgets/google_signin.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -136,7 +137,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     textCapitalization: TextCapitalization.words,
                     controller: _Fname,
                     decoration: const InputDecoration(
-                      hintText: 'First Name',
+                      labelText: 'First Name',
                     ),
                   ),
                 ),
@@ -146,7 +147,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     textCapitalization: TextCapitalization.words,
                     controller: _Lname,
                     decoration: const InputDecoration(
-                      hintText: 'Last Name',
+                      labelText: 'Last Name',
                     ),
                   ),
                 ),
@@ -157,7 +158,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               controller: _email,
               autovalidateMode: AutovalidateMode.onUserInteraction,
               decoration: InputDecoration(
-                hintText: 'Email',
+                labelText: 'Email',
                 errorText:
                     _hasInputError ? "Enter a Valid Email Address" : null,
               ),
@@ -169,7 +170,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               controller: _pass,
               autovalidateMode: AutovalidateMode.onUserInteraction,
               decoration: InputDecoration(
-                hintText: 'Password',
+                labelText: 'Password',
                 suffixIcon: InkWell(
                   onTap: _toggle,
                   child: Icon(
@@ -196,7 +197,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               controller: _Cpass,
               autovalidateMode: AutovalidateMode.onUserInteraction,
               decoration: const InputDecoration(
-                hintText: 'Confirm Password',
+                labelText: 'Confirm Password',
               ),
               validator: (value) {
                 if (value!.isEmpty) {
@@ -252,20 +253,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ),
       ),
     );
-    //SIGN UP with google
-    Widget loginWith = Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset(
-              'assets/images/google.png',
-              width: 180,
-            ),
-          ],
-        ),
-      ],
-    );
+
     //back to log in page
     Widget backButton = Column(
       children: [
@@ -306,7 +294,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 registerSection,
                 const CustomDivider(),
-                loginWith,
+                const SignIn_Google(),
               ],
             ),
           ),

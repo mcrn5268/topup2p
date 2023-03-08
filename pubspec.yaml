@@ -57,8 +57,9 @@ dependencies:
   flutter_staggered_animations: ^1.0.0
   chat_bubbles: ^1.4.0
   restart_app: ^1.1.2
-  intl: ^0.18.0
+  intl: ^0.17.0
   http: ^0.13.5
+  google_sign_in: ^6.0.2
 
 dev_dependencies:
   flutter_test:

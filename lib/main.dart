@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'package:topup2p/providers/favorites_provider.dart';
 import 'package:topup2p/providers/payment_provider.dart';
@@ -10,8 +11,17 @@ import 'package:topup2p/utilities/models_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:topup2p/providers/user_provider.dart';
 
-void main() {
-  runApp(const Topup2p());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => UserProvider()),
+      ],
+      child: const Topup2p(),
+    ),
+  );
 }
 
 class Topup2p extends StatelessWidget {
@@ -19,11 +29,7 @@ class Topup2p extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => UserProvider()),
-      ],
-      child: MaterialApp(
+    return MaterialApp(
         title: 'Topup2p',
         theme: ThemeData(
           elevatedButtonTheme: ElevatedButtonThemeData(
@@ -74,8 +80,6 @@ class Topup2p extends StatelessWidget {
               }
             }
           },
-        ),
-      ),
-    );
+        ));
   }
 }

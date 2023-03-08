@@ -1,9 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 import 'package:topup2p/providers/user_provider.dart';
+import 'package:topup2p/screens/forgot_password.dart';
 import 'package:topup2p/screens/register.dart';
 import 'package:topup2p/widgets/custom_divider.dart';
+import 'package:topup2p/widgets/google_signin.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -46,7 +49,7 @@ class _LoginScreenState extends State<LoginScreen> {
           TextFormField(
             controller: _email,
             decoration: InputDecoration(
-              hintText: 'Email',
+              labelText: 'Email',
               errorText: _errorText,
             ),
             onChanged: (textt) {
@@ -60,7 +63,7 @@ class _LoginScreenState extends State<LoginScreen> {
           TextFormField(
             controller: _pass,
             decoration: InputDecoration(
-              hintText: 'Password',
+              labelText: 'Password',
               errorText: _errorText2,
             ),
             onChanged: (textt) {
@@ -168,34 +171,20 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
             onTap: () {
-              //todo
-              // Navigator.push(
-              //   context,
-              //   PageRouteBuilder(
-              //     pageBuilder: (_, __, ___) => const ForgotPasswordPage(),
-              //     transitionsBuilder: (_, a, __, c) =>
-              //         FadeTransition(opacity: a, child: c),
-              //   ),
-              // );
+              Navigator.push(
+                context,
+                PageRouteBuilder(
+                  pageBuilder: (_, __, ___) => const ForgotPasswordScreen(),
+                  transitionsBuilder: (_, a, __, c) =>
+                      FadeTransition(opacity: a, child: c),
+                ),
+              );
             },
           ),
         ],
       ),
     );
-    //LOG IN with google
-    Widget loginWith = Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset(
-              'assets/images/google.png',
-              width: 180,
-            ),
-          ],
-        ),
-      ],
-    );
+
     //don't have an account? sign up
     Widget signupSection = Padding(
       padding: const EdgeInsets.only(top: 40),
@@ -236,34 +225,30 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
     //skip to main page -- to show games list
-    Widget skipButton = Column(
+    Widget skipButton = Row(
+      mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            ElevatedButton(
-              onPressed: () {
-                //todo
-                // Navigator.pushReplacement(
-                //   context,
-                //   PageRouteBuilder(
-                //     pageBuilder: (_, __, ___) => const MainPage(),
-                //     transitionsBuilder: (_, a, __, c) =>
-                //         FadeTransition(opacity: a, child: c),
-                //   ),
-                // );
-              },
-              child: Row(
-                children: const <Widget>[
-                  Text(
-                    'Skip',
-                  ),
-                  Icon(Icons.arrow_forward_ios_outlined)
-                ],
+        ElevatedButton(
+          onPressed: () {
+            //todo
+            // Navigator.pushReplacement(
+            //   context,
+            //   PageRouteBuilder(
+            //     pageBuilder: (_, __, ___) => const MainPage(),
+            //     transitionsBuilder: (_, a, __, c) =>
+            //         FadeTransition(opacity: a, child: c),
+            //   ),
+            // );
+          },
+          child: Row(
+            children: const <Widget>[
+              Text(
+                'Skip',
               ),
-            )
-          ],
-        ),
+              Icon(Icons.arrow_forward_ios_outlined)
+            ],
+          ),
+        )
       ],
     );
     return Scaffold(
@@ -284,7 +269,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 loginSection,
                 forgotPassword,
                 const CustomDivider(),
-                loginWith,
+                const SignIn_Google(),
                 signupSection,
               ],
             ),
