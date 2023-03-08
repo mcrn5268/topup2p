@@ -14,13 +14,13 @@ class SellerMainScreen extends StatefulWidget {
   const SellerMainScreen({Key? key}) : super(key: key);
 
   @override
-  _SellerMainScreenState createState() => _SellerMainScreenState();
+  State<SellerMainScreen> createState() => _SellerMainScreenState();
 }
 
 //tocheck keepalive
 class _SellerMainScreenState extends State<SellerMainScreen> {
   final PageStorageBucket _bucket = PageStorageBucket();
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
   bool _showScrollToTopButton = false;
   Widget ratesLoop(Map<String, dynamic> data, String icon, int startIndex) {
     List<Widget> rows = [];
@@ -61,7 +61,7 @@ class _SellerMainScreenState extends State<SellerMainScreen> {
             //title: Text('Title'),
             children: [
               Image.asset(getImage(game, 'image_banner')),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Center(
                 child: FutureBuilder(
                   future: FirestoreService().read(
@@ -74,7 +74,7 @@ class _SellerMainScreenState extends State<SellerMainScreen> {
                       subdocumentId: game),
                   builder: (BuildContext context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return CircularProgressIndicator();
+                      return const CircularProgressIndicator();
                     } else {
                       Map<String, dynamic> data = snapshot.data;
                       return Row(
@@ -123,7 +123,7 @@ class _SellerMainScreenState extends State<SellerMainScreen> {
         Consumer<SellItemsProvider>(builder: (context, siProvider, _) {
       if (siProvider.Sitems.isNotEmpty) {
         return ListView.builder(
-          key: ValueKey('seller-home-page-listview'),
+          key: const ValueKey('seller-home-page-listview'),
           controller: _scrollController,
           //physics: NeverScrollableScrollPhysics(),
           shrinkWrap: true,
@@ -152,7 +152,7 @@ class _SellerMainScreenState extends State<SellerMainScreen> {
                             color: Colors.grey.withOpacity(0.5),
                             spreadRadius: 2,
                             blurRadius: 5,
-                            offset: Offset(0, 2), // changes position of shadow
+                            offset: const Offset(0, 2), // changes position of shadow
                           ),
                         ],
                       ),
@@ -160,7 +160,7 @@ class _SellerMainScreenState extends State<SellerMainScreen> {
                         child: ListTile(
                           title: Text('${item.name}  ⓘ'),
                           subtitle: Text(
-                            '$status',
+                            status,
                             style: TextStyle(
                                 color: status == 'disabled'
                                     ? Colors.red
@@ -169,18 +169,18 @@ class _SellerMainScreenState extends State<SellerMainScreen> {
                           leading: ClipOval(
                             child: ColorFiltered(
                               colorFilter: (status == 'disabled')
-                                  ? ColorFilter.mode(
+                                  ? const ColorFilter.mode(
                                       Colors.grey, BlendMode.saturation)
-                                  : ColorFilter.mode(
+                                  : const ColorFilter.mode(
                                       Colors.transparent, BlendMode.saturation),
                               child: CircleAvatar(
                                 backgroundImage: AssetImage(
-                                    getImage('${item.name}', 'image')),
+                                    getImage(item.name, 'image')),
                               ),
                             ),
                           ),
                           trailing: IconButton(
-                            icon: Icon(Icons.settings),
+                            icon: const Icon(Icons.settings),
                             onPressed: () async {
                               final sellItems = await Navigator.push(
                                 context,
@@ -230,8 +230,8 @@ class _SellerMainScreenState extends State<SellerMainScreen> {
           },
         );
       } else {
-        return Center(
-            child: const Text(
+        return const Center(
+            child: Text(
           "Click + To Post",
           style: TextStyle(fontSize: 24),
         ));
@@ -245,10 +245,10 @@ class _SellerMainScreenState extends State<SellerMainScreen> {
             child: FloatingActionButton(
               onPressed: () {
                 _scrollController.animateTo(0,
-                    duration: Duration(milliseconds: 500),
+                    duration: const Duration(milliseconds: 500),
                     curve: Curves.easeInOut);
               },
-              child: Icon(Icons.arrow_upward),
+              child: const Icon(Icons.arrow_upward),
             )));
     Widget addItem = Positioned(
       bottom: 15.0,
@@ -259,7 +259,7 @@ class _SellerMainScreenState extends State<SellerMainScreen> {
               .payments
               .isEmpty) {
             ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: const Text('You must have a wallet')));
+                const SnackBar(content: Text('You must have a wallet')));
 
             Navigator.pushReplacement(
               context,
@@ -310,9 +310,9 @@ class _SellerMainScreenState extends State<SellerMainScreen> {
               setState(() {});
             }
           } else {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                 content:
-                    const Text('You must have at least 1 enabled wallet')));
+                    Text('You must have at least 1 enabled wallet')));
 
             Navigator.pushReplacement(
               context,
@@ -331,15 +331,15 @@ class _SellerMainScreenState extends State<SellerMainScreen> {
     return Scaffold(
       appBar: AppBar(
           centerTitle: true,
-          title: Text(
+          title: const Text(
             'Games',
             style: TextStyle(
               color: Colors.black,
             ),
           ),
-          shape: Border(bottom: BorderSide(color: Colors.grey, width: 1))),
+          shape: const Border(bottom: BorderSide(color: Colors.grey, width: 1))),
       body: PageStorage(
-        key: PageStorageKey('sellerHomePage'),
+        key: const PageStorageKey('sellerHomePage'),
         bucket: _bucket,
         child: Stack(
           children: [

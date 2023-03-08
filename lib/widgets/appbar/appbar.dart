@@ -17,7 +17,7 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor:
           (fromProfile != null) ? Colors.blueGrey : Colors.transparent,
       leading: leadingIcon(context),
-      shape: Border(bottom: BorderSide(color: Colors.grey, width: 1)),
+      shape: const Border(bottom: BorderSide(color: Colors.grey, width: 1)),
       flexibleSpace: Padding(
         padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
         child: SafeArea(

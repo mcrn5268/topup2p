@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -76,7 +78,7 @@ class _GamesListState extends State<GamesList> {
                                           color: Colors.grey.withOpacity(0.5),
                                           spreadRadius: 2,
                                           blurRadius: 5,
-                                          offset: Offset(0,
+                                          offset: const Offset(0,
                                               2),
                                         ),
                                       ],
@@ -88,7 +90,7 @@ class _GamesListState extends State<GamesList> {
                                   ),
                                 ),
                                 Expanded(
-                                  child: Container(
+                                  child: SizedBox(
                                     width: double.infinity,
                                     child: Column(
                                       mainAxisAlignment:
@@ -122,7 +124,7 @@ class _GamesListState extends State<GamesList> {
           },
           child: Padding(
             padding: const EdgeInsets.all(20),
-            child: _isLoading ? CircularProgressIndicator() : Text(_viewML),
+            child: _isLoading ? const CircularProgressIndicator() : Text(_viewML),
           ),
         ),
       ],

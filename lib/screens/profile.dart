@@ -41,17 +41,17 @@ class ProfileScreen extends StatelessWidget {
       alignment: Alignment.center,
       children: [
         CustomPaint(
-          child: Container(
+          painter: HeaderCurvedContainer(),
+          child: SizedBox(
             width: MediaQuery.of(context).size.width,
             height: 350,
           ),
-          painter: HeaderCurvedContainer(),
         ),
         Positioned(
           top: 0,
           child: Padding(
             padding: const EdgeInsets.only(right: 8.0, top: 10),
-            child: Container(
+            child: SizedBox(
               width: MediaQuery.of(context).size.width,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -66,7 +66,7 @@ class ProfileScreen extends StatelessWidget {
                               onPressed: () {
                                 Navigator.pop(context, favProvider!.favorites);
                               },
-                              icon: Icon(Icons.arrow_back_ios_outlined,
+                              icon: const Icon(Icons.arrow_back_ios_outlined,
                                   color: Colors.white)),
                         ],
                       ),
@@ -86,7 +86,7 @@ class ProfileScreen extends StatelessWidget {
               padding: const EdgeInsets.all(20.0),
               child: Text(
                 userProvider.user!.name,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 35.0,
                   letterSpacing: 1.5,
                   color: Colors.white,
@@ -108,7 +108,7 @@ class ProfileScreen extends StatelessWidget {
           InkWell(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
-              children: [
+              children: const [
                 Icon(Icons.edit, color: Colors.grey),
                 Text('Edit Profile')
               ],
@@ -168,22 +168,22 @@ class ProfileScreen extends StatelessWidget {
           ),
           const Divider(),
           //todo
-          ListTile(
+          const ListTile(
             leading: Icon(Icons.phone_android),
             title: Text('+639 999 9999'),
           ),
           const Divider(),
           ListTile(
-            leading: Icon(Icons.email),
+            leading: const Icon(Icons.email),
             title: Text(userProvider.user!.email),
           ),
           const Divider(),
           //if user type seller show Wallets list tile
           if (userProvider.user!.type == 'seller') ...[
             InkWell(
-                child: ListTile(
+                child: const ListTile(
                   leading: Icon(Icons.wallet),
-                  title: const Text("Wallets"),
+                  title: Text("Wallets"),
                   trailing: Icon(Icons.arrow_forward_ios_outlined),
                 ),
                 onTap: () async {
@@ -252,9 +252,9 @@ class ProfileScreen extends StatelessWidget {
             child: RichText(
               textScaleFactor: MediaQuery.of(context).textScaleFactor,
               textAlign: TextAlign.center,
-              text: TextSpan(
-                style: const TextStyle(fontSize: 15, color: Colors.black),
-                children: const [
+              text: const TextSpan(
+                style: TextStyle(fontSize: 15, color: Colors.black),
+                children: [
                   TextSpan(
                     text: 'Want to sell?',
                     style: TextStyle(decoration: TextDecoration.underline),
@@ -298,7 +298,7 @@ class HeaderCurvedContainer extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     Paint paint = Paint()
-      ..shader = LinearGradient(
+      ..shader = const LinearGradient(
         colors: [Colors.blueGrey, Colors.black],
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,

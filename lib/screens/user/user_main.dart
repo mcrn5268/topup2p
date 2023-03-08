@@ -63,10 +63,10 @@ class _UserMainScreenState extends State<UserMainScreen> {
                   ],
                 ));
           } else {
-            return Container(
+            return const SizedBox(
               width: 50,
               height: 50,
-              child: const LoadingScreen(),
+              child: LoadingScreen(),
             );
           }
         });

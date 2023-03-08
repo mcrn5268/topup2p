@@ -25,11 +25,11 @@ class _SellerMainState extends State<SellerMain> {
   late int _currentIndex;
   final PageStorageBucket bucket = PageStorageBucket();
   final List<Widget> _children = [
-    SellerMainScreen(),
-    MessagesScreen(),
+    const SellerMainScreen(),
+    const MessagesScreen(),
     ChangeNotifierProvider<SellItemsProvider>.value(
       value: SellItemsProvider(),
-      child: ProfileScreen(),
+      child: const ProfileScreen(),
     ),
   ];
 
@@ -113,7 +113,7 @@ class _SellerMainState extends State<SellerMain> {
                   type: BottomNavigationBarType.fixed,
                   showSelectedLabels: false,
                   showUnselectedLabels: false,
-                  items: [
+                  items: const [
                     BottomNavigationBarItem(
                       icon: Icon(Icons.home),
                       label: 'Home',
@@ -144,7 +144,7 @@ class _SellerMainState extends State<SellerMain> {
                               child: Container(
                                 width: 10,
                                 height: 10,
-                                decoration: BoxDecoration(
+                                decoration: const BoxDecoration(
                                     shape: BoxShape.circle, color: Colors.red),
                               ),
                             ),

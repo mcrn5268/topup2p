@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:topup2p/cloud/firestore.dart';
 import 'package:topup2p/providers/user_provider.dart';
-import 'package:topup2p/screens/chat.dart';
 import 'package:topup2p/screens/messages.dart';
 
 class MessageButton extends StatelessWidget {
@@ -19,7 +18,7 @@ class MessageButton extends StatelessWidget {
               Navigator.push(
                 context,
                 PageRouteBuilder(
-                  pageBuilder: (_, __, ___) => MessagesScreen(),
+                  pageBuilder: (_, __, ___) => const MessagesScreen(),
                   transitionsBuilder: (_, a, __, c) =>
                       FadeTransition(opacity: a, child: c),
                 ),
@@ -44,7 +43,7 @@ class MessageButton extends StatelessWidget {
                             child: Container(
                               width: 10,
                               height: 10,
-                              decoration: BoxDecoration(
+                              decoration: const BoxDecoration(
                                   shape: BoxShape.circle, color: Colors.red),
                             )),
                       )

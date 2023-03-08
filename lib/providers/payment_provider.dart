@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:topup2p/models/payment_model.dart';
 
 class PaymentProvider with ChangeNotifier {
-  List<Payment> _payments = [];
+  final List<Payment> _payments = [];
 
   List<Payment> get payments => _payments;
 

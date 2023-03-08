@@ -42,6 +42,7 @@ class _LoginScreenState extends State<LoginScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          const Divider(),
           TextFormField(
             controller: _email,
             decoration: InputDecoration(
@@ -80,7 +81,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: _isLoading
                     ? Row(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
+                        children: const [
                           CircularProgressIndicator(),
                         ],
                       )
@@ -154,9 +155,9 @@ class _LoginScreenState extends State<LoginScreen> {
             child: RichText(
               textScaleFactor: MediaQuery.of(context).textScaleFactor,
               textAlign: TextAlign.center,
-              text: TextSpan(
-                style: const TextStyle(fontSize: 15, color: Colors.black),
-                children: const [
+              text: const TextSpan(
+                style: TextStyle(fontSize: 15, color: Colors.black),
+                children: [
                   TextSpan(
                     text: 'Forgot password?',
                     style: TextStyle(
@@ -205,10 +206,10 @@ class _LoginScreenState extends State<LoginScreen> {
             child: RichText(
               textScaleFactor: MediaQuery.of(context).textScaleFactor,
               textAlign: TextAlign.center,
-              text: TextSpan(
-                style: const TextStyle(fontSize: 15, color: Colors.black),
+              text: const TextSpan(
+                style: TextStyle(fontSize: 15, color: Colors.black),
                 text: "Don't have an account?",
-                children: const [
+                children: [
                   TextSpan(
                     text: ' Sign up ',
                     style: TextStyle(
@@ -223,7 +224,7 @@ class _LoginScreenState extends State<LoginScreen> {
               Navigator.push(
                 context,
                 PageRouteBuilder(
-                  pageBuilder: (_, __, ___) => RegisterScreen(),
+                  pageBuilder: (_, __, ___) => const RegisterScreen(),
                   transitionsBuilder: (_, a, __, c) =>
                       FadeTransition(opacity: a, child: c),
                 ),

@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names, use_build_context_synchronously
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -56,7 +58,7 @@ class _SellerRegisterScreenState extends State<SellerRegisterScreen> {
   @override
   Widget build(BuildContext context) {
     UserProvider userProvider = Provider.of<UserProvider>(context);
-    bool _flag = MediaQuery.of(context).orientation == Orientation.portrait;
+    bool flag = MediaQuery.of(context).orientation == Orientation.portrait;
     Widget registerName = Padding(
       padding: const EdgeInsets.fromLTRB(50, 0, 50, 0),
       child: Form(
@@ -66,7 +68,7 @@ class _SellerRegisterScreenState extends State<SellerRegisterScreen> {
           children: [
             TextFormField(
               controller: _Sname,
-              decoration: InputDecoration(hintText: 'Shop Name'),
+              decoration: const InputDecoration(hintText: 'Shop Name'),
               validator: (value) {
                 if (value!.isEmpty) {
                   return 'Shop name is required';
@@ -180,11 +182,11 @@ class _SellerRegisterScreenState extends State<SellerRegisterScreen> {
       child: InkWell(
         child: Stack(
           children: [
-            Container(
-              height: _flag
+            SizedBox(
+              height: flag
                   ? MediaQuery.of(context).size.width
                   : MediaQuery.of(context).size.width / 2,
-              width: _flag
+              width: flag
                   ? MediaQuery.of(context).size.height
                   : MediaQuery.of(context).size.height / 2,
               child: ClipPath(
@@ -203,21 +205,21 @@ class _SellerRegisterScreenState extends State<SellerRegisterScreen> {
             ),
             //upload icon
             Positioned(
-              right: _flag ? 0 : 85,
-              bottom: _flag ? 20 : 0,
+              right: flag ? 0 : 85,
+              bottom: flag ? 20 : 0,
               child: Container(
-                decoration: new BoxDecoration(
+                decoration: const BoxDecoration(
                   color: Colors.blueGrey,
                   shape: BoxShape.circle,
                 ),
-                height: _flag
+                height: flag
                     ? MediaQuery.of(context).size.width / 7
                     : MediaQuery.of(context).size.width / 9,
-                width: _flag
+                width: flag
                     ? MediaQuery.of(context).size.height / 7
                     : MediaQuery.of(context).size.height / 9,
-                child: ClipPath(
-                    clipper: const ShapeBorderClipper(shape: CircleBorder()),
+                child: const ClipPath(
+                    clipper: ShapeBorderClipper(shape: CircleBorder()),
                     clipBehavior: Clip.hardEdge,
                     child: Icon(
                       Icons.upload,
@@ -235,8 +237,8 @@ class _SellerRegisterScreenState extends State<SellerRegisterScreen> {
     );
     return Scaffold(
       body: _isLoading
-          ? Center(
-              child: const LoadingScreen(),
+          ? const Center(
+              child: LoadingScreen(),
             )
           : ListView(
               children: [

@@ -1,3 +1,5 @@
+// ignore_for_file: file_names, non_constant_identifier_names, use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
@@ -31,11 +33,11 @@ class AddItemSell extends StatefulWidget {
 }
 
 class _AddItemSellState extends State<AddItemSell> {
-  List<TextEditingController> _cRate = List.generate(
+  final List<TextEditingController> _cRate = List.generate(
     12,
     (index) => TextEditingController(),
   );
-  List<String?> _errorText = List.generate(12, (index) => null);
+  final List<String?> _errorText = List.generate(12, (index) => null);
   final TextEditingController _typeAheadController = TextEditingController();
   String gameIconPath = 'assets/icons/coin.png';
   bool _isLoading = false;
@@ -64,8 +66,8 @@ class _AddItemSellState extends State<AddItemSell> {
           _ratesFlag = false;
         }
       } else if (controller.text != '' && controller2.text != '') {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: const Text(
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text(
                 'Rates must not be empty if you wish to add an item!')));
         _ratesFlag = false;
       }
@@ -141,9 +143,9 @@ class _AddItemSellState extends State<AddItemSell> {
       (_cRate.length / 2).ceil(),
       (index) => Row(
         children: [
-          Padding(
-            padding: const EdgeInsets.only(right: 8.0),
-            child: const Text(
+          const Padding(
+            padding: EdgeInsets.only(right: 8.0),
+            child: Text(
               '₱',
               style: TextStyle(fontSize: 25),
             ),
@@ -164,9 +166,9 @@ class _AddItemSellState extends State<AddItemSell> {
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.only(left: 10, right: 10),
-            child: const Text(
+          const Padding(
+            padding: EdgeInsets.only(left: 10, right: 10),
+            child: Text(
               ':',
               style: TextStyle(fontSize: 25),
             ),
@@ -207,7 +209,7 @@ class _AddItemSellState extends State<AddItemSell> {
               TypeAheadFormField(
                 textFieldConfiguration: TextFieldConfiguration(
                   controller: _typeAheadController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Select a game',
                     border: OutlineInputBorder(),
                   ),
@@ -260,15 +262,17 @@ class _AddItemSellState extends State<AddItemSell> {
                 visible: _typeAheadController.text != '',
                 child: Positioned(
                     right: 0,
-                    child: Container(
+                    child: SizedBox(
                       height: 58,
                       child: IconButton(
                         onPressed: () => setState(() {
                           _switchVisible = false;
                           _typeAheadController.text = '';
-                          _cRate.forEach((controller) => controller.text = '');
+                          for (var controller in _cRate) {
+                            controller.text = '';
+                          }
                         }),
-                        icon: Icon(Icons.close),
+                        icon: const Icon(Icons.close),
                         color: Colors.grey,
                       ),
                     )),
@@ -279,7 +283,7 @@ class _AddItemSellState extends State<AddItemSell> {
             onTap: () {
               if (_typeAheadController.text == '') {
                 ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: const Text('Select a game first!')));
+                    const SnackBar(content: Text('Select a game first!')));
               }
             },
             child: Stack(
@@ -291,15 +295,15 @@ class _AddItemSellState extends State<AddItemSell> {
                   ),
                 ),
                 if (_isLoadingData) ...[
-                  Padding(
-                    padding: const EdgeInsets.only(top: 15),
+                  const Padding(
+                    padding: EdgeInsets.only(top: 15),
                     child: Center(child: CircularProgressIndicator()),
                   )
                 ]
               ],
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 30,
           ),
           Stack(
@@ -333,8 +337,8 @@ class _AddItemSellState extends State<AddItemSell> {
                         if (_cRate[i].text.toString() != '') {
                           if (_cRate[i + 6].text.toString() != '') {
                             ratesMap['rate$indexUsed'] = {
-                              'php': '${_cRate[i].text.toString()}',
-                              'digGoods': '${_cRate[i + 6].text.toString()}',
+                              'php': _cRate[i].text.toString(),
+                              'digGoods': _cRate[i + 6].text.toString(),
                             };
                             indexUsed++;
                           }
@@ -374,7 +378,6 @@ class _AddItemSellState extends State<AddItemSell> {
                           };
                         }
                       }
-                      ;
                       final Map<String, dynamic> mapData = {
                         'mop': mopMap,
                         'rates': ratesMap,
@@ -405,7 +408,7 @@ class _AddItemSellState extends State<AddItemSell> {
                         merge: false,
                       );
                       ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: const Text('Success')));
+                          const SnackBar(content: Text('Success')));
                       setState(() {
                         _isLoading = false;
                       });
@@ -423,7 +426,7 @@ class _AddItemSellState extends State<AddItemSell> {
                     child: Center(
                       child: Text(
                         forButton,
-                        style: TextStyle(fontSize: 20),
+                        style: const TextStyle(fontSize: 20),
                       ),
                     ),
                   ),
@@ -443,7 +446,7 @@ class _AddItemSellState extends State<AddItemSell> {
                     Provider.of<SellItemsProvider>(context, listen: false)
                         .Sitems);
               },
-              icon: Icon(
+              icon: const Icon(
                 Icons.arrow_back_ios_outlined,
                 color: Colors.black,
               )),

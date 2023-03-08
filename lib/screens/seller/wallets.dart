@@ -38,7 +38,7 @@ class _SellerWalletsScreenState extends State<SellerWalletsScreen> {
               ChangeNotifierProvider<PaymentProvider>.value(
             value: PaymentProvider(),
             child: AddUpdateWalletScreen(
-                cardWallet: card != null ? card : null,
+                cardWallet: card,
                 paymentList: paymentProvider.payments),
           ),
           transitionsBuilder: (_, a, __, c) =>
@@ -58,18 +58,18 @@ class _SellerWalletsScreenState extends State<SellerWalletsScreen> {
               onPressed: () {
                 Navigator.pop(context, paymentProvider.payments);
               },
-              icon: Icon(
+              icon: const Icon(
                 Icons.arrow_back_ios_outlined,
                 color: Colors.black,
               )),
           centerTitle: true,
-          title: Text(
+          title: const Text(
             'Wallets',
             style: TextStyle(
               color: Colors.black, // try a different color here
             ),
           ),
-          shape: Border(bottom: BorderSide(color: Colors.grey, width: 1)),
+          shape: const Border(bottom: BorderSide(color: Colors.grey, width: 1)),
         ),
         body: Consumer<PaymentProvider>(builder: (context, paymentProvider, _) {
           return Stack(
@@ -88,7 +88,7 @@ class _SellerWalletsScreenState extends State<SellerWalletsScreen> {
                   if (paymentProvider.payments.isNotEmpty) ...[
                     ListView.builder(
                       shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
+                      physics: const NeverScrollableScrollPhysics(),
                       itemCount: paymentProvider.payments.length,
                       itemBuilder: (BuildContext context, int index) {
                         var paymentItem = paymentProvider.payments[index];
@@ -115,7 +115,7 @@ class _SellerWalletsScreenState extends State<SellerWalletsScreen> {
                                                   Colors.grey.withOpacity(0.5),
                                               blurRadius: 7,
                                               spreadRadius: 2,
-                                              offset: Offset(0, 2),
+                                              offset: const Offset(0, 2),
                                             ),
                                           ],
                                         ),
@@ -134,10 +134,10 @@ class _SellerWalletsScreenState extends State<SellerWalletsScreen> {
                                               100,
                                         ),
                                       ),
-                                      Align(
+                                      const Align(
                                           alignment:
                                               AlignmentDirectional.centerEnd,
-                                          child: Container(
+                                          child: SizedBox(
                                               width: 30.0,
                                               height: 30.0,
                                               child: Icon(Icons
@@ -154,8 +154,8 @@ class _SellerWalletsScreenState extends State<SellerWalletsScreen> {
                   ] else ...[
                     SizedBox(
                       height: MediaQuery.of(context).size.height / 2,
-                      child: Center(
-                        child: const Text('Click + To Add',
+                      child: const Center(
+                        child: Text('Click + To Add',
                             style: TextStyle(fontSize: 24)),
                       ),
                     )

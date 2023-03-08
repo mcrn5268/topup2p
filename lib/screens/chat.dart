@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:async';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -11,7 +13,6 @@ import 'package:provider/provider.dart';
 import 'package:topup2p/cloud/firestore.dart';
 import 'package:topup2p/models/item_model.dart';
 import 'package:topup2p/providers/user_provider.dart';
-import 'package:topup2p/utilities/globals.dart';
 import 'package:topup2p/utilities/image_file_utils.dart';
 import 'package:chat_bubbles/chat_bubbles.dart';
 import 'package:intl/intl.dart';
@@ -117,11 +118,11 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     PlatformFile? pickedFile;
-    ValueNotifier<bool> _isVisiblegame = ValueNotifier<bool>(false);
-    ValueNotifier<bool> _isVisiblepayment = ValueNotifier<bool>(false);
+    ValueNotifier<bool> isVisiblegame = ValueNotifier<bool>(false);
+    ValueNotifier<bool> isVisiblepayment = ValueNotifier<bool>(false);
 
     Widget gamesInfo = ValueListenableBuilder<bool>(
-      valueListenable: _isVisiblegame,
+      valueListenable: isVisiblegame,
       builder: (BuildContext context, bool value, Widget? child) {
         return StatefulBuilder(
             builder: (BuildContext context, StateSetter setState) {
@@ -129,8 +130,8 @@ class _ChatScreenState extends State<ChatScreen> {
             duration: const Duration(milliseconds: 300),
             opacity: value ? 1.0 : 0.0,
             child: Container(
-              height: _isVisiblegame.value ? 145 : 0,
-              width: _isVisiblegame.value
+              height: isVisiblegame.value ? 145 : 0,
+              width: isVisiblegame.value
                   ? MediaQuery.of(context).size.width - 50
                   : 0,
               decoration: BoxDecoration(
@@ -141,7 +142,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     color: Colors.grey.withOpacity(0.5),
                     spreadRadius: 2,
                     blurRadius: 5,
-                    offset: Offset(0, 2),
+                    offset: const Offset(0, 2),
                   ),
                 ],
               ),
@@ -156,14 +157,14 @@ class _ChatScreenState extends State<ChatScreen> {
                             Container(
                               height: 145,
                               decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.only(
+                                  borderRadius: const BorderRadius.only(
                                     topLeft: Radius.circular(20.0),
                                     bottomLeft: Radius.circular(20.0),
                                   ),
                                   image: DecorationImage(
                                       fit: BoxFit.cover,
                                       image: _typeAheadController.text == ''
-                                          ? AssetImage(
+                                          ? const AssetImage(
                                               'assets/images/logo-old.png')
                                           : AssetImage(selectedItem!.image))),
                             )
@@ -191,7 +192,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                       TextFieldConfiguration(
                                     textAlign: TextAlign.center,
                                     controller: _typeAheadController,
-                                    decoration: InputDecoration(
+                                    decoration: const InputDecoration(
                                       hintText: 'Select a game',
                                       labelStyle: TextStyle(
                                         color: Colors.black,
@@ -252,7 +253,7 @@ class _ChatScreenState extends State<ChatScreen> {
                             if (_typeAheadController.text != '') ...[
                               Expanded(
                                 child: _isLoadingData
-                                    ? CircularProgressIndicator()
+                                    ? const CircularProgressIndicator()
                                     : Row(
                                         children: [
                                           for (var i = 1;
@@ -282,8 +283,8 @@ class _ChatScreenState extends State<ChatScreen> {
                                                               .center,
                                                       children: [
                                                         Text(
-                                                          "₱ ${shopInfo['rates']['rate${j}']['php']} : ${shopInfo['rates']['rate${j}']['digGoods']} ",
-                                                          style: TextStyle(
+                                                          "₱ ${shopInfo['rates']['rate$j']['php']} : ${shopInfo['rates']['rate$j']['digGoods']} ",
+                                                          style: const TextStyle(
                                                               color:
                                                                   Colors.white),
                                                         ),
@@ -312,7 +313,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                         bottom: 10, top: 10),
                                     child: InkWell(
                                       child:
-                                          Icon(Icons.copy, color: Colors.white),
+                                          const Icon(Icons.copy, color: Colors.white),
                                       onTap: () {
                                         String text = List.generate(
                                             shopInfo['rates'].length, (i) {
@@ -323,8 +324,8 @@ class _ChatScreenState extends State<ChatScreen> {
                                         Clipboard.setData(
                                             ClipboardData(text: text));
                                         ScaffoldMessenger.of(context)
-                                            .showSnackBar(SnackBar(
-                                          content: const Text('Copiied'),
+                                            .showSnackBar(const SnackBar(
+                                          content: Text('Copiied'),
                                           duration: Duration(milliseconds: 500),
                                         ));
                                       },
@@ -345,14 +346,14 @@ class _ChatScreenState extends State<ChatScreen> {
     );
 
     Widget paymentsInfo = ValueListenableBuilder<bool>(
-      valueListenable: _isVisiblepayment,
+      valueListenable: isVisiblepayment,
       builder: (BuildContext context, bool value, Widget? child) {
         return AnimatedOpacity(
           duration: const Duration(milliseconds: 300),
           opacity: value ? 1.0 : 0.0,
           child: Container(
-            height: _isVisiblepayment.value ? 145 : 0,
-            width: _isVisiblepayment.value
+            height: isVisiblepayment.value ? 145 : 0,
+            width: isVisiblepayment.value
                 ? MediaQuery.of(context).size.width - 50
                 : 0,
             decoration: BoxDecoration(
@@ -363,7 +364,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   color: Colors.grey.withOpacity(0.5),
                   spreadRadius: 1,
                   blurRadius: 3,
-                  offset: Offset(0, 2),
+                  offset: const Offset(0, 2),
                 ),
               ],
             ),
@@ -391,7 +392,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         ),
                         Text(
                           payments[index]['name'],
-                          style: TextStyle(color: Colors.white),
+                          style: const TextStyle(color: Colors.white),
                         ),
                         const Divider(
                           color: Colors.white,
@@ -400,25 +401,25 @@ class _ChatScreenState extends State<ChatScreen> {
                           endIndent: 20,
                         ),
                         Text('${payments[index]['account_name']}',
-                            style: TextStyle(color: Colors.white)),
+                            style: const TextStyle(color: Colors.white)),
                         Text('${payments[index]['account_number']}',
-                            style: TextStyle(color: Colors.white)),
+                            style: const TextStyle(color: Colors.white)),
                         Padding(
                           padding: const EdgeInsets.only(top: 5),
                           child: InkWell(
-                            child: Icon(Icons.copy, color: Colors.white),
+                            child: const Icon(Icons.copy, color: Colors.white),
                             onTap: () {
                               String text =
                                   '${payments[index]['name']} : Account Name: ${payments[index]['account_name']} | Account Number: ${payments[index]['account_number']}';
                               Clipboard.setData(ClipboardData(text: text));
                               ScaffoldMessenger.of(context)
-                                  .showSnackBar(SnackBar(
-                                content: const Text('Copiied'),
+                                  .showSnackBar(const SnackBar(
+                                content: Text('Copiied'),
                                 duration: Duration(milliseconds: 500),
                               ));
                               ScaffoldMessenger.of(context)
-                                  .showSnackBar(SnackBar(
-                                content: const Text('Copiied'),
+                                  .showSnackBar(const SnackBar(
+                                content: Text('Copiied'),
                                 duration: Duration(milliseconds: 500),
                               ));
                             },
@@ -443,47 +444,47 @@ class _ChatScreenState extends State<ChatScreen> {
         Expanded(
           child: ElevatedButton.icon(
             onPressed: () {
-              _isVisiblegame.value = !_isVisiblegame.value;
-              if (_isVisiblepayment.value == true) {
-                _isVisiblepayment.value = !_isVisiblepayment.value;
+              isVisiblegame.value = !isVisiblegame.value;
+              if (isVisiblepayment.value == true) {
+                isVisiblepayment.value = !isVisiblepayment.value;
               }
             },
             icon: ValueListenableBuilder<bool>(
-              valueListenable: _isVisiblegame,
+              valueListenable: isVisiblegame,
               builder: (BuildContext context, bool value, Widget? child) {
                 return RotationTransition(
                   turns: AlwaysStoppedAnimation(value ? 0 : 0.5),
-                  child: Icon(
+                  child: const Icon(
                     Icons.arrow_drop_up,
                     color: Colors.black,
                   ),
                 );
               },
             ),
-            label: Text('Game'),
+            label: const Text('Game'),
           ),
         ),
         Expanded(
           child: ElevatedButton.icon(
             onPressed: () {
-              _isVisiblepayment.value = !_isVisiblepayment.value;
-              if (_isVisiblegame.value == true) {
-                _isVisiblegame.value = !_isVisiblegame.value;
+              isVisiblepayment.value = !isVisiblepayment.value;
+              if (isVisiblegame.value == true) {
+                isVisiblegame.value = !isVisiblegame.value;
               }
             },
             icon: ValueListenableBuilder<bool>(
-              valueListenable: _isVisiblepayment,
+              valueListenable: isVisiblepayment,
               builder: (BuildContext context, bool value, Widget? child) {
                 return RotationTransition(
                   turns: AlwaysStoppedAnimation(value ? 0 : 0.5),
-                  child: Icon(
+                  child: const Icon(
                     Icons.arrow_drop_up,
                     color: Colors.black,
                   ),
                 );
               },
             ),
-            label: Text('Payment'),
+            label: const Text('Payment'),
           ),
         ),
       ],
@@ -496,11 +497,11 @@ class _ChatScreenState extends State<ChatScreen> {
             future: forconvId,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return CircularProgressIndicator();
+                return const CircularProgressIndicator();
               } else {
                 conversationId = snapshot.data!;
-                DateTime? _prevDate;
-                bool _todayDisplayed = false;
+                DateTime? prevDate;
+                bool todayDisplayed = false;
                 //return Container();
                 return StreamBuilder<QuerySnapshot>(
                   stream: FirestoreService().getStream(
@@ -509,11 +510,11 @@ class _ChatScreenState extends State<ChatScreen> {
                   builder: (BuildContext context,
                       AsyncSnapshot<QuerySnapshot> snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(
+                      return const Center(
                         child: CircularProgressIndicator(),
                       );
                     } else {
-                      if (snapshot.hasData && snapshot.data!.docs.length > 0) {
+                      if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
                         //there are messages
                         SchedulerBinding.instance.addPostFrameCallback((_) {
                           //scroll to bottom
@@ -548,23 +549,23 @@ class _ChatScreenState extends State<ChatScreen> {
                                     final now = DateTime.now();
                                     final msgDate = timestamp.toDate();
 
-                                    if (_prevDate == null ||
-                                        _prevDate!.difference(msgDate).inDays !=
+                                    if (prevDate == null ||
+                                        prevDate!.difference(msgDate).inDays !=
                                             0) {
                                       // Message is from a different day
                                       showDate = true;
-                                      _prevDate = msgDate;
-                                      _todayDisplayed =
+                                      prevDate = msgDate;
+                                      todayDisplayed =
                                           false; // reset today display flag
                                     }
                                     if (now.year == msgDate.year &&
                                         now.month == msgDate.month &&
                                         now.day == msgDate.day &&
-                                        !_todayDisplayed) {
+                                        !todayDisplayed) {
                                       // Message is from today and "Today" has not been displayed yet
                                       showDate = true;
                                       today = true;
-                                      _todayDisplayed =
+                                      todayDisplayed =
                                           true; // set today display flag
                                     }
                                     final formattedDate = today
@@ -613,7 +614,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                                         text: msg['content'],
                                                         isSender: isSender,
                                                         color: Colors.blueGrey,
-                                                        textStyle: TextStyle(
+                                                        textStyle: const TextStyle(
                                                           fontSize: 16,
                                                           color: Colors.white,
                                                         ),
@@ -634,7 +635,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                                                 _scrollController
                                                                     .position
                                                                     .maxScrollExtent,
-                                                                duration: Duration(
+                                                                duration: const Duration(
                                                                     milliseconds:
                                                                         200),
                                                                 curve: Curves
@@ -676,6 +677,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                       ),
                                     );
                                   }
+                                  return null;
                                 },
                               ),
                             ),
@@ -691,7 +693,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         );
                       } else {
                         //no messages
-                        return Center(
+                        return const Center(
                             child: CircleAvatar(
                                 radius: 200,
                                 backgroundImage: AssetImage(
@@ -732,7 +734,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         pickedFile = null;
                       });
                     },
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.close,
                       color: Colors.grey,
                     ))
@@ -751,7 +753,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         _flag = true;
                       });
                     },
-                    child: Icon(Icons.camera_alt)),
+                    child: const Icon(Icons.camera_alt)),
                 //text field
                 Expanded(
                     child: Padding(
@@ -759,7 +761,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   child: Container(
                       decoration: BoxDecoration(
                           color: Colors.blueGrey[50],
-                          borderRadius: BorderRadius.all(Radius.circular(20))),
+                          borderRadius: const BorderRadius.all(Radius.circular(20))),
                       child: Padding(
                         padding: const EdgeInsets.only(
                             left: 15, right: 15, bottom: 5),
@@ -770,7 +772,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 )),
                 //send message - send icon
                 IconButton(
-                  icon: Icon(Icons.send),
+                  icon: const Icon(Icons.send),
                   onPressed: () async {
                     if (pickedFile != null) {
                       String url =
@@ -789,7 +791,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         _flag = false;
                       });
                     }
-                    if (_controller.text.length > 0) {
+                    if (_controller.text.isNotEmpty) {
                       FirestoreService().sendMessage(
                           conversationId: conversationId!,
                           message: _controller.text,
@@ -804,7 +806,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     try {
                       _scrollController.animateTo(
                         _scrollController.position.maxScrollExtent,
-                        duration: Duration(milliseconds: 200),
+                        duration: const Duration(milliseconds: 200),
                         curve: Curves.easeOut,
                       );
                     } catch (e) {
@@ -825,18 +827,18 @@ class _ChatScreenState extends State<ChatScreen> {
               onPressed: () {
                 Navigator.pop(context);
               },
-              icon: Icon(
+              icon: const Icon(
                 Icons.arrow_back_ios_outlined,
                 color: Colors.black,
               )),
           centerTitle: true,
           title: Text(
             widget.userName,
-            style: TextStyle(
+            style: const TextStyle(
               color: Colors.black,
             ),
           ),
-          shape: Border(bottom: BorderSide(color: Colors.grey, width: 1)),
+          shape: const Border(bottom: BorderSide(color: Colors.grey, width: 1)),
         ),
         body: Column(
           children: [chatBody, footer],

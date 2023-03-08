@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:topup2p/models/item_model.dart';
 
 class FavoritesProvider with ChangeNotifier {
-  List<Item> _favorites = [];
+  final List<Item> _favorites = [];
 
   List<Item> get favorites => _favorites;
 

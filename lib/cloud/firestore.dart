@@ -6,7 +6,7 @@ import 'package:topup2p/providers/user_provider.dart';
 import 'package:topup2p/utilities/other_utils.dart';
 
 class FirestoreService {
-  FirebaseFirestore _db = FirebaseFirestore.instance;
+  final FirebaseFirestore _db = FirebaseFirestore.instance;
 
   Future<void> create(
       {required String collection,
@@ -181,7 +181,7 @@ class FirestoreService {
     } else {
       //timestamp is inside a map field
       return subCollectionRef
-          .orderBy(FieldPath(['last_msg', 'timestamp']), descending: true)
+          .orderBy(FieldPath(const ['last_msg', 'timestamp']), descending: true)
           .snapshots();
     }
   }

@@ -1,5 +1,6 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
 import 'package:topup2p/cloud/firestore.dart';
 import 'package:topup2p/models/item_model.dart';
@@ -14,7 +15,7 @@ import 'package:topup2p/widgets/favorite_icon.dart';
 import 'package:topup2p/widgets/loading_screen.dart';
 
 class GameSellScreen extends StatefulWidget {
-  GameSellScreen({required this.gameName, required this.favorites, super.key});
+  const GameSellScreen({required this.gameName, required this.favorites, super.key});
   final String gameName;
   final List<Item> favorites;
   @override
@@ -114,7 +115,7 @@ class _GameSellScreenState extends State<GameSellScreen> {
                             BoxShadow(
                               color: Colors.grey.withOpacity(0.5),
                               blurRadius: 7,
-                              offset: Offset(0, 2),
+                              offset: const Offset(0, 2),
                             ),
                           ],
                         ),
@@ -126,7 +127,7 @@ class _GameSellScreenState extends State<GameSellScreen> {
                               child: shop['info']['image'] == 'assets/images/store-placeholder.png'
                                   ? Container(
                                       width: 100,
-                                      decoration: BoxDecoration(
+                                      decoration: const BoxDecoration(
                                           shape: BoxShape.circle,
                                           image: DecorationImage(
                                               fit: BoxFit.cover,
@@ -203,7 +204,7 @@ class _GameSellScreenState extends State<GameSellScreen> {
                                                             .center,
                                                     children: [
                                                       Text(
-                                                          "₱ ${shop['rates']['rate${j}']['php']} : ${shop['rates']['rate${j}']['digGoods']} "),
+                                                          "₱ ${shop['rates']['rate$j']['php']} : ${shop['rates']['rate$j']['digGoods']} "),
                                                       Image.asset(
                                                         gameIcon(
                                                             widget.gameName),

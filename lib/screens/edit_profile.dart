@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names, use_build_context_synchronously
+
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -58,7 +60,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    bool _flag = MediaQuery.of(context).orientation == Orientation.portrait;
+    bool flag = MediaQuery.of(context).orientation == Orientation.portrait;
     Widget editProfileSection = Padding(
       padding: const EdgeInsets.fromLTRB(50, 0, 50, 0),
       child: Form(
@@ -70,12 +72,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               visible: userProvider.user!.type == 'seller',
               child: TextFormField(
                 controller: _Sname,
-                decoration: InputDecoration(hintText: 'Shop name'),
+                decoration: const InputDecoration(hintText: 'Shop name'),
                 validator: (value) {
                   if (userProvider.user!.type == 'seller') {
                     _textValidator(value!);
                     return _errorMessage;
                   }
+                  return null;
                 },
                 onChanged: (value) => setState(() {
                   _errorMessage = null;
@@ -252,18 +255,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           _isLoading = false;
                         });
                         ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: const Text('Profile Updated')));
+                            const SnackBar(content: Text('Profile Updated')));
                       } else {
                         setState(() {
                           _isLoading = false;
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              content: const Text(
+                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                              content: Text(
                                   'Shop name is already taken. Try again.')));
                         });
                       }
                     } else {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: const Text('No changes has been made')));
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                          content: Text('No changes has been made')));
                       Navigator.pop(context);
                     }
                   }
@@ -319,11 +322,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   child: Stack(
                     children: [
                       //display photo
-                      Container(
-                        height: _flag
+                      SizedBox(
+                        height: flag
                             ? MediaQuery.of(context).size.width
                             : MediaQuery.of(context).size.width / 2,
-                        width: _flag
+                        width: flag
                             ? MediaQuery.of(context).size.height
                             : MediaQuery.of(context).size.height / 2,
                         child: ClipPath(
@@ -339,21 +342,21 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ),
                       //upload icon
                       Positioned(
-                        right: _flag ? 0 : 85,
-                        bottom: _flag ? 20 : 0,
+                        right: flag ? 0 : 85,
+                        bottom: flag ? 20 : 0,
                         child: Container(
-                          decoration: new BoxDecoration(
+                          decoration: const BoxDecoration(
                             color: Colors.blueGrey,
                             shape: BoxShape.circle,
                           ),
-                          height: _flag
+                          height: flag
                               ? MediaQuery.of(context).size.width / 7
                               : MediaQuery.of(context).size.width / 9,
-                          width: _flag
+                          width: flag
                               ? MediaQuery.of(context).size.height / 7
                               : MediaQuery.of(context).size.height / 9,
-                          child: ClipPath(
-                              clipper: const ShapeBorderClipper(
+                          child: const ClipPath(
+                              clipper: ShapeBorderClipper(
                                   shape: CircleBorder()),
                               clipBehavior: Clip.hardEdge,
                               child: Icon(
@@ -365,11 +368,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       if (pickedFile != null) ...[
                         //remove image icon
                         Positioned(
-                          right: _flag ? 20 : 100,
-                          top: _flag ? 20 : 0,
+                          right: flag ? 20 : 100,
+                          top: flag ? 20 : 0,
                           child: InkWell(
-                            child: ClipPath(
-                                clipper: const ShapeBorderClipper(
+                            child: const ClipPath(
+                                clipper: ShapeBorderClipper(
                                     shape: CircleBorder()),
                                 clipBehavior: Clip.hardEdge,
                                 child: Icon(
@@ -399,8 +402,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
     return Scaffold(
         body: _isLoading
-            ? Center(
-                child: const LoadingScreen(),
+            ? const Center(
+                child: LoadingScreen(),
               )
             : editProfileBody);
   }

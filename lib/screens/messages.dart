@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names, use_build_context_synchronously
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
@@ -10,7 +12,7 @@ import 'package:intl/intl.dart';
 class MessagesScreen extends StatefulWidget {
   const MessagesScreen({super.key});
   @override
-  _MessagesScreenState createState() => _MessagesScreenState();
+  State<MessagesScreen> createState() => _MessagesScreenState();
 }
 
 class _MessagesScreenState extends State<MessagesScreen> {
@@ -26,11 +28,11 @@ class _MessagesScreenState extends State<MessagesScreen> {
           flag: false),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(
+          return const Center(
             child: CircularProgressIndicator(),
           );
         }
-        if (snapshot.hasData && snapshot.data!.docs.length > 0) {
+        if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
           return ListView.builder(
             itemCount: snapshot.data!.docs.length,
             itemBuilder: (BuildContext context, int index) {
@@ -98,7 +100,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                   color: Colors.grey.withOpacity(0.5),
                                   spreadRadius: 2,
                                   blurRadius: 5,
-                                  offset: Offset(0, 2),
+                                  offset: const Offset(0, 2),
                                 ),
                               ],
                             ),
@@ -124,7 +126,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                     //excess characters are chanegd to ...
                                     subtitle: Text(
                                       msg.length > 30
-                                          ? msg.substring(0, 30) + '...'
+                                          ? '${msg.substring(0, 30)}...'
                                           : msg,
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
@@ -203,7 +205,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                         child: Container(
                                           width: 10,
                                           height: 10,
-                                          decoration: BoxDecoration(
+                                          decoration: const BoxDecoration(
                                               shape: BoxShape.circle,
                                               color: Colors.red),
                                         )),
@@ -221,7 +223,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
           );
         } else {
           //if messages is empty
-          return Center(
+          return const Center(
               child: CircleAvatar(
                   radius: 200,
                   backgroundImage: AssetImage('assets/images/empty-chat.png')));
@@ -237,29 +239,29 @@ class _MessagesScreenState extends State<MessagesScreen> {
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.arrow_back_ios_outlined,
                       color: Colors.black,
                     )),
                 centerTitle: true,
-                title: Text(
+                title: const Text(
                   'Messages',
                   style: TextStyle(
                     color: Colors.black,
                   ),
                 ),
-                shape: Border(bottom: BorderSide(color: Colors.grey, width: 1)),
+                shape: const Border(bottom: BorderSide(color: Colors.grey, width: 1)),
               )
             : AppBar(
                 centerTitle: true,
-                title: Text(
+                title: const Text(
                   'Messages',
                   style: TextStyle(
                     color: Colors.black,
                   ),
                 ),
                 shape:
-                    Border(bottom: BorderSide(color: Colors.grey, width: 1))),
+                    const Border(bottom: BorderSide(color: Colors.grey, width: 1))),
         body: messagesBody);
   }
 }

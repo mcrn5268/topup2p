@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
@@ -64,7 +66,7 @@ class _FavoritesListState extends State<FavoritesList>
       height: 150,
       child: Consumer<FavoritesProvider>(builder: (context, favProvider, _) {
         if (favProvider.favorites.isEmpty) {
-          return FavoritesPlaceholder();
+          return const FavoritesPlaceholder();
         } else {
           favoritedLength = favProvider.favorites.length;
           return Stack(
@@ -106,7 +108,7 @@ class _FavoritesListState extends State<FavoritesList>
                                                     .withOpacity(0.5),
                                                 spreadRadius: 2,
                                                 blurRadius: 5,
-                                                offset: Offset(0,
+                                                offset: const Offset(0,
                                                     2), 
                                               ),
                                             ],
@@ -119,7 +121,7 @@ class _FavoritesListState extends State<FavoritesList>
                                         ),
                                       ),
                                       Expanded(
-                                        child: Container(
+                                        child: SizedBox(
                                           width: double.infinity,
                                           child: Column(
                                             mainAxisAlignment:

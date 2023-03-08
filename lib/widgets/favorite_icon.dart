@@ -63,7 +63,7 @@ class _FavoritesIconState extends State<FavoritesIcon> {
             },
           ));
     } else {
-      return Align(alignment: Alignment.topRight, child: Icon(Icons.error));
+      return const Align(alignment: Alignment.topRight, child: Icon(Icons.error));
     }
   }
 }

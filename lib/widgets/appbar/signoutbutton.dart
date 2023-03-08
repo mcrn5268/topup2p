@@ -16,7 +16,7 @@ class SignoutButton extends StatelessWidget {
             side: const BorderSide(color: Colors.red)),
       ),
       child: Row(
-        children: <Widget>[
+        children: const <Widget>[
           Text(
             'Sign Out',
             style: TextStyle(color: Colors.red),

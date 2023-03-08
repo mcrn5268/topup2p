@@ -7,7 +7,6 @@ import 'package:topup2p/screens/seller/seller_main.dart';
 import 'package:topup2p/screens/user/user_main.dart';
 import 'package:topup2p/utilities/globals.dart';
 import 'package:topup2p/utilities/models_utils.dart';
-import 'package:topup2p/widgets/loading_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:topup2p/providers/user_provider.dart';
 
@@ -49,29 +48,29 @@ class Topup2p extends StatelessWidget {
           primarySwatch: Colors.blueGrey,
         ),
         home: Consumer<UserProvider>(
-          builder: (context, UserProvider, _) {
-            if (UserProvider.user == null) {
+          builder: (context, userProvider, _) {
+            if (userProvider.user == null) {
               // User is not logged in
-              return LoginScreen();
+              return const LoginScreen();
             } else {
               // User is logged in
               itemsObjectList = convertMapsToItems(productItemsMap);
 
-              if (UserProvider.user!.type == 'normal') {
+              if (userProvider.user!.type == 'normal') {
                 return ChangeNotifierProvider(
                   create: (_) => FavoritesProvider(),
-                  child: UserMainScreen(),
+                  child: const UserMainScreen(),
                 );
-              } else if (UserProvider.user!.type == 'seller') {
+              } else if (userProvider.user!.type == 'seller') {
                 return MultiProvider(
                   providers: [
                     ChangeNotifierProvider(create: (_) => SellItemsProvider()),
                     ChangeNotifierProvider(create: (_) => PaymentProvider()),
                   ],
-                  child: SellerMain(),
+                  child: const SellerMain(),
                 );
               } else {
-                return Center(child: const Text('Something went wrong'));
+                return const Center(child: Text('Something went wrong'));
               }
             }
           },

@@ -1,3 +1,5 @@
+// ignore_for_file: file_names
+
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_switch/flutter_switch.dart';
@@ -17,10 +19,10 @@ class AddUpdateWalletScreen extends StatefulWidget {
 }
 
 class _AddUpdateWalletScreenState extends State<AddUpdateWalletScreen> {
-  TextEditingController _controllername = TextEditingController();
-  TextEditingController _controllernum = TextEditingController();
+  final TextEditingController _controllername = TextEditingController();
+  final TextEditingController _controllernum = TextEditingController();
   bool _isEditable = false;
-  TextEditingController _typeAheadController = TextEditingController();
+  final TextEditingController _typeAheadController = TextEditingController();
   late int limit;
   bool isToggled = false;
   List<String> threeMOPs = ['GCash', 'UnionBank', 'Metrobank'];
@@ -62,7 +64,7 @@ class _AddUpdateWalletScreenState extends State<AddUpdateWalletScreen> {
     Widget walletsList = TypeAheadFormField(
       textFieldConfiguration: TextFieldConfiguration(
         controller: _typeAheadController,
-        decoration: InputDecoration(
+        decoration: const InputDecoration(
           labelText: 'Select a wallet',
           border: OutlineInputBorder(),
         ),
@@ -163,7 +165,7 @@ class _AddUpdateWalletScreenState extends State<AddUpdateWalletScreen> {
                           child: SizedBox(
                             height: 58,
                             child: IconButton(
-                              icon: Icon(Icons.close,
+                              icon: const Icon(Icons.close,
                                   color: Colors.grey, size: 20),
                               onPressed: () {
                                 setState(() {
@@ -178,7 +180,7 @@ class _AddUpdateWalletScreenState extends State<AddUpdateWalletScreen> {
               ),
             ],
           ),
-          Text('Account Name'),
+          const Text('Account Name'),
           Row(
             children: [
               Expanded(
@@ -214,7 +216,7 @@ class _AddUpdateWalletScreenState extends State<AddUpdateWalletScreen> {
                           child: SizedBox(
                             height: 58,
                             child: IconButton(
-                              icon: Icon(Icons.close,
+                              icon: const Icon(Icons.close,
                                   color: Colors.grey, size: 20),
                               onPressed: () {
                                 setState(() {
@@ -229,7 +231,7 @@ class _AddUpdateWalletScreenState extends State<AddUpdateWalletScreen> {
               ),
             ],
           ),
-          Text('Account Number'),
+          const Text('Account Number'),
           SizedBox(
             height: 63,
             child: Row(
@@ -251,25 +253,25 @@ class _AddUpdateWalletScreenState extends State<AddUpdateWalletScreen> {
                                             _controllernum.text)
                                     : false)) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                      content: const Text(
+                                  const SnackBar(
+                                      content: Text(
                                           'No changes has been made')));
                               setState(() {
                                 _isEditable = !_isEditable;
                               });
                             } else if (_controllername.text == '') {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                      content: const Text(
+                                  const SnackBar(
+                                      content: Text(
                                           'Account name must not be empty')));
                             } else if (_controllernum.text == '') {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                      content: const Text(
+                                  const SnackBar(
+                                      content: Text(
                                           'Account number must not be empty')));
                             } else if (_controllernum.text.length != limit) {
                               if (_controllernum.text.length == 1) {
-                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                                     content: Text(
                                         'Account number start with either 09 or 639')));
                               } else {
@@ -298,8 +300,8 @@ class _AddUpdateWalletScreenState extends State<AddUpdateWalletScreen> {
                               }
 
                               ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                      content: const Text('Wallet updated')));
+                                  const SnackBar(
+                                      content: Text('Wallet updated')));
                               setState(() {
                                 _isEditable = !_isEditable;
                               });
@@ -313,7 +315,7 @@ class _AddUpdateWalletScreenState extends State<AddUpdateWalletScreen> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
-                            _isEditable ? Icon(Icons.check) : Icon(Icons.edit),
+                            _isEditable ? const Icon(Icons.check) : const Icon(Icons.edit),
                             Text(_isEditable ? 'Save' : 'Edit')
                           ],
                         ),
@@ -331,7 +333,7 @@ class _AddUpdateWalletScreenState extends State<AddUpdateWalletScreen> {
               onPressed: () {
                 Navigator.pop(context, paymentProvider.payments);
               },
-              icon: Icon(
+              icon: const Icon(
                 Icons.arrow_back_ios_outlined,
                 color: Colors.black,
               )),
@@ -392,7 +394,7 @@ class _AddUpdateWalletScreenState extends State<AddUpdateWalletScreen> {
                             child: SizedBox(
                               height: 58,
                               child: IconButton(
-                                icon: Icon(
+                                icon: const Icon(
                                   Icons.close,
                                   color: Colors.grey,
                                 ),

@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names, use_build_context_synchronously
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -8,7 +10,7 @@ import 'package:topup2p/providers/user_provider.dart';
 import 'package:topup2p/widgets/custom_divider.dart';
 
 class RegisterScreen extends StatefulWidget {
-  RegisterScreen({super.key});
+  const RegisterScreen({super.key});
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
 }
@@ -32,7 +34,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   void initState() {
     super.initState();
-    focusNode = new FocusNode();
+    focusNode = FocusNode();
     focusNode.addListener(() {
       if (!focusNode.hasFocus) {
         setState(() {
@@ -83,7 +85,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       };
       FirestoreService().create(
           collection: 'users',
-          documentId: '${authResult.user!.uid}',
+          documentId: authResult.user!.uid,
           data: userData);
 
       // Update the user data in the UserProvider
@@ -215,7 +217,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   child: _isLoading
                       ? Row(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
+                          children: const [
                             CircularProgressIndicator(),
                           ],
                         )

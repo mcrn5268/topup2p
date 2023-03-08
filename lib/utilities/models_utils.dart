@@ -1,7 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:topup2p/models/item_model.dart';
 import 'package:topup2p/models/payment_model.dart';
-import 'package:topup2p/providers/payment_provider.dart';
 import 'package:topup2p/utilities/globals.dart';
 
 //Map to object/model

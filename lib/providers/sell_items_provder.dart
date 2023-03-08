@@ -1,8 +1,10 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'package:flutter/material.dart';
 import 'package:topup2p/models/item_model.dart';
 
 class SellItemsProvider with ChangeNotifier {
-  List<Map<Item, String>> _Sitems = [];
+  final List<Map<Item, String>> _Sitems = [];
 
   List<Map<Item, String>> get Sitems => _Sitems;
 
