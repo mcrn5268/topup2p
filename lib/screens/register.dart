@@ -78,7 +78,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
         'email': _email.text,
         //'phone_number': _phoneNumberController.text,
         'type': 'normal',
-        //todo
         'image': 'assets/images/person-placeholder.png',
         'image_url': 'assets/images/person-placeholder.png'
       };
