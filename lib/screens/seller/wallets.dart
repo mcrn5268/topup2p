@@ -17,9 +17,10 @@ class _SellerWalletsScreenState extends State<SellerWalletsScreen> {
   void initState() {
     super.initState();
     if (widget.payments.isNotEmpty) {
-      Provider.of<PaymentProvider>(context, listen: false).clearPayments(notify: false);
       Provider.of<PaymentProvider>(context, listen: false)
-          .addAllPayments(widget.payments,notify: false);
+          .clearPayments(notify: false);
+      Provider.of<PaymentProvider>(context, listen: false)
+          .addAllPayments(widget.payments, notify: false);
     }
   }
 
@@ -38,8 +39,7 @@ class _SellerWalletsScreenState extends State<SellerWalletsScreen> {
               ChangeNotifierProvider<PaymentProvider>.value(
             value: PaymentProvider(),
             child: AddUpdateWalletScreen(
-                cardWallet: card,
-                paymentList: paymentProvider.payments),
+                cardWallet: card, paymentList: paymentProvider.payments),
           ),
           transitionsBuilder: (_, a, __, c) =>
               FadeTransition(opacity: a, child: c),
@@ -60,14 +60,11 @@ class _SellerWalletsScreenState extends State<SellerWalletsScreen> {
               },
               icon: const Icon(
                 Icons.arrow_back_ios_outlined,
-                color: Colors.black,
               )),
           centerTitle: true,
           title: const Text(
             'Wallets',
-            style: TextStyle(
-              color: Colors.black, // try a different color here
-            ),
+            style: TextStyle(),
           ),
           shape: const Border(bottom: BorderSide(color: Colors.grey, width: 1)),
         ),
@@ -77,12 +74,20 @@ class _SellerWalletsScreenState extends State<SellerWalletsScreen> {
               Padding(
                 padding: const EdgeInsets.only(left: 25, right: 25, bottom: 10),
                 child: ListView(children: [
-                  Image.asset(
-                    'assets/images/wallet-placeholder.png',
-                    height: MediaQuery.of(context).orientation ==
-                            Orientation.portrait
-                        ? MediaQuery.of(context).size.width - 200
-                        : MediaQuery.of(context).size.width / 5,
+                  ColorFiltered(
+                    colorFilter: ColorFilter.mode(
+                        MediaQuery.of(context).platformBrightness ==
+                                Brightness.dark
+                            ? Colors.white
+                            : Colors.black,
+                        BlendMode.srcIn),
+                    child: Image.asset(
+                      'assets/images/wallet-placeholder.png',
+                      height: MediaQuery.of(context).orientation ==
+                              Orientation.portrait
+                          ? MediaQuery.of(context).size.width - 200
+                          : MediaQuery.of(context).size.width / 5,
+                    ),
                   ),
                   const Divider(),
                   if (paymentProvider.payments.isNotEmpty) ...[
@@ -105,33 +110,45 @@ class _SellerWalletsScreenState extends State<SellerWalletsScreen> {
                                   child: Stack(
                                     alignment: AlignmentDirectional.center,
                                     children: [
-                                      Container(
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(50),
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color:
-                                                  Colors.grey.withOpacity(0.5),
-                                              blurRadius: 7,
-                                              spreadRadius: 2,
-                                              offset: const Offset(0, 2),
-                                            ),
-                                          ],
-                                        ),
-                                        foregroundDecoration: BoxDecoration(
-                                          color: paymentItem.isEnabled
-                                              ? Colors.transparent
-                                              : Colors.grey,
-                                          backgroundBlendMode:
-                                              BlendMode.saturation,
-                                        ),
-                                        child: Image.asset(
-                                          paymentItem.paymentimage,
+                                      AspectRatio(
+                                        aspectRatio: 1.5873,
+                                        child: Container(
                                           width: MediaQuery.of(context)
                                                   .size
                                                   .width -
                                               100,
+                                          decoration: BoxDecoration(
+                                            image: DecorationImage(
+                                              image: AssetImage(
+                                                paymentItem.paymentimage,
+                                              ),fit: BoxFit.cover
+                                            ),
+                                            borderRadius:
+                                                BorderRadius.circular(20),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.grey
+                                                    .withOpacity(0.5),
+                                                spreadRadius: 1,
+                                                blurRadius: 3,
+                                                offset: const Offset(0, 1),
+                                              ),
+                                            ],
+                                          ),
+                                          foregroundDecoration: BoxDecoration(
+                                            color: paymentItem.isEnabled
+                                                ? Colors.transparent
+                                                : Colors.grey,
+                                            backgroundBlendMode:
+                                                BlendMode.saturation,
+                                          ),
+                                          // child: Image.asset(
+                                          //   paymentItem.paymentimage,
+                                          //   width: MediaQuery.of(context)
+                                          //           .size
+                                          //           .width -
+                                          //       100,
+                                          // ),
                                         ),
                                       ),
                                       const Align(
@@ -169,7 +186,6 @@ class _SellerWalletsScreenState extends State<SellerWalletsScreen> {
                   onPressed: () {
                     toCardWallet();
                   },
-                  backgroundColor: Colors.blueGrey,
                   child: const Icon(Icons.add),
                 ),
               ),

@@ -31,8 +31,8 @@ class SignoutButton extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Log out'),
-          content: const Text('Are you sure you want to log out?'),
+          title: const Text('Sign out'),
+          content: const Text('Are you sure you want to sign out?'),
           actions: <Widget>[
             TextButton(
               style: TextButton.styleFrom(

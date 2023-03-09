@@ -269,7 +269,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  side: const BorderSide(color: Colors.black),
                   shape: const StadiumBorder(),
                   padding: const EdgeInsets.all(15),
                 ),
@@ -295,6 +294,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.transparent,
+                side: const BorderSide(color: Colors.transparent),
+              ),
               onPressed: () {
                 Navigator.pop(context);
               },
@@ -342,8 +345,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         right: flag ? 0 : 85,
                         bottom: flag ? 20 : 0,
                         child: Container(
-                          decoration: const BoxDecoration(
-                            color: Colors.blueGrey,
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color:
+                                  MediaQuery.of(context).platformBrightness ==
+                                          Brightness.dark
+                                      ? Colors.white
+                                      : Colors.black,
+                            ),
+                            color: MediaQuery.of(context).platformBrightness ==
+                                    Brightness.dark
+                                ? Colors.teal
+                                : Colors.blueGrey,
                             shape: BoxShape.circle,
                           ),
                           height: flag

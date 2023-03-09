@@ -124,8 +124,9 @@ class _GameSellScreenState extends State<GameSellScreen> {
                           boxShadow: [
                             BoxShadow(
                               color: Colors.grey.withOpacity(0.5),
-                              blurRadius: 7,
-                              offset: const Offset(0, 2),
+                              spreadRadius: 1,
+                              blurRadius: 3,
+                              offset: const Offset(0, 1),
                             ),
                           ],
                         ),
@@ -268,7 +269,21 @@ class _GameSellScreenState extends State<GameSellScreen> {
               child: SizedBox(
                 width: 300,
                 height: 300,
-                child: Image.asset('assets/images/exclamation.png'),
+                child: ColorFiltered(
+                  colorFilter: ColorFilter.mode(
+                      MediaQuery.of(context).platformBrightness ==
+                              Brightness.dark
+                          ? Colors.white
+                          : Colors.black,
+                      BlendMode.srcIn),
+                  child: Image.asset(
+                    'assets/images/exclamation.png',
+                    height: MediaQuery.of(context).orientation ==
+                            Orientation.portrait
+                        ? MediaQuery.of(context).size.width - 200
+                        : MediaQuery.of(context).size.width / 5,
+                  ),
+                ),
               ),
             ),
             Text("Sorry there's no seller/shop for ${widget.gameName}")

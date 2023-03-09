@@ -9,6 +9,10 @@ class SearchButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.transparent,
+            side: const BorderSide(color: Colors.transparent),
+          ),
       onPressed: () {
         showSearch(
           context: context,

@@ -4,8 +4,13 @@ import 'package:topup2p/widgets/appbar/allwidgets.dart';
 import 'package:topup2p/widgets/appbar/signoutbutton.dart';
 
 class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
-  const AppBarWidget({required this.home, required this.search, required this.isloggedin,
-      this.fromProfile, this.fromGameSellScreen, super.key});
+  const AppBarWidget(
+      {required this.home,
+      required this.search,
+      required this.isloggedin,
+      this.fromProfile,
+      this.fromGameSellScreen,
+      super.key});
   final bool home;
   final bool search;
   final bool isloggedin;
@@ -57,7 +62,11 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
           },
           icon: Icon(
             Icons.arrow_back_ios_outlined,
-            color: (fromProfile != null) ? Colors.white : Colors.black,
+            color: (fromProfile != null)
+                ? Colors.white
+                : MediaQuery.of(context).platformBrightness == Brightness.dark
+                    ? Colors.white
+                    : Colors.black,
           ));
     } else {
       return const LogoButton();

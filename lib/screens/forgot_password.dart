@@ -73,6 +73,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        side: const BorderSide(color: Colors.transparent),
+                      ),
                       onPressed: () {
                         Navigator.pop(context);
                       },
@@ -142,8 +146,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                             }
                                           },
                                           style: ElevatedButton.styleFrom(
-                                            side: const BorderSide(
-                                                color: Colors.black),
                                             shape: const StadiumBorder(),
                                             padding: const EdgeInsets.all(15),
                                           ),

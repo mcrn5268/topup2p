@@ -18,11 +18,11 @@ class LogInButton extends StatelessWidget {
           ),
         );
       },
-      style: ElevatedButton.styleFrom(
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(30),
-            side: const BorderSide(color: Colors.black)),
-      ),
+      
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.transparent,
+            side: const BorderSide(color: Colors.transparent),
+          ),
       child: Row(
         children: const <Widget>[
           Text(

@@ -231,7 +231,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             }
                           },
                           style: ElevatedButton.styleFrom(
-                            side: const BorderSide(color: Colors.black),
                             shape: const StadiumBorder(),
                             padding: const EdgeInsets.all(15),
                           ),
@@ -261,6 +260,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.transparent,
+                side: const BorderSide(color: Colors.transparent),
+              ),
               onPressed: () {
                 Navigator.pop(context);
               },

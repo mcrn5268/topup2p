@@ -9,7 +9,8 @@ import 'package:topup2p/models/payment_model.dart';
 import 'package:topup2p/providers/payment_provider.dart';
 import 'package:topup2p/utilities/digit_input_formatter.dart';
 import 'package:topup2p/utilities/models_utils.dart';
-
+//todo if there is no wallet left, disable all of the items
+//also show warning
 class AddUpdateWalletScreen extends StatefulWidget {
   const AddUpdateWalletScreen({this.cardWallet, this.paymentList, super.key});
   final Payment? cardWallet;
@@ -335,7 +336,6 @@ class _AddUpdateWalletScreenState extends State<AddUpdateWalletScreen> {
               },
               icon: const Icon(
                 Icons.arrow_back_ios_outlined,
-                color: Colors.black,
               )),
           flexibleSpace: SafeArea(
             child: Visibility(

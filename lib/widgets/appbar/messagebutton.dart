@@ -10,15 +10,19 @@ class MessageButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-        stream: FirestoreService().getSeenStream(uid:
-            Provider.of<UserProvider>(context, listen: false).user!.uid),
+        stream: FirestoreService().getSeenStream(
+            uid: Provider.of<UserProvider>(context, listen: false).user!.uid),
         builder: (context, snapshot) {
           return ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.transparent,
+              side: const BorderSide(color: Colors.transparent),
+            ),
             onPressed: () {
               Navigator.push(
                 context,
                 PageRouteBuilder(
-                  pageBuilder: (_, __, ___) => MessagesScreen(),
+                  pageBuilder: (_, __, ___) => const MessagesScreen(),
                   transitionsBuilder: (_, a, __, c) =>
                       FadeTransition(opacity: a, child: c),
                 ),
@@ -33,8 +37,12 @@ class MessageButton extends StatelessWidget {
                     children: [
                       Icon(
                         Icons.chat_bubble_outline_outlined,
-                        color:
-                            (fromProfile != null) ? Colors.white : Colors.black,
+                        color: MediaQuery.of(context).platformBrightness ==
+                                Brightness.dark
+                            ? Colors.white
+                            : (fromProfile != null)
+                                ? Colors.white
+                                : Colors.black,
                       ),
                       Visibility(
                         visible: snapshot.hasData,

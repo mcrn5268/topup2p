@@ -97,7 +97,7 @@ class _AddItemSellState extends State<AddItemSell> {
           .addAllPayments(widget.payments, notify: false);
     }
   }
-
+  //fix no longer working
   Future<void> checkGame(String gameName) async {
     //check game if it exists if yes then populate the input fields
     final item = getItemByName(gameName);
@@ -389,10 +389,9 @@ class _AddItemSellState extends State<AddItemSell> {
                         }
                       };
                       await FirestoreService().create(
-                        collection: 'seller_games_data',
-                        documentId: _typeAheadController.text,
-                        data: {userProvider.user!.name: mapData}
-                      );
+                          collection: 'seller_games_data',
+                          documentId: _typeAheadController.text,
+                          data: {userProvider.user!.name: mapData});
 
                       await FirestoreService().create(
                         collection: 'sellers',
@@ -443,7 +442,6 @@ class _AddItemSellState extends State<AddItemSell> {
               },
               icon: const Icon(
                 Icons.arrow_back_ios_outlined,
-                color: Colors.black,
               )),
           flexibleSpace: SafeArea(
             child: Padding(

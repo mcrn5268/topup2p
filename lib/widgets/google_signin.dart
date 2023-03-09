@@ -31,9 +31,13 @@ class SignIn_Google extends StatelessWidget {
                   .signIn(value.user);
             });
           },
-          child: Image.asset(
-            'assets/images/google.png',
+          child: Container(
             width: 180,
+            height: 38.92,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15),
+                image: const DecorationImage(
+                    image: AssetImage('assets/images/google.png'))),
           ),
         ),
       ],

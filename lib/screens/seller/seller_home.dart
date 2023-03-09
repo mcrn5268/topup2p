@@ -145,14 +145,16 @@ class _SellerMainScreenState extends State<SellerMainScreen> {
                     child: Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(15),
-                        color: Colors.white,
+                        color: MediaQuery.of(context).platformBrightness ==
+                                Brightness.dark
+                            ? Colors.black
+                            : Colors.white,
                         boxShadow: [
                           BoxShadow(
                             color: Colors.grey.withOpacity(0.5),
-                            spreadRadius: 2,
-                            blurRadius: 5,
-                            offset: const Offset(
-                                0, 2), // changes position of shadow
+                            spreadRadius: 0.5,
+                            blurRadius: 1,
+                            offset: const Offset(0, 1),
                           ),
                         ],
                       ),
@@ -323,7 +325,7 @@ class _SellerMainScreenState extends State<SellerMainScreen> {
             );
           }
         },
-        backgroundColor: Colors.blueGrey,
+        //backgroundColor: Colors.blueGrey,
         child: const Icon(Icons.add),
       ),
     );
@@ -332,9 +334,6 @@ class _SellerMainScreenState extends State<SellerMainScreen> {
           centerTitle: true,
           title: const Text(
             'Games',
-            style: TextStyle(
-              color: Colors.black,
-            ),
           ),
           shape:
               const Border(bottom: BorderSide(color: Colors.grey, width: 1))),

@@ -47,7 +47,10 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   final _controller = TextEditingController();
   final _scrollController = ScrollController();
-  final TextEditingController _typeAheadController = TextEditingController();
+  final TextEditingController _typeAheadControllerGame =
+      TextEditingController();
+  final TextEditingController _typeAheadControllerPayment =
+      TextEditingController();
   late Future<String> forconvId;
   String? conversationId;
   bool _flag = false;
@@ -56,14 +59,26 @@ class _ChatScreenState extends State<ChatScreen> {
   List<dynamic> enabledGames = [];
   List<Map<String, dynamic>> payments = [];
   Item? selectedItem;
+  Map<String, dynamic> selectedPayment = {};
   SellItemsProvider? siItems;
   PaymentProvider? paymentProvider;
+  PlatformFile? pickedFile;
+  ValueNotifier<bool> isVisiblegame = ValueNotifier<bool>(false);
+  ValueNotifier<bool> isVisiblepayment = ValueNotifier<bool>(false);
 
   @override
   void initState() {
     super.initState();
     if (Provider.of<UserProvider>(context, listen: false).user!.type ==
         'normal') {
+      //if navigator.push is from shop.dart
+      if (widget.gameFromShop != null) {
+        for (var key in widget.gameFromShop!.keys) {
+          shopInfo[key.toString()] = widget.gameFromShop![key];
+        }
+        _typeAheadControllerGame.text = widget.gameName!;
+        selectedItem = getItemByName(_typeAheadControllerGame.text);
+      }
       FirestoreService()
           .read(collection: 'sellers', documentId: widget.userId)
           .then((value) {
@@ -73,19 +88,6 @@ class _ChatScreenState extends State<ChatScreen> {
               .where((entry) => entry.value == 'enabled')
               .map((entry) => entry.key)
               .toList();
-        });
-      });
-      if (widget.gameFromShop != null) {
-        for (var key in widget.gameFromShop!.keys) {
-          shopInfo[key.toString()] = widget.gameFromShop![key];
-        }
-        _typeAheadController.text = widget.gameName!;
-        selectedItem = getItemByName(_typeAheadController.text);
-      }
-      FirestoreService()
-          .read(collection: 'sellers', documentId: widget.userId)
-          .then((value) {
-        setState(() {
           for (var key in value['MoP'].keys) {
             var account = value['MoP'][key];
             if (account['status'] == 'enabled') {
@@ -94,7 +96,10 @@ class _ChatScreenState extends State<ChatScreen> {
               payments.add(enabledAccount);
             }
           }
-          print(payments);
+          if (value.isNotEmpty) {
+            selectedPayment = {...payments[0]};
+            _typeAheadControllerPayment.text = selectedPayment['name'];
+          }
         });
       });
     } else {
@@ -112,7 +117,6 @@ class _ChatScreenState extends State<ChatScreen> {
       paymentProvider = Provider.of<PaymentProvider>(context, listen: false);
       paymentProvider!.addAllPayments(widget.payments!, notify: false);
       for (var payment in paymentProvider!.payments) {
-        print(payment);
         if (payment.isEnabled) {
           payments.add({
             'name': payment.paymentname,
@@ -134,7 +138,8 @@ class _ChatScreenState extends State<ChatScreen> {
   void dispose() {
     _controller.dispose();
     _scrollController.dispose();
-    _typeAheadController.dispose();
+    _typeAheadControllerPayment.dispose();
+    _typeAheadControllerGame.dispose();
     super.dispose();
   }
 
@@ -151,10 +156,6 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    PlatformFile? pickedFile;
-    ValueNotifier<bool> isVisiblegame = ValueNotifier<bool>(false);
-    ValueNotifier<bool> isVisiblepayment = ValueNotifier<bool>(false);
-
     Widget gamesInfo = ValueListenableBuilder<bool>(
       valueListenable: isVisiblegame,
       builder: (BuildContext context, bool value, Widget? child) {
@@ -170,13 +171,16 @@ class _ChatScreenState extends State<ChatScreen> {
                   : 0,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
-                color: Colors.blueGrey,
+                color:
+                    MediaQuery.of(context).platformBrightness == Brightness.dark
+                        ? Colors.teal
+                        : Colors.blueGrey,
                 boxShadow: [
                   BoxShadow(
                     color: Colors.grey.withOpacity(0.5),
-                    spreadRadius: 2,
-                    blurRadius: 5,
-                    offset: const Offset(0, 2),
+                    spreadRadius: 1,
+                    blurRadius: 3,
+                    offset: const Offset(0, 1),
                   ),
                 ],
               ),
@@ -197,7 +201,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                   ),
                                   image: DecorationImage(
                                       fit: BoxFit.cover,
-                                      image: _typeAheadController.text == ''
+                                      image: _typeAheadControllerGame.text == ''
                                           ? const AssetImage(
                                               'assets/images/logo-old.png')
                                           : AssetImage(selectedItem!.image))),
@@ -221,70 +225,99 @@ class _ChatScreenState extends State<ChatScreen> {
                                       Theme.of(context).scaffoldBackgroundColor,
                                   borderRadius: BorderRadius.circular(15),
                                 ),
-                                child: TypeAheadFormField(
-                                  textFieldConfiguration:
-                                      TextFieldConfiguration(
-                                    textAlign: TextAlign.center,
-                                    controller: _typeAheadController,
-                                    decoration: const InputDecoration(
-                                      hintText: 'Select a game',
-                                      labelStyle: TextStyle(
-                                        color: Colors.black,
+                                child: Stack(
+                                  children: [
+                                    TypeAheadFormField(
+                                      textFieldConfiguration:
+                                          TextFieldConfiguration(
+                                        textAlign: TextAlign.center,
+                                        controller: _typeAheadControllerGame,
+                                        decoration: const InputDecoration(
+                                          hintText: 'Select a game',
+                                          labelStyle: TextStyle(
+                                            color: Colors.black,
+                                          ),
+                                          border: InputBorder.none,
+                                        ),
+                                        onSubmitted: (value) async {
+                                          if (value.isEmpty) {
+                                            // If the field is empty, do nothing
+                                            return;
+                                          }
+                                          final suggestions =
+                                              enabledGames.where((option) =>
+                                                  option.toLowerCase().contains(
+                                                      value.toLowerCase()));
+                                          if (suggestions.isNotEmpty) {
+                                            // If there are suggestions, select the first one
+                                            setState(() {
+                                              selectedItem = getItemByName(
+                                                  suggestions.first);
+                                              _typeAheadControllerGame.text =
+                                                  suggestions.first;
+                                              _isLoadingData = true;
+                                            });
+                                            shopInfo = await readGameData(
+                                                suggestions.first);
+                                            setState(() {
+                                              _isLoadingData = false;
+                                            });
+                                          } else {
+                                            // If there are no suggestions, clear the text field
+                                            _typeAheadControllerGame.clear();
+                                          }
+                                        },
                                       ),
-                                      border: InputBorder.none,
-                                    ),
-                                    onSubmitted: (value) async {
-                                      if (value.isEmpty) {
-                                        // If the field is empty, do nothing
-                                        return;
-                                      }
-                                      final suggestions = enabledGames.where(
-                                          (option) => option
-                                              .toLowerCase()
-                                              .contains(value.toLowerCase()));
-                                      if (suggestions.isNotEmpty) {
-                                        // If there are suggestions, select the first one
+                                      suggestionsCallback: (pattern) {
+                                        return enabledGames;
+                                      },
+                                      itemBuilder: (context, suggestion) {
+                                        return ListTile(
+                                          title: Text(suggestion),
+                                        );
+                                      },
+                                      onSuggestionSelected: (suggestion) async {
                                         setState(() {
                                           selectedItem =
-                                              getItemByName(suggestions.first);
-                                          _typeAheadController.text =
-                                              suggestions.first;
+                                              getItemByName(suggestion);
+                                          _typeAheadControllerGame.text =
+                                              suggestion;
                                           _isLoadingData = true;
                                         });
-                                        shopInfo = await readGameData(
-                                            suggestions.first);
+                                        shopInfo =
+                                            await readGameData(suggestion);
                                         setState(() {
                                           _isLoadingData = false;
                                         });
-                                      } else {
-                                        // If there are no suggestions, clear the text field
-                                        _typeAheadController.clear();
-                                      }
-                                    },
-                                  ),
-                                  suggestionsCallback: (pattern) {
-                                    return enabledGames;
-                                  },
-                                  itemBuilder: (context, suggestion) {
-                                    return ListTile(
-                                      title: Text(suggestion),
-                                    );
-                                  },
-                                  onSuggestionSelected: (suggestion) async {
-                                    setState(() {
-                                      selectedItem = getItemByName(suggestion);
-                                      _typeAheadController.text = suggestion;
-                                      _isLoadingData = true;
-                                    });
-                                    shopInfo = await readGameData(suggestion);
-                                    setState(() {
-                                      _isLoadingData = false;
-                                    });
-                                  },
+                                      },
+                                    ),
+                                    Visibility(
+                                      visible:
+                                          _typeAheadControllerGame.text != '',
+                                      child: Align(
+                                        alignment: Alignment.centerRight,
+                                        child: IconButton(
+                                            onPressed: () {
+                                              setState(
+                                                () {
+                                                  _typeAheadControllerGame
+                                                      .clear();
+                                                  selectedItem = null;
+                                                },
+                                              );
+                                            },
+                                            icon: const Icon(
+                                              Icons.close,
+                                              color: Colors.grey,
+                                              size: 20,
+                                            )),
+                                      ),
+                                    )
+                                  ],
                                 ),
                               ),
                             ),
-                            if (_typeAheadController.text != '') ...[
+                            if (_typeAheadControllerGame.text != '') ...[
                               Expanded(
                                 child: _isLoadingData
                                     ? const CircularProgressIndicator()
@@ -325,7 +358,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                                         ),
                                                         Image.asset(
                                                           gameIcon(
-                                                              _typeAheadController
+                                                              _typeAheadControllerGame
                                                                   .text),
                                                           width: 10,
                                                           height: 10,
@@ -379,98 +412,227 @@ class _ChatScreenState extends State<ChatScreen> {
         });
       },
     );
-
+    //todo remake
     Widget paymentsInfo = ValueListenableBuilder<bool>(
       valueListenable: isVisiblepayment,
       builder: (BuildContext context, bool value, Widget? child) {
-        return AnimatedOpacity(
-          duration: const Duration(milliseconds: 300),
-          opacity: value ? 1.0 : 0.0,
-          child: Container(
-            height: isVisiblepayment.value ? 145 : 0,
-            width: isVisiblepayment.value
-                ? MediaQuery.of(context).size.width - 50
-                : 0,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              color: Colors.blueGrey,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.5),
-                  spreadRadius: 1,
-                  blurRadius: 3,
-                  offset: const Offset(0, 2),
+        return StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+          return AnimatedOpacity(
+            duration: const Duration(milliseconds: 300),
+            opacity: value ? 1.0 : 0.0,
+            child: Container(
+              height: isVisiblepayment.value ? 145 : 0,
+              width: isVisiblepayment.value
+                  ? MediaQuery.of(context).size.width - 50
+                  : 0,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                color:
+                    MediaQuery.of(context).platformBrightness == Brightness.dark
+                        ? Colors.teal
+                        : Colors.blueGrey,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    spreadRadius: 1,
+                    blurRadius: 3,
+                    offset: const Offset(0, 1),
+                  ),
+                ],
+              ),
+              child: Center(
+                child: Row(
+                  children: [
+                    if (payments.isNotEmpty) ...[
+                      Expanded(
+                          flex: 3,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                height: 145,
+                                decoration: BoxDecoration(
+                                    borderRadius: const BorderRadius.only(
+                                      topLeft: Radius.circular(20.0),
+                                      bottomLeft: Radius.circular(20.0),
+                                    ),
+                                    image: DecorationImage(
+                                        fit: BoxFit.cover,
+                                        image: _typeAheadControllerPayment
+                                                    .text ==
+                                                ''
+                                            ? const AssetImage(
+                                                'assets/images/logo-old.png')
+                                            : AssetImage(
+                                                'assets/images/MoP/${selectedPayment['name']}-large.png'))),
+                              )
+                            ],
+                          )),
+                      Expanded(
+                          flex: 4,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Padding(
+                                padding:
+                                    const EdgeInsets.only(top: 10, bottom: 10),
+                                child: Container(
+                                  height: 35,
+                                  width: MediaQuery.of(context).size.width / 2 -
+                                      25,
+                                  decoration: BoxDecoration(
+                                    color: Theme.of(context)
+                                        .scaffoldBackgroundColor,
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                  child: Stack(
+                                    children: [
+                                      TypeAheadFormField(
+                                        textFieldConfiguration:
+                                            TextFieldConfiguration(
+                                          textAlign: TextAlign.center,
+                                          controller:
+                                              _typeAheadControllerPayment,
+                                          decoration: const InputDecoration(
+                                            hintText: 'Select a payment method',
+                                            labelStyle: TextStyle(
+                                              color: Colors.black,
+                                            ),
+                                            border: InputBorder.none,
+                                          ),
+                                          onSubmitted: (value) async {
+                                            if (value.isEmpty) {
+                                              // If the field is empty, do nothing
+                                              return;
+                                            }
+                                            final suggestions = payments.where(
+                                                (payment) => payment['name']
+                                                    .toLowerCase()
+                                                    .contains(
+                                                        value.toLowerCase()));
+                                            if (suggestions.isNotEmpty) {
+                                              // If there are suggestions, select the first one
+                                              setState(() {
+                                                selectedPayment =
+                                                    suggestions.first;
+                                                _typeAheadControllerPayment
+                                                        .text =
+                                                    selectedPayment['name'];
+                                              });
+                                            } else {
+                                              // If there are no suggestions, clear the text field
+                                              _typeAheadControllerPayment
+                                                  .clear();
+                                            }
+                                          },
+                                        ),
+                                        suggestionsCallback: (query) {
+                                          final matches = payments.where(
+                                              (payment) => payment['name']
+                                                  .toLowerCase()
+                                                  .contains(
+                                                      query.toLowerCase()));
+                                          return matches
+                                              .map((match) => match['name'])
+                                              .toList();
+                                        },
+                                        itemBuilder: (context, suggestion) {
+                                          return ListTile(
+                                            title: Text(suggestion),
+                                          );
+                                        },
+                                        onSuggestionSelected:
+                                            (dynamic suggestion) {
+                                          final payment = payments.firstWhere(
+                                            (payment) =>
+                                                payment['name'] == suggestion,
+                                            orElse: () => {},
+                                          );
+                                          if (payment.isNotEmpty) {
+                                            setState(() {
+                                              _typeAheadControllerPayment.text =
+                                                  suggestion;
+                                              selectedPayment = payment;
+                                            });
+                                          }
+                                        },
+                                      ),
+                                      Visibility(
+                                        visible:
+                                            _typeAheadControllerPayment.text !=
+                                                '',
+                                        child: Align(
+                                          alignment: Alignment.centerRight,
+                                          child: IconButton(
+                                              onPressed: () {
+                                                setState(
+                                                  () {
+                                                    _typeAheadControllerPayment
+                                                        .clear();
+                                                    selectedPayment = {};
+                                                  },
+                                                );
+                                              },
+                                              icon: const Icon(
+                                                Icons.close,
+                                                color: Colors.grey,
+                                                size: 20,
+                                              )),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              if (_typeAheadControllerPayment.text != '') ...[
+                                Expanded(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(selectedPayment['account_name']),
+                                      Text(selectedPayment['account_number']),
+                                    ],
+                                  ),
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          bottom: 10, top: 10),
+                                      child: InkWell(
+                                        child: const Icon(Icons.copy,
+                                            color: Colors.white),
+                                        onTap: () {
+                                          String text =
+                                              'Payment: ${selectedPayment['name']} Account Name: ${selectedPayment['account_name']} | Account Number: ${selectedPayment['account_number']}';
+                                          Clipboard.setData(
+                                              ClipboardData(text: text));
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(const SnackBar(
+                                            content: Text('Copiied'),
+                                            duration:
+                                                Duration(milliseconds: 500),
+                                          ));
+                                        },
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              ]
+                            ],
+                          )),
+                    ] else ...[
+                      const Text('No Payments Information Available',
+                          style: TextStyle(color: Colors.white))
+                    ]
+                  ],
                 ),
-              ],
+              ),
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                if (payments.isNotEmpty) ...[
-                  for (var index = 0; index < payments.length; index++) ...[
-                    Expanded(
-                        child: Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(10, 10, 10, 5),
-                          child: Container(
-                            height: 50,
-                            width: 50,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                image: DecorationImage(
-                                    fit: BoxFit.fitHeight,
-                                    image: AssetImage(
-                                        'assets/images/MoP/${payments[index]['name']}-large.png'))),
-                          ),
-                        ),
-                        Text(
-                          payments[index]['name'],
-                          style: const TextStyle(color: Colors.white),
-                        ),
-                        const Divider(
-                          color: Colors.white,
-                          height: 1,
-                          indent: 20,
-                          endIndent: 20,
-                        ),
-                        Text('${payments[index]['account_name']}',
-                            style: const TextStyle(color: Colors.white)),
-                        Text('${payments[index]['account_number']}',
-                            style: const TextStyle(color: Colors.white)),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 5),
-                          child: InkWell(
-                            child: const Icon(Icons.copy, color: Colors.white),
-                            onTap: () {
-                              String text =
-                                  '${payments[index]['name']} : Account Name: ${payments[index]['account_name']} | Account Number: ${payments[index]['account_number']}';
-                              Clipboard.setData(ClipboardData(text: text));
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(const SnackBar(
-                                content: Text('Copiied'),
-                                duration: Duration(milliseconds: 500),
-                              ));
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(const SnackBar(
-                                content: Text('Copiied'),
-                                duration: Duration(milliseconds: 500),
-                              ));
-                            },
-                          ),
-                        ),
-                      ],
-                    ))
-                  ]
-                ] else ...[
-                  const Text('No Payments Information Available',
-                      style: TextStyle(color: Colors.white))
-                ]
-              ],
-            ),
-          ),
-        );
+          );
+        });
       },
     );
 
@@ -478,6 +640,10 @@ class _ChatScreenState extends State<ChatScreen> {
       children: [
         Expanded(
           child: ElevatedButton.icon(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.transparent,
+              side: const BorderSide(color: Colors.transparent),
+            ),
             onPressed: () {
               isVisiblegame.value = !isVisiblegame.value;
               if (isVisiblepayment.value == true) {
@@ -491,7 +657,6 @@ class _ChatScreenState extends State<ChatScreen> {
                   turns: AlwaysStoppedAnimation(value ? 0 : 0.5),
                   child: const Icon(
                     Icons.arrow_drop_up,
-                    color: Colors.black,
                   ),
                 );
               },
@@ -501,6 +666,10 @@ class _ChatScreenState extends State<ChatScreen> {
         ),
         Expanded(
           child: ElevatedButton.icon(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.transparent,
+              side: const BorderSide(color: Colors.transparent),
+            ),
             onPressed: () {
               isVisiblepayment.value = !isVisiblepayment.value;
               if (isVisiblegame.value == true) {
@@ -514,7 +683,6 @@ class _ChatScreenState extends State<ChatScreen> {
                   turns: AlwaysStoppedAnimation(value ? 0 : 0.5),
                   child: const Icon(
                     Icons.arrow_drop_up,
-                    color: Colors.black,
                   ),
                 );
               },
@@ -531,6 +699,7 @@ class _ChatScreenState extends State<ChatScreen> {
         child: FutureBuilder<String>(
             future: forconvId,
             builder: (context, snapshot) {
+              print('future');
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const CircularProgressIndicator();
               } else {
@@ -648,7 +817,12 @@ class _ChatScreenState extends State<ChatScreen> {
                                                     BubbleNormal(
                                                         text: msg['content'],
                                                         isSender: isSender,
-                                                        color: Colors.blueGrey,
+                                                        color: MediaQuery.of(
+                                                                        context)
+                                                                    .platformBrightness ==
+                                                                Brightness.dark
+                                                            ? Colors.teal
+                                                            : Colors.blueGrey,
                                                         textStyle:
                                                             const TextStyle(
                                                           fontSize: 16,
@@ -682,7 +856,12 @@ class _ChatScreenState extends State<ChatScreen> {
                                                             return child;
                                                           },
                                                         ),
-                                                        color: Colors.blueGrey,
+                                                        color: MediaQuery.of(
+                                                                        context)
+                                                                    .platformBrightness ==
+                                                                Brightness.dark
+                                                            ? Colors.teal
+                                                            : Colors.blueGrey,
                                                         tail: true,
                                                         id: 'image $index',
                                                       ),
@@ -797,7 +976,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   padding: const EdgeInsets.only(left: 10, right: 10),
                   child: Container(
                       decoration: BoxDecoration(
-                          color: Colors.blueGrey[50],
+                          color: Colors.grey[800],
                           borderRadius:
                               const BorderRadius.all(Radius.circular(20))),
                       child: Padding(
@@ -871,14 +1050,10 @@ class _ChatScreenState extends State<ChatScreen> {
               },
               icon: const Icon(
                 Icons.arrow_back_ios_outlined,
-                color: Colors.black,
               )),
           centerTitle: true,
           title: Text(
             widget.userName,
-            style: const TextStyle(
-              color: Colors.black,
-            ),
           ),
           shape: const Border(bottom: BorderSide(color: Colors.grey, width: 1)),
         ),

@@ -32,10 +32,50 @@ class Topup2p extends StatelessWidget {
     return MaterialApp(
         title: 'Topup2p',
         theme: ThemeData(
+          textTheme: const TextTheme(
+            displayLarge:
+                TextStyle(fontSize: 72.0, fontWeight: FontWeight.bold),
+            titleLarge: TextStyle(fontSize: 26.0, fontStyle: FontStyle.italic),
+            bodyMedium: TextStyle(fontSize: 14.0, fontFamily: 'Hind'),
+            bodyLarge: TextStyle(
+              fontSize: 16,
+              color: Colors.black,
+            ),
+          ),
+          iconTheme: const IconThemeData(color: Colors.white),
           elevatedButtonTheme: ElevatedButtonThemeData(
             style: ElevatedButton.styleFrom(
+              side: const BorderSide(color: Colors.black),
               backgroundColor: Colors.transparent,
               foregroundColor: Colors.black,
+              elevation: 0,
+              shadowColor: Colors.transparent,
+            ),
+          ),
+          appBarTheme: const AppBarTheme(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              toolbarHeight: 66,
+              titleTextStyle: TextStyle(fontSize: 20, color: Colors.black)),
+          primaryColor: Colors.white,
+          brightness: Brightness.light,
+          primaryColorDark: Colors.black,
+          canvasColor: Colors.white,
+          primarySwatch: Colors.blueGrey,
+        ),
+        darkTheme: ThemeData(
+          // primaryColor: Colors.black12,
+          brightness: Brightness.dark,
+          //primaryColorDark: Colors.black12,
+          //indicatorColor: Colors.white,
+          canvasColor: Colors.grey[900],
+          primarySwatch: Colors.teal,
+          iconTheme: const IconThemeData(color: Colors.white),
+          elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+              side: const BorderSide(color: Colors.white),
+              backgroundColor: Colors.teal,
+              foregroundColor: Colors.white,
               elevation: 0,
               shadowColor: Colors.transparent,
             ),
@@ -45,14 +85,18 @@ class Topup2p extends StatelessWidget {
                 TextStyle(fontSize: 72.0, fontWeight: FontWeight.bold),
             titleLarge: TextStyle(fontSize: 26.0, fontStyle: FontStyle.italic),
             bodyMedium: TextStyle(fontSize: 14.0, fontFamily: 'Hind'),
+            bodyLarge: TextStyle(
+              fontSize: 16,
+              color: Colors.white,
+            ),
           ),
           appBarTheme: const AppBarTheme(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            toolbarHeight: 66,
-          ),
-          primarySwatch: Colors.blueGrey,
-        ),
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              toolbarHeight: 66,
+              titleTextStyle: TextStyle(fontSize: 20, color: Colors.white)),
+        ), // standard dark theme
+        themeMode: ThemeMode.system, // device controls theme
         home: Consumer<UserProvider>(
           builder: (context, userProvider, _) {
             if (userProvider.user == null) {

@@ -64,7 +64,8 @@ class _GamesListState extends State<GamesList> {
                         child: Stack(children: [
                           GestureDetector(
                             onTap: () {
-                              GameItemScreenNavigator(name: item.name, flag: true);
+                              GameItemScreenNavigator(
+                                  name: item.name, flag: true);
                             },
                             child: Column(
                               children: [
@@ -76,10 +77,9 @@ class _GamesListState extends State<GamesList> {
                                       boxShadow: [
                                         BoxShadow(
                                           color: Colors.grey.withOpacity(0.5),
-                                          spreadRadius: 2,
-                                          blurRadius: 5,
-                                          offset: const Offset(0,
-                                              2),
+                                          spreadRadius: 1,
+                                          blurRadius: 3,
+                                          offset: const Offset(0, 1),
                                         ),
                                       ],
                                     ),
@@ -107,7 +107,7 @@ class _GamesListState extends State<GamesList> {
                               ],
                             ),
                           ),
-                          FavoritesIcon(itemName: item.name,size: 35)
+                          FavoritesIcon(itemName: item.name, size: 35)
                         ]),
                       ),
                     ),
@@ -124,7 +124,8 @@ class _GamesListState extends State<GamesList> {
           },
           child: Padding(
             padding: const EdgeInsets.all(20),
-            child: _isLoading ? const CircularProgressIndicator() : Text(_viewML),
+            child:
+                _isLoading ? const CircularProgressIndicator() : Text(_viewML),
           ),
         ),
       ],
@@ -135,7 +136,8 @@ class _GamesListState extends State<GamesList> {
 //purpose ontap for main, favorites and search game item
 //why? search item won't work well bec of pushreplacement
 
-Future<void> GameItemScreenNavigator({required String name, required bool flag}) async {
+Future<void> GameItemScreenNavigator(
+    {required String name, required bool flag}) async {
   FavoritesProvider favProvider =
       Provider.of<FavoritesProvider>(gameContext!, listen: false);
   if (flag == true) {
@@ -145,7 +147,8 @@ Future<void> GameItemScreenNavigator({required String name, required bool flag})
         pageBuilder: (_, __, ___) =>
             ChangeNotifierProvider<FavoritesProvider>.value(
           value: FavoritesProvider(),
-          child: GameSellScreen(gameName: name, favorites: favProvider.favorites),
+          child:
+              GameSellScreen(gameName: name, favorites: favProvider.favorites),
         ),
         transitionsBuilder: (_, a, __, c) =>
             FadeTransition(opacity: a, child: c),
@@ -163,7 +166,8 @@ Future<void> GameItemScreenNavigator({required String name, required bool flag})
         pageBuilder: (_, __, ___) =>
             ChangeNotifierProvider<FavoritesProvider>.value(
           value: FavoritesProvider(),
-          child: GameSellScreen(gameName: name, favorites: favProvider.favorites),
+          child:
+              GameSellScreen(gameName: name, favorites: favProvider.favorites),
         ),
         transitionsBuilder: (_, a, __, c) =>
             FadeTransition(opacity: a, child: c),

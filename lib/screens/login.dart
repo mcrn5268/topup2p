@@ -127,7 +127,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           }
                         },
                         style: ElevatedButton.styleFrom(
-                          side: const BorderSide(color: Colors.black),
                           shape: const StadiumBorder(),
                           padding: const EdgeInsets.all(15),
                         ),
@@ -159,7 +158,7 @@ class _LoginScreenState extends State<LoginScreen> {
               textScaleFactor: MediaQuery.of(context).textScaleFactor,
               textAlign: TextAlign.center,
               text: const TextSpan(
-                style: TextStyle(fontSize: 15, color: Colors.black),
+                style: TextStyle(fontSize: 15),
                 children: [
                   TextSpan(
                     text: 'Forgot password?',
@@ -196,7 +195,7 @@ class _LoginScreenState extends State<LoginScreen> {
               textScaleFactor: MediaQuery.of(context).textScaleFactor,
               textAlign: TextAlign.center,
               text: const TextSpan(
-                style: TextStyle(fontSize: 15, color: Colors.black),
+                style: TextStyle(fontSize: 15),
                 text: "Don't have an account?",
                 children: [
                   TextSpan(
@@ -229,6 +228,10 @@ class _LoginScreenState extends State<LoginScreen> {
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.transparent,
+            side: const BorderSide(color: Colors.transparent),
+          ),
           onPressed: () {
             //todo
             // Navigator.pushReplacement(

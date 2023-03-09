@@ -52,7 +52,7 @@ class ProfileScreen extends StatelessWidget {
         alignment: Alignment.center,
         children: [
           CustomPaint(
-            painter: HeaderCurvedContainer(),
+            painter: HeaderCurvedContainer(context),
             child: SizedBox(
               width: MediaQuery.of(context).size.width,
               height: 350,
@@ -280,7 +280,7 @@ class ProfileScreen extends StatelessWidget {
                 textScaleFactor: MediaQuery.of(context).textScaleFactor,
                 textAlign: TextAlign.center,
                 text: const TextSpan(
-                  style: TextStyle(fontSize: 15, color: Colors.black),
+                  style: TextStyle(fontSize: 15),
                   children: [
                     TextSpan(
                       text: 'Want to sell?',
@@ -325,11 +325,15 @@ class ProfileScreen extends StatelessWidget {
 
 // CustomPainter class to for the header curved-container
 class HeaderCurvedContainer extends CustomPainter {
+  const HeaderCurvedContainer(this.context);
+  final BuildContext context;
   @override
   void paint(Canvas canvas, Size size) {
     Paint paint = Paint()
-      ..shader = const LinearGradient(
-        colors: [Colors.blueGrey, Colors.black],
+      ..shader = LinearGradient(
+        colors: MediaQuery.of(context).platformBrightness == Brightness.dark
+            ? [Colors.teal, Colors.black]
+            : [Colors.blueGrey, Colors.black],
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
       ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));

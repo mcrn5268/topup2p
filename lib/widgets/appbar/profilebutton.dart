@@ -11,6 +11,10 @@ class ProfileButton extends StatelessWidget {
     FavoritesProvider favProvider =
         Provider.of<FavoritesProvider>(context, listen: false);
     return ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.transparent,
+            side: const BorderSide(color: Colors.transparent),
+          ),
       onPressed: () async {
         final favs = await Navigator.push(
           context,

@@ -131,7 +131,6 @@ class FirestoreService {
     }
   }
 
-
   Future<void> updateSubcollectionDocumentField({
     required String collectionName,
     required String subcollectionName,
@@ -200,6 +199,7 @@ class FirestoreService {
   }
 
   Future<String> conversationId(String? id) async {
+    print('convid');
     if (id == null) {
       late String returnId;
       bool flag = true;
