@@ -9,10 +9,10 @@ class SearchButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.transparent,
-            side: const BorderSide(color: Colors.transparent),
-          ),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.transparent,
+        side: const BorderSide(color: Colors.transparent),
+      ),
       onPressed: () {
         showSearch(
           context: context,
@@ -48,7 +48,9 @@ class MySearchDelegate extends SearchDelegate {
         icon: AnimatedIcon(
             icon: AnimatedIcons.menu_arrow,
             progress: transitionAnimation,
-            color: Colors.black),
+            color: MediaQuery.of(context).platformBrightness == Brightness.dark
+                ? Colors.white
+                : Colors.black),
         onPressed: () => close(context, null));
   }
 
@@ -80,7 +82,7 @@ class MySearchDelegate extends SearchDelegate {
               child: ListTile(
                   title: Text(title),
                   onTap: () {
-                    GameItemScreenNavigator(name: title,flag: false);
+                    GameItemScreenNavigator(name: title, flag: false);
                   }),
             ),
           ),

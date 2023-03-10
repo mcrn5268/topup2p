@@ -260,6 +260,7 @@ class _SellerMainScreenState extends State<SellerMainScreen> {
           if (Provider.of<PaymentProvider>(context, listen: false)
               .payments
               .isEmpty) {
+            print('IFFFFFFFFFFFFFFFFFFF');
             ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('You must have a wallet')));
 
@@ -284,6 +285,8 @@ class _SellerMainScreenState extends State<SellerMainScreen> {
           } else if (Provider.of<PaymentProvider>(context, listen: false)
               .payments
               .any((payment) => payment.isEnabled == true)) {
+            print('ELSEEEEEEEEEEEE IFFFFFFFFFFFFFFFFFFF');
+            print('sitems test ${siProvider.Sitems}');
             final sellItems = await Navigator.push(
               context,
               PageRouteBuilder(
@@ -312,6 +315,7 @@ class _SellerMainScreenState extends State<SellerMainScreen> {
               setState(() {});
             }
           } else {
+            print('ELSEEEEEEEEE');
             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                 content: Text('You must have at least 1 enabled wallet')));
 

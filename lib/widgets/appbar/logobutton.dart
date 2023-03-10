@@ -5,22 +5,13 @@ class LogoButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Row(
-          children: [
-            IconButton(
-              icon: Image.asset('assets/images/logo.png'),
-              iconSize: 40,
-              onPressed: () {
-                //toMainPage
-              },
-            )
-          ],
-        ),
-      ],
-    );
+    return Image.asset('assets/images/logo.png');
+    // return IconButton(
+    //           icon: Image.asset('assets/images/logo.png'),
+    //           iconSize: 40,
+    //           onPressed: () {
+    //             //toMainPage
+    //           },
+    //         );
   }
 }

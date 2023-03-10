@@ -9,6 +9,7 @@ import 'package:topup2p/providers/favorites_provider.dart';
 import 'package:topup2p/providers/payment_provider.dart';
 import 'package:topup2p/providers/sell_items_provder.dart';
 import 'package:topup2p/providers/user_provider.dart';
+import 'package:topup2p/utilities/globals.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 final GoogleSignIn _googleSignIn = GoogleSignIn();
@@ -25,8 +26,9 @@ Future<void> signOut(context) async {
         }
       }
       await _auth.signOut();
-      
+
       Navigator.of(context).popUntil((route) => route.isFirst);
+      itemsObjectList.clear();
       userProvder.clearUser();
       // Navigate to a new screen
       Navigator.of(context).pushReplacement(

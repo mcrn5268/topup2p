@@ -48,6 +48,7 @@ class _AddItemSellState extends State<AddItemSell> {
   bool _ratesFlag = true;
   bool _switchVisible = false;
   String forButton = 'ADD';
+  late SellItemsProvider siItems;
 
   Map<String, dynamic> itemDataMap = {};
 
@@ -88,8 +89,8 @@ class _AddItemSellState extends State<AddItemSell> {
       });
     }
     if (widget.Sitems != null || widget.Sitems!.isNotEmpty) {
-      Provider.of<SellItemsProvider>(context, listen: false)
-          .addItems(widget.Sitems!);
+      siItems = Provider.of<SellItemsProvider>(context, listen: false);
+      siItems.addItems(widget.Sitems!);
 
       Provider.of<PaymentProvider>(context, listen: false)
           .clearPayments(notify: false);
@@ -97,14 +98,13 @@ class _AddItemSellState extends State<AddItemSell> {
           .addAllPayments(widget.payments, notify: false);
     }
   }
+
   //fix no longer working
   Future<void> checkGame(String gameName) async {
     //check game if it exists if yes then populate the input fields
     final item = getItemByName(gameName);
     if (item != null) {
-      bool isAlreadyPosted =
-          Provider.of<SellItemsProvider>(context, listen: false)
-              .itemExist(item);
+      bool isAlreadyPosted = siItems.itemExist(item);
       if (isAlreadyPosted) {
         itemDataMap = await FirestoreService().read(
             collection: 'sellers',
@@ -251,12 +251,18 @@ class _AddItemSellState extends State<AddItemSell> {
                   );
                 },
                 onSuggestionSelected: (suggestion) {
+                  print(siItems
+                      .Sitems
+                      .length);
                   setState(() {
                     _typeAheadController.text = suggestion.name;
                     _isLoadingData = true;
                     checkGame(suggestion.name);
                     gameIconPath = gameIcon(_typeAheadController.text);
                   });
+                  print(siItems
+                      .Sitems
+                      .length);
                 },
               ),
               Visibility(
@@ -317,14 +323,13 @@ class _AddItemSellState extends State<AddItemSell> {
                     _cRateValidation();
                     //add item to provider and firestore
                     //SellItemsProvider
-                    SellItemsProvider siProvider =
-                        Provider.of<SellItemsProvider>(context, listen: false);
+                    
                     Item? item = getItemByName(_typeAheadController.text);
-                    if (siProvider.itemExist(item!)) {
-                      siProvider.updateItem(
+                    if (siItems.itemExist(item!)) {
+                      siItems.updateItem(
                           item, itemDataMap['info']['status']);
                     } else {
-                      siProvider.addItem(item, 'enabled');
+                      siItems.addItem(item, 'enabled');
                     }
 
                     //Firestore
@@ -435,10 +440,7 @@ class _AddItemSellState extends State<AddItemSell> {
         appBar: AppBar(
           leading: IconButton(
               onPressed: () {
-                Navigator.pop(
-                    context,
-                    Provider.of<SellItemsProvider>(context, listen: false)
-                        .Sitems);
+                Navigator.pop(context);
               },
               icon: const Icon(
                 Icons.arrow_back_ios_outlined,

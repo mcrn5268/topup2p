@@ -412,7 +412,7 @@ class _ChatScreenState extends State<ChatScreen> {
         });
       },
     );
-    //todo remake
+
     Widget paymentsInfo = ValueListenableBuilder<bool>(
       valueListenable: isVisiblepayment,
       builder: (BuildContext context, bool value, Widget? child) {
@@ -1043,16 +1043,37 @@ class _ChatScreenState extends State<ChatScreen> {
 
     return Scaffold(
         appBar: AppBar(
-          leading: IconButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              icon: const Icon(
-                Icons.arrow_back_ios_outlined,
-              )),
-          centerTitle: true,
-          title: Text(
-            widget.userName,
+          automaticallyImplyLeading: false,
+          title: Stack(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircleAvatar(
+                    backgroundImage: NetworkImage(widget.userImage),
+                  ),
+                  const SizedBox(width: 20),
+                  Text(
+                    widget.userName,
+                  ),
+                ],
+              ),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: SizedBox(
+                  width: 30,
+                  height: 40,
+                  child: IconButton(
+                      padding: EdgeInsets.zero,
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      icon: const Icon(
+                        Icons.arrow_back_ios_outlined,
+                      )),
+                ),
+              ),
+            ],
           ),
           shape: const Border(bottom: BorderSide(color: Colors.grey, width: 1)),
         ),

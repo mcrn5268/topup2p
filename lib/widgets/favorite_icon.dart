@@ -5,7 +5,6 @@ import 'package:topup2p/cloud/firestore.dart';
 import 'package:topup2p/models/item_model.dart';
 import 'package:topup2p/providers/favorites_provider.dart';
 import 'package:topup2p/providers/user_provider.dart';
-import 'package:topup2p/screens/user/favorites.dart';
 import 'package:topup2p/utilities/globals.dart';
 import 'package:topup2p/utilities/models_utils.dart';
 
@@ -52,14 +51,7 @@ class _FavoritesIconState extends State<FavoritesIcon> {
                     data: {widget.itemName: FieldValue.serverTimestamp()});
               }
               favProvider.toggleFavorite(itemObject);
-
-              if ((favProvider.favorites.length) * 114.5 > logicalWidth) {
-                RVisible = true;
-              } else {
-                RVisible = false;
-              }
-
-              setState(() {});
+              //setState(() {});
             },
           ));
     } else {
