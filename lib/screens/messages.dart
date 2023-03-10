@@ -209,6 +209,14 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                         }
                                         if (widget.siItems != null ||
                                             widget.payments != null) {
+                                          final page = ChatScreen(
+                                              convId: convId,
+                                              userId: other_user['uid'],
+                                              userImage: other_user['image'],
+                                              userName: other_user['name'],
+                                              sItems: siItems.Sitems,
+                                              payments:
+                                                  paymentProvider.payments);
                                           Navigator.push(
                                             context,
                                             PageRouteBuilder(
@@ -224,16 +232,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                                     value: PaymentProvider(),
                                                   ),
                                                 ],
-                                                child: ChatScreen(
-                                                    convId: convId,
-                                                    userId: other_user['uid'],
-                                                    userImage:
-                                                        other_user['image'],
-                                                    userName:
-                                                        other_user['name'],
-                                                    sItems: siItems.Sitems,
-                                                    payments: paymentProvider
-                                                        .payments),
+                                                child: page,
                                               ),
                                               transitionsBuilder:
                                                   (_, a, __, c) =>
@@ -242,16 +241,16 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                             ),
                                           );
                                         } else {
+                                          final page = ChatScreen(
+                                            convId: convId,
+                                            userId: other_user['uid'],
+                                            userImage: other_user['image'],
+                                            userName: other_user['name'],
+                                          );
                                           Navigator.push(
                                             context,
                                             PageRouteBuilder(
-                                              pageBuilder: (_, __, ___) =>
-                                                  ChatScreen(
-                                                convId: convId,
-                                                userId: other_user['uid'],
-                                                userImage: other_user['image'],
-                                                userName: other_user['name'],
-                                              ),
+                                              pageBuilder: (_, __, ___) => page,
                                               transitionsBuilder:
                                                   (_, a, __, c) =>
                                                       FadeTransition(

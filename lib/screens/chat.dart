@@ -699,7 +699,6 @@ class _ChatScreenState extends State<ChatScreen> {
         child: FutureBuilder<String>(
             future: forconvId,
             builder: (context, snapshot) {
-              print('future');
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const CircularProgressIndicator();
               } else {
