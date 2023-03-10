@@ -21,6 +21,8 @@ class SellerMainScreen extends StatefulWidget {
 class _SellerMainScreenState extends State<SellerMainScreen> {
   final PageStorageBucket _bucket = PageStorageBucket();
   final ScrollController _scrollController = ScrollController();
+  late PaymentProvider paymentProvider;
+  late SellItemsProvider siProvider;
   bool _showScrollToTopButton = false;
   Widget ratesLoop(Map<String, dynamic> data, String icon, int startIndex) {
     List<Widget> rows = [];
@@ -99,6 +101,8 @@ class _SellerMainScreenState extends State<SellerMainScreen> {
   @override
   void initState() {
     super.initState();
+    paymentProvider = Provider.of<PaymentProvider>(context, listen: false);
+    siProvider = Provider.of<SellItemsProvider>(context, listen: false);
     _scrollController.addListener(() {
       setState(() {
         _showScrollToTopButton = _scrollController.offset >= 200;
@@ -114,22 +118,19 @@ class _SellerMainScreenState extends State<SellerMainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    SellItemsProvider siProvider =
-        Provider.of<SellItemsProvider>(context, listen: false);
-    PaymentProvider paymentProvider =
-        Provider.of<PaymentProvider>(context, listen: false);
     Widget sellerHomeBody =
-        Consumer<SellItemsProvider>(builder: (context, siProvider, _) {
-      if (siProvider.Sitems.isNotEmpty) {
+        Consumer<SellItemsProvider>(builder: (context, siProvider2, _) {
+      print('consumer');
+      if (siProvider2.Sitems.isNotEmpty) {
         return ListView.builder(
           key: const ValueKey('seller-home-page-listview'),
           controller: _scrollController,
           //physics: NeverScrollableScrollPhysics(),
           shrinkWrap: true,
-          itemCount: siProvider.Sitems.length,
+          itemCount: siProvider2.Sitems.length,
           itemBuilder: (context, index) {
             //map
-            Map<Item, String> map = siProvider.Sitems[index];
+            Map<Item, String> map = siProvider2.Sitems[index];
             //key
             Item item = map.keys.first;
             //value
@@ -199,7 +200,7 @@ class _SellerMainScreenState extends State<SellerMainScreen> {
                                       ),
                                     ],
                                     child: AddItemSell(
-                                        Sitems: siProvider.Sitems,
+                                        Sitems: siProvider2.Sitems,
                                         payments: paymentProvider.payments,
                                         update: true,
                                         game: item.name),
@@ -210,10 +211,10 @@ class _SellerMainScreenState extends State<SellerMainScreen> {
                               );
 
                               if (sellItems != null) {
-                                if (siProvider.Sitems.length !=
+                                if (siProvider2.Sitems.length !=
                                     sellItems.length) {
-                                  siProvider.clearItems();
-                                  siProvider.addItems(sellItems);
+                                  siProvider2.clearItems();
+                                  siProvider2.addItems(sellItems);
                                 }
                                 setState(() {});
                               }
@@ -285,8 +286,6 @@ class _SellerMainScreenState extends State<SellerMainScreen> {
           } else if (Provider.of<PaymentProvider>(context, listen: false)
               .payments
               .any((payment) => payment.isEnabled == true)) {
-            print('ELSEEEEEEEEEEEE IFFFFFFFFFFFFFFFFFFF');
-            print('sitems test ${siProvider.Sitems}');
             final sellItems = await Navigator.push(
               context,
               PageRouteBuilder(

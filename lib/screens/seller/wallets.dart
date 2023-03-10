@@ -1,26 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
+import 'package:topup2p/models/item_model.dart';
 import 'package:topup2p/models/payment_model.dart';
 import 'package:topup2p/providers/payment_provider.dart';
+import 'package:topup2p/providers/sell_items_provder.dart';
 import 'package:topup2p/screens/seller/add-update_wallet.dart';
 
 class SellerWalletsScreen extends StatefulWidget {
-  const SellerWalletsScreen({required this.payments, super.key});
+  const SellerWalletsScreen(
+      {required this.payments, required this.siItems, super.key});
   final List<Payment> payments;
+  final List<Map<Item, String>> siItems;
   @override
   State<SellerWalletsScreen> createState() => _SellerWalletsScreenState();
 }
 
 class _SellerWalletsScreenState extends State<SellerWalletsScreen> {
+  late PaymentProvider paymentProvider;
+  SellItemsProvider? siProvider;
   @override
   void initState() {
     super.initState();
+    paymentProvider = Provider.of<PaymentProvider>(context, listen: false);
+    siProvider = Provider.of<SellItemsProvider>(context, listen: false);
     if (widget.payments.isNotEmpty) {
-      Provider.of<PaymentProvider>(context, listen: false)
-          .clearPayments(notify: false);
-      Provider.of<PaymentProvider>(context, listen: false)
-          .addAllPayments(widget.payments, notify: false);
+      paymentProvider.clearPayments(notify: false);
+      paymentProvider.addAllPayments(widget.payments, notify: false);
+    }
+    if (widget.siItems.isNotEmpty) {
+      siProvider!.clearItems(notify: false);
+      siProvider!.addItems(widget.siItems, notify: false);
     }
   }
 
@@ -28,27 +38,35 @@ class _SellerWalletsScreenState extends State<SellerWalletsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    PaymentProvider paymentProvider =
-        Provider.of<PaymentProvider>(context, listen: false);
-
     Future<void> toCardWallet({Payment? card}) async {
-      final walletPayments = await Navigator.push(
+      final result = await Navigator.push(
         context,
         PageRouteBuilder(
-          pageBuilder: (_, __, ___) =>
+          pageBuilder: (_, __, ___) => MultiProvider(
+            providers: [
+              ChangeNotifierProvider<SellItemsProvider>.value(
+                value: SellItemsProvider(),
+              ),
               ChangeNotifierProvider<PaymentProvider>.value(
-            value: PaymentProvider(),
+                value: PaymentProvider(),
+              ),
+            ],
             child: AddUpdateWalletScreen(
-                cardWallet: card, paymentList: paymentProvider.payments),
+                cardWallet: card,
+                paymentList: paymentProvider.payments,
+                gamesItemsList: siProvider!.Sitems),
           ),
           transitionsBuilder: (_, a, __, c) =>
               FadeTransition(opacity: a, child: c),
         ),
       );
       //add to provider
-      if (walletPayments != null) {
-        paymentProvider.updatePaymentList(walletPayments);
-        setState(() {});
+      if (result[0] != null) {
+        paymentProvider.updatePaymentList(result[0]);
+      }
+      print('testt ${result[1]}');
+      if (result[1] != null) {
+        siProvider!.updateItemsList(result[1]);
       }
     }
 
@@ -119,10 +137,10 @@ class _SellerWalletsScreenState extends State<SellerWalletsScreen> {
                                               100,
                                           decoration: BoxDecoration(
                                             image: DecorationImage(
-                                              image: AssetImage(
-                                                paymentItem.paymentimage,
-                                              ),fit: BoxFit.cover
-                                            ),
+                                                image: AssetImage(
+                                                  paymentItem.paymentimage,
+                                                ),
+                                                fit: BoxFit.cover),
                                             borderRadius:
                                                 BorderRadius.circular(20),
                                             boxShadow: [

@@ -60,7 +60,7 @@ class _ChatScreenState extends State<ChatScreen> {
   List<Map<String, dynamic>> payments = [];
   Item? selectedItem;
   Map<String, dynamic> selectedPayment = {};
-  SellItemsProvider? siItems;
+  SellItemsProvider? siProvider;
   PaymentProvider? paymentProvider;
   PlatformFile? pickedFile;
   ValueNotifier<bool> isVisiblegame = ValueNotifier<bool>(false);
@@ -104,9 +104,9 @@ class _ChatScreenState extends State<ChatScreen> {
       });
     } else {
       //for _typeaheadtext
-      siItems = Provider.of<SellItemsProvider>(context, listen: false);
-      siItems!.addItems(widget.sItems!, notify: false);
-      for (var item in siItems!.Sitems) {
+      siProvider = Provider.of<SellItemsProvider>(context, listen: false);
+      siProvider!.addItems(widget.sItems!, notify: false);
+      for (var item in siProvider!.Sitems) {
         if (item.values.first == 'enabled') {
           Item itemObject = item.keys.first;
           enabledGames.add(itemObject.name);
@@ -624,8 +624,10 @@ class _ChatScreenState extends State<ChatScreen> {
                             ],
                           )),
                     ] else ...[
-                      const Text('No Payments Information Available',
-                          style: TextStyle(color: Colors.white))
+                      const Center(
+                        child: Text('No Payments Information Available',
+                            style: TextStyle(color: Colors.white)),
+                      )
                     ]
                   ],
                 ),

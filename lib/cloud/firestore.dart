@@ -299,4 +299,35 @@ class FirestoreService {
         subdocumentId: otherUserId,
         merge: false);
   }
+
+  Future<void> toggleAllGames(
+      {required String uid,
+      required bool enable,
+      required String shopName}) async {
+    final status = enable ? 'enabled' : 'disabled';
+    final data = {
+      'info': {'status': status}
+    };
+    final allGames = await read(collection: 'sellers', documentId: uid);
+    print(allGames);
+
+    for (var game in allGames['games'].keys) {
+      print(game);
+      if (allGames['games'][game] == 'enabled') {
+        print('enabled $game');
+        create(
+            collection: 'sellers',
+            documentId: uid,
+            data: data,
+            subcollection: 'games',
+            subdocumentId: game);
+      }
+      create(collection: 'seller_games_data', documentId: game, data: {
+        shopName: {...data}
+      });
+      create(collection: 'sellers', documentId: uid, data: {
+        'games': {game: status}
+      });
+    }
+  }
 }

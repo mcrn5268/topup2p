@@ -22,17 +22,17 @@ class MessagesScreen extends StatefulWidget {
 }
 
 class _MessagesScreenState extends State<MessagesScreen> {
-  late SellItemsProvider siItems;
+  late SellItemsProvider siProvider;
   late PaymentProvider paymentProvider;
   @override
   void initState() {
     super.initState();
+    siProvider = Provider.of<SellItemsProvider>(context, listen: false);
+    paymentProvider = Provider.of<PaymentProvider>(context, listen: false);
     if (widget.siItems != null) {
-      siItems = Provider.of<SellItemsProvider>(context, listen: false);
-      siItems.addItems(widget.siItems!);
+      siProvider.addItems(widget.siItems!);
     }
     if (widget.payments != null) {
-      paymentProvider = Provider.of<PaymentProvider>(context, listen: false);
       paymentProvider.clearPayments(notify: false);
       paymentProvider.addAllPayments(widget.payments!, notify: false);
     }
@@ -231,7 +231,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                                         other_user['image'],
                                                     userName:
                                                         other_user['name'],
-                                                    sItems: siItems.Sitems,
+                                                    sItems: siProvider.Sitems,
                                                     payments: paymentProvider
                                                         .payments),
                                               ),

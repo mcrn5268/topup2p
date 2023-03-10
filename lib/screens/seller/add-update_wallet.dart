@@ -5,16 +5,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:provider/provider.dart';
+import 'package:topup2p/cloud/firestore.dart';
+import 'package:topup2p/models/item_model.dart';
 import 'package:topup2p/models/payment_model.dart';
 import 'package:topup2p/providers/payment_provider.dart';
+import 'package:topup2p/providers/sell_items_provder.dart';
+import 'package:topup2p/providers/user_provider.dart';
 import 'package:topup2p/utilities/digit_input_formatter.dart';
 import 'package:topup2p/utilities/models_utils.dart';
+import 'package:topup2p/widgets/show_dialog.dart';
+
 //todo if there is no wallet left, disable all of the items
 //also show warning
 class AddUpdateWalletScreen extends StatefulWidget {
-  const AddUpdateWalletScreen({this.cardWallet, this.paymentList, super.key});
+  const AddUpdateWalletScreen(
+      {required this.cardWallet,
+      required this.paymentList,
+      required this.gamesItemsList,
+      super.key});
   final Payment? cardWallet;
-  final List<Payment>? paymentList;
+  final List<Payment> paymentList;
+  final List<Map<Item, String>> gamesItemsList;
   @override
   State<AddUpdateWalletScreen> createState() => _AddUpdateWalletScreenState();
 }
@@ -31,9 +42,15 @@ class _AddUpdateWalletScreenState extends State<AddUpdateWalletScreen> {
   Payment? payment;
   String _hintTextName = '';
   String _hintTextNum = '';
+  late PaymentProvider paymentProvider;
+  late SellItemsProvider siProvider;
+
+  bool switchFlag = true;
   @override
   void initState() {
     super.initState();
+    paymentProvider = Provider.of<PaymentProvider>(context, listen: false);
+    siProvider = Provider.of<SellItemsProvider>(context, listen: false);
     if (widget.cardWallet != null) {
       payment = widget.cardWallet;
       _typeAheadController.text = payment!.paymentname;
@@ -41,11 +58,13 @@ class _AddUpdateWalletScreenState extends State<AddUpdateWalletScreen> {
       _controllernum.text = payment!.accountnumber;
       flag = true;
     }
-    if (widget.paymentList != null) {
-      Provider.of<PaymentProvider>(context, listen: false)
-          .clearPayments(notify: false);
-      Provider.of<PaymentProvider>(context, listen: false)
-          .addAllPayments(widget.paymentList!, notify: false);
+    if (widget.paymentList.isNotEmpty) {
+      paymentProvider.clearPayments(notify: false);
+      paymentProvider.addAllPayments(widget.paymentList, notify: false);
+    }
+    if (widget.gamesItemsList.isNotEmpty) {
+      siProvider.clearItems(notify: false);
+      siProvider.addItems(widget.gamesItemsList, notify: false);
     }
     limit = max(_controllernum.text.toString().length, 3);
   }
@@ -60,8 +79,6 @@ class _AddUpdateWalletScreenState extends State<AddUpdateWalletScreen> {
 
   @override
   Widget build(BuildContext context) {
-    PaymentProvider paymentProvider =
-        Provider.of<PaymentProvider>(context, listen: false);
     Widget walletsList = TypeAheadFormField(
       textFieldConfiguration: TextFieldConfiguration(
         controller: _typeAheadController,
@@ -255,8 +272,8 @@ class _AddUpdateWalletScreenState extends State<AddUpdateWalletScreen> {
                                     : false)) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
-                                      content: Text(
-                                          'No changes has been made')));
+                                      content:
+                                          Text('No changes has been made')));
                               setState(() {
                                 _isEditable = !_isEditable;
                               });
@@ -272,9 +289,10 @@ class _AddUpdateWalletScreenState extends State<AddUpdateWalletScreen> {
                                           'Account number must not be empty')));
                             } else if (_controllernum.text.length != limit) {
                               if (_controllernum.text.length == 1) {
-                                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                                    content: Text(
-                                        'Account number start with either 09 or 639')));
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        content: Text(
+                                            'Account number start with either 09 or 639')));
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                                     content: Text(
@@ -316,7 +334,9 @@ class _AddUpdateWalletScreenState extends State<AddUpdateWalletScreen> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
-                            _isEditable ? const Icon(Icons.check) : const Icon(Icons.edit),
+                            _isEditable
+                                ? const Icon(Icons.check)
+                                : const Icon(Icons.edit),
                             Text(_isEditable ? 'Save' : 'Edit')
                           ],
                         ),
@@ -332,7 +352,11 @@ class _AddUpdateWalletScreenState extends State<AddUpdateWalletScreen> {
         appBar: AppBar(
           leading: IconButton(
               onPressed: () {
-                Navigator.pop(context, paymentProvider.payments);
+                List<dynamic> toReturn = [
+                  paymentProvider.payments,
+                  siProvider.Sitems
+                ];
+                Navigator.pop(context, toReturn);
               },
               icon: const Icon(
                 Icons.arrow_back_ios_outlined,
@@ -355,12 +379,31 @@ class _AddUpdateWalletScreenState extends State<AddUpdateWalletScreen> {
                       activeColor: Colors.green,
                       inactiveColor: Colors.red,
                       value: payment != null ? payment!.isEnabled : false,
-                      onToggle: (value) {
-                        paymentProvider.updatePayment(payment!,
-                            isEnabled: !payment!.isEnabled, notify: false);
-                        setState(() {
-                          !payment!.isEnabled;
-                        });
+                      onToggle: (value) async {
+                        UserProvider userProvider =
+                            Provider.of<UserProvider>(context, listen: false);
+                        var enabledPayments = paymentProvider.payments
+                            .where((payment) => payment.isEnabled);
+                        bool onlyOne = enabledPayments.length == 1;
+
+                        if (onlyOne) {
+                          switchFlag = (await dialogBuilder(context, 'Confirm',
+                              'If you disable all of your wallet, all of your games listen will be disabled as well. \n\nDo you want to proceed?'))!;
+                        }
+                        if (switchFlag) {
+                          if (onlyOne) {
+                            FirestoreService().toggleAllGames(
+                                uid: userProvider.user!.uid,
+                                enable: false,
+                                shopName: userProvider.user!.name);
+                            siProvider.toggleAllGamesProvider(false);
+                          }
+                          paymentProvider.updatePayment(payment!,
+                              isEnabled: !payment!.isEnabled, notify: false);
+                          setState(() {
+                            !payment!.isEnabled;
+                          });
+                        }
                       },
                     ),
                   ],

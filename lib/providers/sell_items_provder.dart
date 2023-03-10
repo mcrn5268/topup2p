@@ -21,8 +21,25 @@ class SellItemsProvider with ChangeNotifier {
 
   void updateItem(Item item, String status) {
     final index = _Sitems.indexWhere((map) => map.containsKey(item));
+    print('index $index');
     if (index != -1) {
       _Sitems[index][item] = status;
+      notifyListeners();
+    }
+    print('test ${_Sitems[index][item]}');
+  }
+
+  void updateItemsList(List<Map<Item, String>> list) {
+    bool flag = false;
+    for (int i = 0; i < list.length; i++) {
+      for (Item item in list[i].keys) {
+        if (_Sitems[i][item] != list[i][item]) {
+          _Sitems[i][item] = list[i][item]!;
+          flag = true;
+        }
+      }
+    }
+    if (flag) {
       notifyListeners();
     }
   }
@@ -39,5 +56,11 @@ class SellItemsProvider with ChangeNotifier {
     if (notify) {
       notifyListeners();
     }
+  }
+
+  void toggleAllGamesProvider(bool enable) {
+    _Sitems.map((map) => map[map.keys.first] = enable ? 'enabled' : 'disabled')
+        .toList();
+    notifyListeners();
   }
 }

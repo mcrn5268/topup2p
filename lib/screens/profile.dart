@@ -200,7 +200,7 @@ class ProfileScreen extends StatelessWidget {
                             ChangeNotifierProvider<PaymentProvider>.value(
                           value: PaymentProvider(),
                           child: SellerWalletsScreen(
-                              payments: paymentProvider!.payments),
+                              payments: paymentProvider!.payments, siItems: siProvider!.Sitems,),
                         ),
                         transitionsBuilder: (_, a, __, c) =>
                             FadeTransition(opacity: a, child: c),

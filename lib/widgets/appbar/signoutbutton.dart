@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:topup2p/cloud/firebase_auth.dart';
+import 'package:topup2p/widgets/show_dialog.dart';
 
 class SignoutButton extends StatelessWidget {
   const SignoutButton({super.key});
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-      onPressed: () {
-        _dialogBuilder(context);
+      onPressed: () async {
+        bool? flag = await dialogBuilder(
+            context, 'Sign out', 'Are you sure you want to sign out?');
+        if (flag!) {
+          // ignore: use_build_context_synchronously
+          signOut(context);
+        }
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.white,
@@ -23,38 +29,6 @@ class SignoutButton extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-
-  Future<void> _dialogBuilder(BuildContext context) {
-    return showDialog<void>(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Sign out'),
-          content: const Text('Are you sure you want to sign out?'),
-          actions: <Widget>[
-            TextButton(
-              style: TextButton.styleFrom(
-                textStyle: Theme.of(context).textTheme.labelLarge,
-              ),
-              child: const Text('No'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              style: TextButton.styleFrom(
-                textStyle: Theme.of(context).textTheme.labelLarge,
-              ),
-              child: const Text('Yes'),
-              onPressed: () {
-                signOut(context);
-              },
-            ),
-          ],
-        );
-      },
     );
   }
 }
