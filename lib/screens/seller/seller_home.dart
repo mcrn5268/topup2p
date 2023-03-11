@@ -22,6 +22,7 @@ class _SellerMainScreenState extends State<SellerMainScreen> {
   final PageStorageBucket _bucket = PageStorageBucket();
   final ScrollController _scrollController = ScrollController();
   late PaymentProvider paymentProvider;
+  late UserProvider userProvider;
   late SellItemsProvider siProvider;
   bool _showScrollToTopButton = false;
   Widget ratesLoop(Map<String, dynamic> data, String icon, int startIndex) {
@@ -102,6 +103,7 @@ class _SellerMainScreenState extends State<SellerMainScreen> {
   void initState() {
     super.initState();
     paymentProvider = Provider.of<PaymentProvider>(context, listen: false);
+    userProvider = Provider.of<UserProvider>(context, listen: false);
     siProvider = Provider.of<SellItemsProvider>(context, listen: false);
     _scrollController.addListener(() {
       setState(() {
@@ -331,6 +333,8 @@ class _SellerMainScreenState extends State<SellerMainScreen> {
         child: const Icon(Icons.add),
       ),
     );
+    bool oneEnabled =
+        siProvider.Sitems.any((map) => map.values.first == 'enabled');
     return Scaffold(
       appBar: AppBar(
           centerTitle: true,
@@ -344,7 +348,29 @@ class _SellerMainScreenState extends State<SellerMainScreen> {
         bucket: _bucket,
         child: Stack(
           children: [
-            sellerHomeBody,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                InkWell(
+                  onTap: () {
+                    siProvider.toggleAllGamesProvider(!oneEnabled);
+                    FirestoreService().toggleAllGames(enable: !oneEnabled, 
+                    shopName: userProvider.user!.name, uid: userProvider.user!.uid);
+                    setState(() {});
+                  },
+                  child: Row(
+                    children: [
+                      Text(oneEnabled ? 'Disable ' : ' Enable '),
+                      const Text('all items')
+                    ],
+                  ),
+                )
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 20),
+              child: sellerHomeBody,
+            ),
             Container(
               height: MediaQuery.of(context).size.height,
             ),

@@ -309,12 +309,9 @@ class FirestoreService {
       'info': {'status': status}
     };
     final allGames = await read(collection: 'sellers', documentId: uid);
-    print(allGames);
 
     for (var game in allGames['games'].keys) {
-      print(game);
       if (allGames['games'][game] == 'enabled') {
-        print('enabled $game');
         create(
             collection: 'sellers',
             documentId: uid,
