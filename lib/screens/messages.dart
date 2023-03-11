@@ -30,7 +30,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
     siProvider = Provider.of<SellItemsProvider>(context, listen: false);
     paymentProvider = Provider.of<PaymentProvider>(context, listen: false);
     if (widget.siItems != null) {
-      siProvider.addItems(widget.siItems!);
+      siProvider.addItems(widget.siItems!, notify: false);
     }
     if (widget.payments != null) {
       paymentProvider.clearPayments(notify: false);

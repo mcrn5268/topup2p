@@ -21,12 +21,10 @@ class SellItemsProvider with ChangeNotifier {
 
   void updateItem(Item item, String status) {
     final index = _Sitems.indexWhere((map) => map.containsKey(item));
-    print('index $index');
     if (index != -1) {
       _Sitems[index][item] = status;
       notifyListeners();
     }
-    print('test ${_Sitems[index][item]}');
   }
 
   void updateItemsList(List<Map<Item, String>> list) {
@@ -51,7 +49,7 @@ class SellItemsProvider with ChangeNotifier {
     }
   }
 
-  void addItems(List<Map<Item, String>> items, {bool notify = false}) {
+  void addItems(List<Map<Item, String>> items, {bool notify = true}) {
     _Sitems.addAll(items);
     if (notify) {
       notifyListeners();

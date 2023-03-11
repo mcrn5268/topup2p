@@ -120,7 +120,6 @@ class _SellerMainScreenState extends State<SellerMainScreen> {
   Widget build(BuildContext context) {
     Widget sellerHomeBody =
         Consumer<SellItemsProvider>(builder: (context, siProvider2, _) {
-      print('consumer');
       if (siProvider2.Sitems.isNotEmpty) {
         return ListView.builder(
           key: const ValueKey('seller-home-page-listview'),
@@ -261,7 +260,6 @@ class _SellerMainScreenState extends State<SellerMainScreen> {
           if (Provider.of<PaymentProvider>(context, listen: false)
               .payments
               .isEmpty) {
-            print('IFFFFFFFFFFFFFFFFFFF');
             ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('You must have a wallet')));
 
@@ -311,10 +309,11 @@ class _SellerMainScreenState extends State<SellerMainScreen> {
                 siProvider.clearItems();
                 siProvider.addItems(sellItems);
               }
-              setState(() {});
+            }
+            for (var index = 0; index < siProvider.Sitems.length; index++) {
+              print(siProvider.Sitems[index]);
             }
           } else {
-            print('ELSEEEEEEEEE');
             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                 content: Text('You must have at least 1 enabled wallet')));
 

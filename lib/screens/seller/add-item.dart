@@ -90,7 +90,7 @@ class _AddItemSellState extends State<AddItemSell> {
     }
     if (widget.Sitems != null || widget.Sitems!.isNotEmpty) {
       siProvider = Provider.of<SellItemsProvider>(context, listen: false);
-      siProvider.addItems(widget.Sitems!);
+      siProvider.addItems(widget.Sitems!, notify: false);
 
       Provider.of<PaymentProvider>(context, listen: false)
           .clearPayments(notify: false);
@@ -251,14 +251,12 @@ class _AddItemSellState extends State<AddItemSell> {
                   );
                 },
                 onSuggestionSelected: (suggestion) {
-                  print(siProvider.Sitems.length);
                   setState(() {
                     _typeAheadController.text = suggestion.name;
                     _isLoadingData = true;
                     checkGame(suggestion.name);
                     gameIconPath = gameIcon(_typeAheadController.text);
                   });
-                  print(siProvider.Sitems.length);
                 },
               ),
               Visibility(
@@ -436,7 +434,10 @@ class _AddItemSellState extends State<AddItemSell> {
         appBar: AppBar(
           leading: IconButton(
               onPressed: () {
-                Navigator.pop(context);
+                Navigator.pop(
+                    context,
+                    Provider.of<SellItemsProvider>(context, listen: false)
+                        .Sitems);
               },
               icon: const Icon(
                 Icons.arrow_back_ios_outlined,
@@ -468,45 +469,45 @@ class _AddItemSellState extends State<AddItemSell> {
                             .updateItem(
                                 getItemByName(_typeAheadController.text)!,
                                 isEnabled! ? 'enabled' : 'disabled');
-                        // FirestoreService().create(
-                        //     collection: 'seller_games_data',
-                        //     documentId: _typeAheadController.text,
-                        //     data: {
-                        //       Provider.of<UserProvider>(context, listen: false)
-                        //           .user!
-                        //           .name: {
-                        //         'info': {
-                        //           'status': isEnabled! ? 'enabled' : 'disabled'
-                        //         }
-                        //       }
-                        //     });
-                        // //sellers fields
-                        // FirestoreService().create(
-                        //     collection: 'sellers',
-                        //     documentId: Provider.of<UserProvider>(context,
-                        //             listen: false)
-                        //         .user!
-                        //         .uid,
-                        //     data: {
-                        //       'games': {
-                        //         _typeAheadController.text:
-                        //             isEnabled! ? 'enabled' : 'disabled'
-                        //       }
-                        //     });
-                        // //sellers subcollection
-                        // FirestoreService().create(
-                        //     collection: 'sellers',
-                        //     documentId: Provider.of<UserProvider>(context,
-                        //             listen: false)
-                        //         .user!
-                        //         .uid,
-                        //     data: {
-                        //       'info': {
-                        //         'status': isEnabled! ? 'enabled' : 'disabled'
-                        //       }
-                        //     },
-                        //     subcollection: 'games',
-                        //     subdocumentId: _typeAheadController.text);
+                        FirestoreService().create(
+                            collection: 'seller_games_data',
+                            documentId: _typeAheadController.text,
+                            data: {
+                              Provider.of<UserProvider>(context, listen: false)
+                                  .user!
+                                  .name: {
+                                'info': {
+                                  'status': isEnabled! ? 'enabled' : 'disabled'
+                                }
+                              }
+                            });
+                        //sellers fields
+                        FirestoreService().create(
+                            collection: 'sellers',
+                            documentId: Provider.of<UserProvider>(context,
+                                    listen: false)
+                                .user!
+                                .uid,
+                            data: {
+                              'games': {
+                                _typeAheadController.text:
+                                    isEnabled! ? 'enabled' : 'disabled'
+                              }
+                            });
+                        //sellers subcollection
+                        FirestoreService().create(
+                            collection: 'sellers',
+                            documentId: Provider.of<UserProvider>(context,
+                                    listen: false)
+                                .user!
+                                .uid,
+                            data: {
+                              'info': {
+                                'status': isEnabled! ? 'enabled' : 'disabled'
+                              }
+                            },
+                            subcollection: 'games',
+                            subdocumentId: _typeAheadController.text);
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                             content:
                                 Text(isEnabled! ? 'Enabled' : 'Disbaled')));
