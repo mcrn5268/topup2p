@@ -348,120 +348,129 @@ class _AddUpdateWalletScreenState extends State<AddUpdateWalletScreen> {
         ],
       ),
     );
-    return Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-              onPressed: () {
-                List<dynamic> toReturn = [
-                  paymentProvider.payments,
-                  siProvider.Sitems
-                ];
-                Navigator.pop(context, toReturn);
-              },
-              icon: const Icon(
-                Icons.arrow_back_ios_outlined,
-              )),
-          flexibleSpace: SafeArea(
-            child: Visibility(
-              visible: flag,
-              child: Padding(
-                padding: const EdgeInsets.only(right: 8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    FlutterSwitch(
-                      height: 20.0,
-                      width: 50.0,
-                      padding: 4.0,
-                      toggleSize: 15.0,
-                      borderRadius: 10.0,
-                      activeColor: Colors.green,
-                      inactiveColor: Colors.red,
-                      value: payment != null ? payment!.isEnabled : false,
-                      onToggle: (value) async {
-                        UserProvider userProvider =
-                            Provider.of<UserProvider>(context, listen: false);
-                        var enabledPayments = paymentProvider.payments
-                            .where((payment) => payment.isEnabled);
-                        bool onlyOne = enabledPayments.length == 1;
+    return WillPopScope(
+      onWillPop: () async {
+        List<dynamic> toReturn = [paymentProvider.payments, siProvider.Sitems];
+        Navigator.pop(context, toReturn);
+        return false;
+      },
+      child: Scaffold(
+          appBar: AppBar(
+            leading: IconButton(
+                onPressed: () {
+                  List<dynamic> toReturn = [
+                    paymentProvider.payments,
+                    siProvider.Sitems
+                  ];
+                  Navigator.pop(context, toReturn);
+                },
+                icon: const Icon(
+                  Icons.arrow_back_ios_outlined,
+                )),
+            flexibleSpace: SafeArea(
+              child: Visibility(
+                visible: flag,
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      FlutterSwitch(
+                        height: 20.0,
+                        width: 50.0,
+                        padding: 4.0,
+                        toggleSize: 15.0,
+                        borderRadius: 10.0,
+                        activeColor: Colors.green,
+                        inactiveColor: Colors.red,
+                        value: payment != null ? payment!.isEnabled : false,
+                        onToggle: (value) async {
+                          UserProvider userProvider =
+                              Provider.of<UserProvider>(context, listen: false);
+                          var enabledPayments = paymentProvider.payments
+                              .where((payment) => payment.isEnabled);
+                          bool onlyOne = enabledPayments.length == 1;
 
-                        if (onlyOne) {
-                          switchFlag = (await dialogBuilder(context, 'Confirm',
-                              'If you disable all of your wallet, all of your games listen will be disabled as well. \n\nDo you want to proceed?'))!;
-                        }
-                        if (switchFlag) {
                           if (onlyOne) {
-                            FirestoreService().toggleAllGames(
-                                uid: userProvider.user!.uid,
-                                enable: false,
-                                shopName: userProvider.user!.name);
-                            siProvider.toggleAllGamesProvider(false);
+                            switchFlag = (await dialogBuilder(
+                                context,
+                                'Confirm',
+                                'If you disable all of your wallet, all of your games listen will be disabled as well. \n\nDo you want to proceed?'))!;
                           }
-                          paymentProvider.updatePayment(payment!,
-                              isEnabled: !payment!.isEnabled, notify: false);
-                          setState(() {
-                            !payment!.isEnabled;
-                          });
-                        }
-                      },
-                    ),
-                  ],
+                          if (switchFlag) {
+                            if (onlyOne) {
+                              FirestoreService().toggleAllGames(
+                                  uid: userProvider.user!.uid,
+                                  enable: false,
+                                  shopName: userProvider.user!.name);
+                              siProvider.toggleAllGamesProvider(false);
+                            }
+                            paymentProvider.updatePayment(payment!,
+                                isEnabled: !payment!.isEnabled, notify: false);
+                            setState(() {
+                              !payment!.isEnabled;
+                            });
+                          }
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
           ),
-        ),
-        body: Padding(
-          padding: const EdgeInsets.only(left: 25, right: 25),
-          child: ListView(
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Image.asset(
-                    'assets/images/MoP/placeholder.png',
-                    height: MediaQuery.of(context).orientation ==
-                            Orientation.portrait
-                        ? MediaQuery.of(context).size.width - 200
-                        : MediaQuery.of(context).size.width / 5,
-                  ),
-                  Stack(
-                    children: [
-                      walletsList,
-                      Visibility(
-                        visible: _typeAheadController.text != '' &&
-                            _isEditable == false,
-                        child: Positioned(
-                            right: 0,
-                            child: SizedBox(
-                              height: 58,
-                              child: IconButton(
-                                icon: const Icon(
-                                  Icons.close,
-                                  color: Colors.grey,
+          body: Padding(
+            padding: const EdgeInsets.only(left: 25, right: 25),
+            child: ListView(
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      'assets/images/MoP/placeholder.png',
+                      height: MediaQuery.of(context).orientation ==
+                              Orientation.portrait
+                          ? MediaQuery.of(context).size.width - 200
+                          : MediaQuery.of(context).size.width / 5,
+                    ),
+                    Stack(
+                      children: [
+                        walletsList,
+                        Visibility(
+                          visible: _typeAheadController.text != '' &&
+                              _isEditable == false,
+                          child: Positioned(
+                              right: 0,
+                              child: SizedBox(
+                                height: 58,
+                                child: IconButton(
+                                  icon: const Icon(
+                                    Icons.close,
+                                    color: Colors.grey,
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      _typeAheadController.text = '';
+                                      _controllername.text = '';
+                                      _controllernum.text = '';
+                                      _hintTextName = '';
+                                      _hintTextNum = '';
+                                      flag = false;
+                                    });
+                                  },
                                 ),
-                                onPressed: () {
-                                  setState(() {
-                                    _typeAheadController.text = '';
-                                    _controllername.text = '';
-                                    _controllernum.text = '';
-                                    _hintTextName = '';
-                                    _hintTextNum = '';
-                                    flag = false;
-                                  });
-                                },
-                              ),
-                            )),
-                      )
-                    ],
-                  ),
-                  const Divider(),
-                  inputFields
-                ],
-              )
-            ],
-          ),
-        ));
+                              )),
+                        )
+                      ],
+                    ),
+                    const Divider(),
+                    inputFields
+                  ],
+                )
+              ],
+            ),
+          )),
+    );
   }
 }

@@ -28,26 +28,32 @@ class _GameSellScreenState extends State<GameSellScreen> {
         Provider.of<UserProvider>(context, listen: false);
     FavoritesProvider favProvider =
         Provider.of<FavoritesProvider>(context, listen: false);
-    return FutureBuilder(
-        future: FirestoreService()
-            .read(collection: 'seller_games_data', documentId: widget.gameName),
-        builder: ((context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            favProvider.addItems(widget.favorites, notify: false);
-            return Scaffold(
-                appBar: AppBarWidget(
-                  home: false,
-                  search: false,
-                  isloggedin: userProvider.user != null,
-                  fromGameSellScreen: favProvider.favorites,
-                ),
-                body: sellerBody(snapshot.data != null
-                    ? snapshot.data as Map<String, dynamic>
-                    : {}));
-          } else {
-            return const LoadingScreen();
-          }
-        }));
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.pop(context, favProvider.favorites);
+        return false;
+      },
+      child: FutureBuilder(
+          future: FirestoreService().read(
+              collection: 'seller_games_data', documentId: widget.gameName),
+          builder: ((context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              favProvider.addItems(widget.favorites, notify: false);
+              return Scaffold(
+                  appBar: AppBarWidget(
+                    home: false,
+                    search: false,
+                    isloggedin: userProvider.user != null,
+                    fromGameSellScreen: favProvider.favorites,
+                  ),
+                  body: sellerBody(snapshot.data != null
+                      ? snapshot.data as Map<String, dynamic>
+                      : {}));
+            } else {
+              return const LoadingScreen();
+            }
+          })),
+    );
   }
 
   //seller list/body
