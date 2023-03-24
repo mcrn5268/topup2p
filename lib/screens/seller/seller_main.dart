@@ -50,12 +50,19 @@ class _SellerMainState extends State<SellerMain> {
               siItems: Provider.of<SellItemsProvider>(context, listen: false)
                   .Sitems, payments: Provider.of<PaymentProvider>(context, listen: false)
                   .payments)),
-      ChangeNotifierProvider<SellItemsProvider>.value(
-        value: SellItemsProvider(),
-        child: ProfileScreen(
+      MultiProvider(
+          providers: [
+            ChangeNotifierProvider<SellItemsProvider>.value(
+              value: SellItemsProvider(),
+            ),
+            ChangeNotifierProvider<PaymentProvider>.value(
+              value: PaymentProvider(),
+            ),
+          ],
+          child: ProfileScreen(
             siItems:
-                Provider.of<SellItemsProvider>(context, listen: false).Sitems),
-      ),
+                Provider.of<SellItemsProvider>(context, listen: false).Sitems, payments: Provider.of<PaymentProvider>(context, listen: false).payments)),
+      
     ];
   }
 
@@ -185,3 +192,6 @@ class _SellerMainState extends State<SellerMain> {
     }
   }
 }
+
+                           
+                          

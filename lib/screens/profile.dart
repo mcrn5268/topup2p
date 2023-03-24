@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:topup2p/cloud/firestore.dart';
 import 'package:topup2p/models/item_model.dart';
+import 'package:topup2p/models/payment_model.dart';
 import 'package:topup2p/providers/favorites_provider.dart';
 import 'package:topup2p/providers/payment_provider.dart';
 import 'package:topup2p/providers/sell_items_provder.dart';
@@ -16,9 +17,10 @@ import 'package:topup2p/widgets/appbar/signoutbutton.dart';
 
 //this is shared screen for both user type normal and seller
 class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({this.siItems, this.favorites, super.key});
+  const ProfileScreen({this.siItems, this.favorites, this.payments, super.key});
   final List<Item>? favorites;
   final List<Map<Item, String>>? siItems;
+  final List<Payment>? payments;
   @override
   Widget build(BuildContext context) {
     PaymentProvider? paymentProvider;

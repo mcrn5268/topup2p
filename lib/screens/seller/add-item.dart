@@ -15,6 +15,7 @@ import 'package:topup2p/utilities/image_file_utils.dart';
 import 'package:topup2p/utilities/models_utils.dart';
 import 'package:topup2p/utilities/profile_image.dart';
 import 'package:topup2p/widgets/loading_screen.dart';
+import 'package:topup2p/widgets/toast.dart';
 
 class AddItemSell extends StatefulWidget {
   const AddItemSell(
@@ -67,9 +68,7 @@ class _AddItemSellState extends State<AddItemSell> {
           _ratesFlag = false;
         }
       } else if (controller.text != '' && controller2.text != '') {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content:
-                Text('Rates must not be empty if you wish to add an item!')));
+        showToast('Rates must not be empty if you wish to add an item!');
         _ratesFlag = false;
       }
       setState(() {});
@@ -283,8 +282,7 @@ class _AddItemSellState extends State<AddItemSell> {
           GestureDetector(
             onTap: () {
               if (_typeAheadController.text == '') {
-                ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Select a game first!')));
+                showToast('Select a game first!');
               }
             },
             child: Stack(
@@ -400,8 +398,8 @@ class _AddItemSellState extends State<AddItemSell> {
                         subdocumentId: _typeAheadController.text,
                         merge: false,
                       );
-                      scaffoldMsgr.showSnackBar(
-                          const SnackBar(content: Text('Success')));
+
+                      showToast('Success');
                       setState(() {
                         _isLoading = false;
                       });
@@ -508,9 +506,8 @@ class _AddItemSellState extends State<AddItemSell> {
                             },
                             subcollection: 'games',
                             subdocumentId: _typeAheadController.text);
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            content:
-                                Text(isEnabled! ? 'Enabled' : 'Disbaled')));
+
+                        showToast(isEnabled! ? 'Enabled' : 'Disbaled');
                       },
                     ),
                   ),

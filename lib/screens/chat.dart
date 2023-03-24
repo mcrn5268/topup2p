@@ -8,6 +8,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:topup2p/cloud/firestore.dart';
 import 'package:topup2p/models/item_model.dart';
@@ -20,6 +21,7 @@ import 'package:topup2p/utilities/image_file_utils.dart';
 import 'package:chat_bubbles/chat_bubbles.dart';
 import 'package:intl/intl.dart';
 import 'package:topup2p/utilities/models_utils.dart';
+import 'package:topup2p/widgets/toast.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen(
@@ -391,11 +393,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                         }).join('\n');
                                         Clipboard.setData(
                                             ClipboardData(text: text));
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(const SnackBar(
-                                          content: Text('Copiied'),
-                                          duration: Duration(milliseconds: 500),
-                                        ));
+                                        showToast('Copied');
                                       },
                                     ),
                                   ),
@@ -609,12 +607,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                               'Payment: ${selectedPayment['name']} Account Name: ${selectedPayment['account_name']} | Account Number: ${selectedPayment['account_number']}';
                                           Clipboard.setData(
                                               ClipboardData(text: text));
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(const SnackBar(
-                                            content: Text('Copiied'),
-                                            duration:
-                                                Duration(milliseconds: 500),
-                                          ));
+                                          showToast('Copied');
                                         },
                                       ),
                                     ),

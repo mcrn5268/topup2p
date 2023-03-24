@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:topup2p/cloud/firestore.dart';
 import 'package:topup2p/models/item_model.dart';
@@ -9,6 +10,7 @@ import 'package:topup2p/providers/user_provider.dart';
 import 'package:topup2p/screens/seller/add-item.dart';
 import 'package:topup2p/screens/seller/seller_main.dart';
 import 'package:topup2p/utilities/globals.dart';
+import 'package:topup2p/widgets/toast.dart';
 
 class SellerMainScreen extends StatefulWidget {
   const SellerMainScreen({Key? key}) : super(key: key);
@@ -262,8 +264,7 @@ class _SellerMainScreenState extends State<SellerMainScreen> {
           if (Provider.of<PaymentProvider>(context, listen: false)
               .payments
               .isEmpty) {
-            ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('You must have a wallet')));
+            showToast('You must have a wallet');
 
             Navigator.pushReplacement(
               context,
@@ -316,8 +317,7 @@ class _SellerMainScreenState extends State<SellerMainScreen> {
               print(siProvider.Sitems[index]);
             }
           } else {
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                content: Text('You must have at least 1 enabled wallet')));
+            showToast('You must have at least 1 enabled wallet');
 
             Navigator.pushReplacement(
               context,
@@ -348,24 +348,29 @@ class _SellerMainScreenState extends State<SellerMainScreen> {
         bucket: _bucket,
         child: Stack(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                InkWell(
-                  onTap: () {
-                    siProvider.toggleAllGamesProvider(!oneEnabled);
-                    FirestoreService().toggleAllGames(enable: !oneEnabled, 
-                    shopName: userProvider.user!.name, uid: userProvider.user!.uid);
-                    setState(() {});
-                  },
-                  child: Row(
-                    children: [
-                      Text(oneEnabled ? 'Disable ' : ' Enable '),
-                      const Text('all items')
-                    ],
-                  ),
-                )
-              ],
+            Visibility(
+              visible: siProvider.Sitems.isNotEmpty,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  InkWell(
+                    onTap: () {
+                      siProvider.toggleAllGamesProvider(!oneEnabled);
+                      FirestoreService().toggleAllGames(
+                          enable: !oneEnabled,
+                          shopName: userProvider.user!.name,
+                          uid: userProvider.user!.uid);
+                      setState(() {});
+                    },
+                    child: Row(
+                      children: [
+                        Text(oneEnabled ? 'Disable ' : ' Enable '),
+                        const Text('all items')
+                      ],
+                    ),
+                  )
+                ],
+              ),
             ),
             Padding(
               padding: const EdgeInsets.only(top: 20),

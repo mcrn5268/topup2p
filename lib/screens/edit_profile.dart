@@ -11,6 +11,7 @@ import 'package:topup2p/providers/user_provider.dart';
 import 'package:topup2p/utilities/image_file_utils.dart';
 import 'package:topup2p/utilities/profile_image.dart';
 import 'package:topup2p/widgets/loading_screen.dart';
+import 'package:topup2p/widgets/toast.dart';
 import '../../../../cloud/download-image.dart';
 import 'dart:io';
 
@@ -90,7 +91,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               child: ElevatedButton(
                 onPressed: () async {
                   final navigator = Navigator.of(context);
-                  final scaffoldMsgr = ScaffoldMessenger.of(context);
                   if (_formKey.currentState!.validate()) {
                     // form is valid
                     if (pickedFile != null ||
@@ -250,20 +250,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         setState(() {
                           _isLoading = false;
                         });
-                        scaffoldMsgr.showSnackBar(
-                            const SnackBar(content: Text('Profile Updated')));
+                        showToast('Profile Updated');
                       } else {
                         setState(() {
                           _isLoading = false;
-                          ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text(
-                                      'Shop name is already taken. Try again.')));
+
+                          showToast('Shop name is already taken. Try again');
                         });
                       }
                     } else {
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                          content: Text('No changes has been made')));
+                      showToast('No changes has been made');
                       Navigator.pop(context);
                     }
                   }

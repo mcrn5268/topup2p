@@ -135,7 +135,6 @@ class _SellerRegisterScreenState extends State<SellerRegisterScreen> {
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  side: const BorderSide(color: Colors.black),
                   shape: const StadiumBorder(),
                   padding: const EdgeInsets.all(15),
                 ),
@@ -162,6 +161,10 @@ class _SellerRegisterScreenState extends State<SellerRegisterScreen> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.transparent,
+                side: const BorderSide(color: Colors.transparent),
+              ),
               onPressed: () {
                 Navigator.pop(context);
               },
@@ -209,8 +212,17 @@ class _SellerRegisterScreenState extends State<SellerRegisterScreen> {
               right: flag ? 0 : 85,
               bottom: flag ? 20 : 0,
               child: Container(
-                decoration: const BoxDecoration(
-                  color: Colors.blueGrey,
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: MediaQuery.of(context).platformBrightness ==
+                            Brightness.dark
+                        ? Colors.white
+                        : Colors.black,
+                  ),
+                  color: MediaQuery.of(context).platformBrightness ==
+                          Brightness.dark
+                      ? Colors.teal
+                      : Colors.blueGrey,
                   shape: BoxShape.circle,
                 ),
                 height: flag
