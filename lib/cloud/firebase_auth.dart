@@ -7,7 +7,7 @@ import 'package:restart_app/restart_app.dart';
 import 'package:topup2p/main.dart';
 import 'package:topup2p/providers/favorites_provider.dart';
 import 'package:topup2p/providers/payment_provider.dart';
-import 'package:topup2p/providers/sell_items_provder.dart';
+import 'package:topup2p/providers/sell_items_provider.dart';
 import 'package:topup2p/providers/user_provider.dart';
 import 'package:topup2p/utilities/globals.dart';
 

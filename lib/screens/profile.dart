@@ -6,7 +6,7 @@ import 'package:topup2p/models/item_model.dart';
 import 'package:topup2p/models/payment_model.dart';
 import 'package:topup2p/providers/favorites_provider.dart';
 import 'package:topup2p/providers/payment_provider.dart';
-import 'package:topup2p/providers/sell_items_provder.dart';
+import 'package:topup2p/providers/sell_items_provider.dart';
 import 'package:topup2p/providers/user_provider.dart';
 import 'package:topup2p/screens/edit_profile.dart';
 import 'package:topup2p/screens/seller/wallets.dart';
@@ -17,10 +17,9 @@ import 'package:topup2p/widgets/appbar/signoutbutton.dart';
 
 //this is shared screen for both user type normal and seller
 class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({this.siItems, this.favorites, this.payments, super.key});
+  const ProfileScreen({this.favorites, super.key});
   final List<Item>? favorites;
-  final List<Map<Item, String>>? siItems;
-  final List<Payment>? payments;
+
   @override
   Widget build(BuildContext context) {
     PaymentProvider? paymentProvider;
@@ -45,10 +44,6 @@ class ProfileScreen extends StatelessWidget {
         favProvider = Provider.of<FavoritesProvider>(context);
         favProvider.clearFavorites(notify: false);
         favProvider.addItems(favorites!, notify: false);
-      }
-      if (siItems != null) {
-        siProvider!.clearItems(notify: false);
-        siProvider.addItems(siItems!, notify: false);
       }
       Widget profileHead = Stack(
         alignment: Alignment.center,
@@ -132,17 +127,7 @@ class ProfileScreen extends StatelessWidget {
                   Navigator.push(
                     context,
                     PageRouteBuilder(
-                      pageBuilder: (_, __, ___) => MultiProvider(
-                        providers: [
-                          ChangeNotifierProvider<SellItemsProvider>.value(
-                            value: SellItemsProvider(),
-                          ),
-                          ChangeNotifierProvider<PaymentProvider>.value(
-                            value: PaymentProvider(),
-                          ),
-                        ],
-                        child: const EditProfileScreen(),
-                      ),
+                      pageBuilder: (_, __, ___) => const EditProfileScreen(),
                       transitionsBuilder: (_, a, __, c) =>
                           FadeTransition(opacity: a, child: c),
                     ),
@@ -151,15 +136,7 @@ class ProfileScreen extends StatelessWidget {
                   await Navigator.push(
                     context,
                     PageRouteBuilder(
-                      pageBuilder: (_, __, ___) => MultiProvider(
-                        providers: [
-                          ChangeNotifierProvider<FavoritesProvider>.value(
-                            value: FavoritesProvider(),
-                          ),
-                        ],
-                        child: EditProfileScreen(
-                            favorites: favProvider!.favorites),
-                      ),
+                      pageBuilder: (_, __, ___) => const EditProfileScreen(),
                       transitionsBuilder: (_, a, __, c) =>
                           FadeTransition(opacity: a, child: c),
                     ),
@@ -195,14 +172,25 @@ class ProfileScreen extends StatelessWidget {
                     trailing: Icon(Icons.arrow_forward_ios_outlined),
                   ),
                   onTap: () async {
-                    final paymentsList = await Navigator.push(
+                    final returnList = await Navigator.push(
                       context,
                       PageRouteBuilder(
-                        pageBuilder: (_, __, ___) =>
+                        pageBuilder: (_, __, ___) => MultiProvider(
+                          providers: [
+                            ChangeNotifierProvider<SellItemsProvider>.value(
+                              value: SellItemsProvider(),
+                            ),
                             ChangeNotifierProvider<PaymentProvider>.value(
-                          value: PaymentProvider(),
+                              value: PaymentProvider(),
+                            ),
+                          ],
                           child: SellerWalletsScreen(
-                              payments: paymentProvider!.payments, siItems: siProvider!.Sitems,),
+                            payments: paymentProvider!.payments,
+                            //must include SellItemsProvider
+                            //because if there is no enabled wallets
+                            //all games will be disabled
+                            siItems: siProvider!.Sitems,
+                          ),
                         ),
                         transitionsBuilder: (_, a, __, c) =>
                             FadeTransition(opacity: a, child: c),
@@ -210,10 +198,10 @@ class ProfileScreen extends StatelessWidget {
                     );
                     //after navigator.pop check if payment has been added
                     //if yes then update both provider and firestore
-                    if (paymentsList != null) {
+                    if (returnList[0] != null) {
                       //add to provider
                       paymentProvider!.clearPayments();
-                      paymentProvider.addAllPayments(paymentsList);
+                      paymentProvider.addAllPayments(returnList[0]);
                       //add to firestore
                       Map<String, dynamic> forSellersMap = {};
                       Map<String, dynamic> forGamesMap = {};
@@ -266,6 +254,9 @@ class ProfileScreen extends StatelessWidget {
                             });
                       }
                     }
+                    if (returnList[2] == true) {
+                      siProvider!.rebuild();
+                    }
                   }),
               const Divider(),
             ],
@@ -295,11 +286,7 @@ class ProfileScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   PageRouteBuilder(
-                    pageBuilder: (_, __, ___) =>
-                        ChangeNotifierProvider<FavoritesProvider>.value(
-                      value: FavoritesProvider(),
-                      child: const SellerRegisterScreen(),
-                    ),
+                    pageBuilder: (_, __, ___) => const SellerRegisterScreen(),
                     transitionsBuilder: (_, a, __, c) =>
                         FadeTransition(opacity: a, child: c),
                   ),

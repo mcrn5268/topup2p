@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:topup2p/cloud/firestore.dart';
 import 'package:topup2p/models/item_model.dart';
 import 'package:topup2p/providers/payment_provider.dart';
-import 'package:topup2p/providers/sell_items_provder.dart';
+import 'package:topup2p/providers/sell_items_provider.dart';
 import 'package:topup2p/providers/user_provider.dart';
 import 'package:topup2p/screens/seller/add-item.dart';
 import 'package:topup2p/screens/seller/seller_main.dart';
@@ -333,8 +333,9 @@ class _SellerMainScreenState extends State<SellerMainScreen> {
         child: const Icon(Icons.add),
       ),
     );
+    //listen to true
     bool oneEnabled =
-        siProvider.Sitems.any((map) => map.values.first == 'enabled');
+        Provider.of<SellItemsProvider>(context, listen: true).Sitems.any((map) => map.values.first == 'enabled');
     return Scaffold(
       appBar: AppBar(
           centerTitle: true,

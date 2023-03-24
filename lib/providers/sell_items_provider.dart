@@ -56,9 +56,15 @@ class SellItemsProvider with ChangeNotifier {
     }
   }
 
-  void toggleAllGamesProvider(bool enable) {
+  void toggleAllGamesProvider(bool enable, {bool notify = true}) {
     _Sitems.map((map) => map[map.keys.first] = enable ? 'enabled' : 'disabled')
         .toList();
+    if (notify) {
+      notifyListeners();
+    }
+  }
+
+  void rebuild() {
     notifyListeners();
   }
 }

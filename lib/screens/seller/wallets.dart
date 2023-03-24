@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:topup2p/models/item_model.dart';
 import 'package:topup2p/models/payment_model.dart';
 import 'package:topup2p/providers/payment_provider.dart';
-import 'package:topup2p/providers/sell_items_provder.dart';
+import 'package:topup2p/providers/sell_items_provider.dart';
 import 'package:topup2p/screens/seller/add-update_wallet.dart';
 
 class SellerWalletsScreen extends StatefulWidget {
@@ -18,7 +18,9 @@ class SellerWalletsScreen extends StatefulWidget {
 
 class _SellerWalletsScreenState extends State<SellerWalletsScreen> {
   late PaymentProvider paymentProvider;
-  SellItemsProvider? siProvider;
+  late SellItemsProvider siProvider;
+  bool disableAll = false;
+
   @override
   void initState() {
     super.initState();
@@ -29,8 +31,8 @@ class _SellerWalletsScreenState extends State<SellerWalletsScreen> {
       paymentProvider.addAllPayments(widget.payments, notify: false);
     }
     if (widget.siItems.isNotEmpty) {
-      siProvider!.clearItems(notify: false);
-      siProvider!.addItems(widget.siItems, notify: false);
+      siProvider.clearItems(notify: false);
+      siProvider.addItems(widget.siItems, notify: false);
     }
   }
 
@@ -54,32 +56,38 @@ class _SellerWalletsScreenState extends State<SellerWalletsScreen> {
             child: AddUpdateWalletScreen(
                 cardWallet: card,
                 paymentList: paymentProvider.payments,
-                gamesItemsList: siProvider!.Sitems),
+                gamesItemsList: siProvider.Sitems),
           ),
           transitionsBuilder: (_, a, __, c) =>
               FadeTransition(opacity: a, child: c),
         ),
       );
-      //add to provider
-      if (result[0] != null) {
-        paymentProvider.updatePaymentList(result[0]);
+      if (result[2] == true) {
+        disableAll = true;
       }
-      print('testt ${result[1]}');
-      if (result[1] != null) {
-        siProvider!.updateItemsList(result[1]);
-      }
+      setState(() {});
     }
 
     return WillPopScope(
       onWillPop: () async {
-        Navigator.pop(context, paymentProvider.payments);
+        List<dynamic> toReturn = [
+          paymentProvider.payments,
+          siProvider.Sitems,
+          disableAll
+        ];
+        Navigator.pop(context, toReturn);
         return false;
       },
       child: Scaffold(
           appBar: AppBar(
             leading: IconButton(
                 onPressed: () {
-                  Navigator.pop(context, paymentProvider.payments);
+                  List<dynamic> toReturn = [
+                    paymentProvider.payments,
+                    siProvider.Sitems,
+                    disableAll
+                  ];
+                  Navigator.pop(context, toReturn);
                 },
                 icon: const Icon(
                   Icons.arrow_back_ios_outlined,

@@ -49,7 +49,7 @@ class PaymentProvider with ChangeNotifier {
     } else {
       bool isEqual = true;
       for (int i = 0; i < _payments.length; i++) {
-        if (_payments[i] != (paymentsFromWallet[i])) {
+        if (_payments[i] != paymentsFromWallet[i]) {
           isEqual = false;
           break;
         }

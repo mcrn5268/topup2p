@@ -9,7 +9,7 @@ import 'package:topup2p/cloud/firestore.dart';
 import 'package:topup2p/models/item_model.dart';
 import 'package:topup2p/models/payment_model.dart';
 import 'package:topup2p/providers/payment_provider.dart';
-import 'package:topup2p/providers/sell_items_provder.dart';
+import 'package:topup2p/providers/sell_items_provider.dart';
 import 'package:topup2p/providers/user_provider.dart';
 import 'package:topup2p/utilities/digit_input_formatter.dart';
 import 'package:topup2p/utilities/models_utils.dart';
@@ -45,8 +45,9 @@ class _AddUpdateWalletScreenState extends State<AddUpdateWalletScreen> {
   String _hintTextNum = '';
   late PaymentProvider paymentProvider;
   late SellItemsProvider siProvider;
-
+  bool disableAll = false;
   bool switchFlag = true;
+
   @override
   void initState() {
     super.initState();
@@ -337,7 +338,11 @@ class _AddUpdateWalletScreenState extends State<AddUpdateWalletScreen> {
     );
     return WillPopScope(
       onWillPop: () async {
-        List<dynamic> toReturn = [paymentProvider.payments, siProvider.Sitems];
+        List<dynamic> toReturn = [
+          paymentProvider.payments,
+          siProvider.Sitems,
+          disableAll
+        ];
         Navigator.pop(context, toReturn);
         return false;
       },
@@ -347,7 +352,8 @@ class _AddUpdateWalletScreenState extends State<AddUpdateWalletScreen> {
                 onPressed: () {
                   List<dynamic> toReturn = [
                     paymentProvider.payments,
-                    siProvider.Sitems
+                    siProvider.Sitems,
+                    disableAll
                   ];
                   Navigator.pop(context, toReturn);
                 },
@@ -391,7 +397,8 @@ class _AddUpdateWalletScreenState extends State<AddUpdateWalletScreen> {
                                   uid: userProvider.user!.uid,
                                   enable: false,
                                   shopName: userProvider.user!.name);
-                              siProvider.toggleAllGamesProvider(false);
+                              siProvider.toggleAllGamesProvider(false, notify: false);
+                              disableAll = true;
                             }
                             paymentProvider.updatePayment(payment!,
                                 isEnabled: !payment!.isEnabled, notify: false);

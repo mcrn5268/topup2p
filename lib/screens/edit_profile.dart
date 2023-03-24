@@ -16,8 +16,7 @@ import '../../../../cloud/download-image.dart';
 import 'dart:io';
 
 class EditProfileScreen extends StatefulWidget {
-  const EditProfileScreen({this.favorites, super.key});
-  final List<Item>? favorites;
+  const EditProfileScreen({super.key});
 
   @override
   State<EditProfileScreen> createState() => _EditProfileScreenState();
@@ -51,10 +50,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   void initState() {
     super.initState();
-    if (widget.favorites != null) {
-      favProvider = Provider.of<FavoritesProvider>(context, listen: false);
-      favProvider!.addItems(widget.favorites!, notify: false);
-    }
     userProvider = Provider.of<UserProvider>(context, listen: false);
     _Sname.text = userProvider.user!.name;
   }

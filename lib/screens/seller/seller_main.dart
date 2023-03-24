@@ -5,7 +5,7 @@ import 'package:topup2p/cloud/firestore.dart';
 import 'package:topup2p/models/item_model.dart';
 import 'package:topup2p/models/payment_model.dart';
 import 'package:topup2p/providers/payment_provider.dart';
-import 'package:topup2p/providers/sell_items_provder.dart';
+import 'package:topup2p/providers/sell_items_provider.dart';
 import 'package:topup2p/providers/user_provider.dart';
 import 'package:topup2p/screens/messages.dart';
 import 'package:topup2p/screens/profile.dart';
@@ -47,22 +47,11 @@ class _SellerMainState extends State<SellerMain> {
             ),
           ],
           child: MessagesScreen(
-              siItems: Provider.of<SellItemsProvider>(context, listen: false)
-                  .Sitems, payments: Provider.of<PaymentProvider>(context, listen: false)
+              siItems:
+                  Provider.of<SellItemsProvider>(context, listen: false).Sitems,
+              payments: Provider.of<PaymentProvider>(context, listen: false)
                   .payments)),
-      MultiProvider(
-          providers: [
-            ChangeNotifierProvider<SellItemsProvider>.value(
-              value: SellItemsProvider(),
-            ),
-            ChangeNotifierProvider<PaymentProvider>.value(
-              value: PaymentProvider(),
-            ),
-          ],
-          child: ProfileScreen(
-            siItems:
-                Provider.of<SellItemsProvider>(context, listen: false).Sitems, payments: Provider.of<PaymentProvider>(context, listen: false).payments)),
-      
+      const ProfileScreen()
     ];
   }
 
@@ -192,6 +181,3 @@ class _SellerMainState extends State<SellerMain> {
     }
   }
 }
-
-                           
-                          

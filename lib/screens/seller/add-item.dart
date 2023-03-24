@@ -8,7 +8,7 @@ import 'package:topup2p/cloud/firestore.dart';
 import 'package:topup2p/models/item_model.dart';
 import 'package:topup2p/models/payment_model.dart';
 import 'package:topup2p/providers/payment_provider.dart';
-import 'package:topup2p/providers/sell_items_provder.dart';
+import 'package:topup2p/providers/sell_items_provider.dart';
 import 'package:topup2p/providers/user_provider.dart';
 import 'package:topup2p/utilities/globals.dart';
 import 'package:topup2p/utilities/image_file_utils.dart';

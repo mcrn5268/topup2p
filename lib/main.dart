@@ -2,7 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'package:topup2p/providers/favorites_provider.dart';
 import 'package:topup2p/providers/payment_provider.dart';
-import 'package:topup2p/providers/sell_items_provder.dart';
+import 'package:topup2p/providers/sell_items_provider.dart';
 import 'package:topup2p/screens/login.dart';
 import 'package:topup2p/screens/seller/seller_main.dart';
 import 'package:topup2p/screens/user/user_main.dart';
