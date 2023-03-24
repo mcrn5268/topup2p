@@ -322,7 +322,17 @@ class _SellerMainScreenState extends State<SellerMainScreen> {
             Navigator.pushReplacement(
               context,
               PageRouteBuilder(
-                pageBuilder: (_, __, ___) => const SellerMain(index: 2),
+                pageBuilder: (_, __, ___) => MultiProvider(
+                  providers: [
+                    ChangeNotifierProvider<PaymentProvider>.value(
+                      value: PaymentProvider(),
+                    ),
+                    ChangeNotifierProvider<SellItemsProvider>.value(
+                      value: SellItemsProvider(),
+                    ),
+                  ],
+                  child: const SellerMain(index: 2),
+                ),
                 transitionsBuilder: (_, a, __, c) =>
                     FadeTransition(opacity: a, child: c),
               ),
@@ -334,8 +344,9 @@ class _SellerMainScreenState extends State<SellerMainScreen> {
       ),
     );
     //listen to true
-    bool oneEnabled =
-        Provider.of<SellItemsProvider>(context, listen: true).Sitems.any((map) => map.values.first == 'enabled');
+    bool oneEnabled = Provider.of<SellItemsProvider>(context, listen: true)
+        .Sitems
+        .any((map) => map.values.first == 'enabled');
     return Scaffold(
       appBar: AppBar(
           centerTitle: true,
